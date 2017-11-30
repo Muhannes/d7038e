@@ -3,18 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server;
+package server.lobby.network;
 
-import com.jme3.app.SimpleApplication;
+import com.jme3.network.HostedConnection;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
 
 /**
  *
- * @author truls
+ * @author hannes
  */
-public class LobbyApplication extends SimpleApplication{
+class LobbyMessageListener implements MessageListener<HostedConnection> {
+
 
     @Override
-    public void simpleInitApp() {
+    public void messageReceived(HostedConnection source, Message m) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
