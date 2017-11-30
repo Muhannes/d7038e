@@ -35,20 +35,21 @@ public class ClientApplication extends SimpleApplication implements
     public void simpleInitApp() {
         Logger.getLogger("").setLevel(Level.FINE);
         
-        clientNetworkHandler = new ClientNetworkHandler();
+        LOGGER.log(Level.FINE, "simpleInitApp");
+        System.out.println("Hej");
+        
+        /*clientNetworkHandler = new ClientNetworkHandler();
         
         clientNetworkHandler.connectToServer();
         
         clientNetworkHandler.getClientLobbyHandler().addLobbyListener(this);
         clientNetworkHandler.getClientLobbyHandler().addPlayerConnectionListener(this);
         
-        addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());
+        addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
         //TODO Create GUI
-    }
-    
-    @Override
-    public void destroy(){
-        clientNetworkHandler.destroy();
+        
+        LoginScreen loginScreen = new LoginScreen();
+        loginScreen.initialize(stateManager, this);
     }
 
     @Override

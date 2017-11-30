@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
+    <screen id="start">
+        <layer id="background" backgroundColor="#000f"/>
+        <layer id="foreground" childLayout="vertical" backgroundColor="#0000">
+            <panel id="panel_top" childLayout="center" backgroundColor="#f008" width="75%" align="center" height="25%"/>
+            <panel id="panel_mid" childLayout="center" backgroundColor="#0f08" width="75%" align="center" height="50%"/>
+            <panel id="panel_bottom" childLayout="horizontal" backgroundColor="#00f8" width="75%" align="center" height="25%">
+                <panel id="panel_bottom_left" childLayout="center" backgroundColor="#44f8" width="50%" valign="center" height="50%"/>
+                <panel id="panel_bottom_right" childLayout="center" backgroundColor="#88f8" width="50%" valign="center" height="50%"/>
+            </panel>
+        </layer>
+    </screen>
+</nifty>
