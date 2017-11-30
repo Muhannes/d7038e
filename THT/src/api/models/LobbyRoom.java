@@ -5,6 +5,7 @@
  */
 package api.models;
 
+import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,5 +33,24 @@ public class LobbyRoom {
     
     public List<Player> getPlayers(){
         return players;
+    }
+    
+    public SerializedLobbyRoom toSerializable(){
+        return new SerializedLobbyRoom(players, roomID);
+    }
+    
+    @Serializable
+    public class SerializedLobbyRoom{
+        private int id;
+        private String[] playerNames;
+        
+        private SerializedLobbyRoom(List<Player> players, int id){
+            playerNames = new String[players.size()];
+            for(int i = 0; i < players.size(); i++){
+                playerNames[i] = players.get(i).getName();
+            }
+            this.id = id;
+        }
+                
     }
 }

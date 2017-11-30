@@ -5,20 +5,23 @@
  */
 package networkutil;
 
-import api.models.LobbyRoom;
+import api.models.LobbyRoom.SerializedLobbyRoom;
+import com.jme3.network.serializing.Serializable;
 import java.util.List;
 
 /**
  *
  * @author hannes
  */
+@Serializable
 public class LobbyRoomsMessage extends AbstractTCPMessage {
-    public List<LobbyRoom> lobbyRooms;
+    public List<SerializedLobbyRoom> lobbyRooms;
+    
     public LobbyRoomsMessage(){
         
     }
     
-    public LobbyRoomsMessage(List<LobbyRoom> lobbyRooms){
+    public LobbyRoomsMessage(List<SerializedLobbyRoom> lobbyRooms){
         this.lobbyRooms = lobbyRooms;
     }
     
