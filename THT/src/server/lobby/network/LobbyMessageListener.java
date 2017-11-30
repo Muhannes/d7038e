@@ -18,7 +18,7 @@ class LobbyMessageListener implements MessageListener<HostedConnection> {
 
     @Override
     public void messageReceived(HostedConnection source, Message m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
 }
