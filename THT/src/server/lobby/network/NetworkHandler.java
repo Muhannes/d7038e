@@ -15,6 +15,8 @@ import com.jme3.network.ConnectionListener;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import java.io.IOException;
+import networkutil.JoinRoomMessage;
+import networkutil.LeaveRoomMessage;
 import networkutil.NetworkUtil;
 
 /**
@@ -26,6 +28,8 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     
     private Server server;
     private final int port = NetworkUtil.LOBBY_SERVER_PORT;
+    
+    private LobbyMessageListener lobbyMessageListener;
     
     public NetworkHandler(){
         NetworkUtil.initSerializables();
@@ -45,9 +49,9 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
             server.close();
         }
         System.out.println("Server started");
-        
+        lobbyMessageListener = new LobbyMessageListener();
         // add a listener that reacts on incoming network packets
-        server.addMessageListener(new LobbyMessageListener()); //TODO: Add messagetypes here.
+        server.addMessageListener(lobbyMessageListener, JoinRoomMessage.class, LeaveRoomMessage.class); //TODO: Add messagetypes here.
         System.out.println("ServerListener activated and added to server");
     }
     
@@ -62,7 +66,7 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
 
     @Override
     public void addLobbySelectionListener(LobbySelectionListener lobbySelectionListener) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        lobbyMessageListener.addLobbySelectionListener(lobbySelectionListener);
     }
 
     @Override

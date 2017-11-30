@@ -5,7 +5,6 @@
  */
 package server.lobby;
 
-import com.jme3.system.JmeContext;
 import server.lobby.network.NetworkHandler;
 
 /**
@@ -13,7 +12,9 @@ import server.lobby.network.NetworkHandler;
  * @author hannes
  */
 public class LobbyBootstrapper {
-    public LobbyBootstrapper(){
+    
+    @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String[] args) throws InterruptedException{
         
         NetworkHandler networkHandler = new NetworkHandler();
         LobbyApplication lobbyApplication = new LobbyApplication(networkHandler);
@@ -22,6 +23,9 @@ public class LobbyBootstrapper {
         networkHandler.addLobbySelectionListener(lobbyApplication);
         lobbyApplication.addLobbyListener(networkHandler);
         lobbyApplication.addPlayerConnectionListener(networkHandler);
+        while(true){//Ugly solution
+            Thread.sleep(1000);
+        }
     }
     
 }
