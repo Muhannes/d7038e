@@ -25,52 +25,28 @@ import java.util.logging.Logger;
  * @author truls
  */
 public class ClientNetworkHandler implements 
-        MessageListener<Client>,
-        ClientStateListener,
-        LobbyEmitter, 
-        PlayerConnectionEmitter, 
-        LobbySelectionListener{
+        ClientStateListener{
     
     private static final Logger LOGGER = Logger.getLogger(ClientNetworkHandler.class.getName());
     
-    private PlayerConnectionListener playerConnectionListener;
-    private LobbyListener lobbyListener;
-    
     private Client client;
     
-    public ClientNetworkHandler(){
-       
-    }
+    private ClientLobbyHandler clientLobbyHandler;
+    
+    public ClientNetworkHandler(){}
     
     void connectToServer(){
         try{
             LOGGER.log(Level.FINE, "Trying to connect to server");
             client = Network.connectToServer("localhost", 7020);
             client.addClientStateListener(this);
+            
+            clientLobbyHandler = new ClientLobbyHandler(client);
+          
             client.start();          
         }catch(IOException ex){
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public void addLobbyListener(LobbyListener lobbyListener) {
-        this.lobbyListener = lobbyListener;
-    }
-
-    @Override
-    public void addPlayerConnectionListener(PlayerConnectionListener playerConnectionListener) {
-        this.playerConnectionListener = playerConnectionListener;
-    }
-
-    @Override
-    public void notifyLobbySelection(LobbyRoom lobbyRoom) {
-        
-    }
-
-    @Override
-    public void messageReceived(Client source, Message m) {
-        LOGGER.log(Level.FINE, "Message received: source = ", source.toString());
     }
 
     @Override
@@ -83,4 +59,7 @@ public class ClientNetworkHandler implements
         LOGGER.log(Level.FINE, "Disconnected from server.\nReason: ", info.reason);  
     }
     
+    public ClientLobbyHandler getClientLobbyHandler(){
+        return clientLobbyHandler;
+    }
 }
