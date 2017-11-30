@@ -5,6 +5,7 @@
  */
 package api.models;
 
+import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

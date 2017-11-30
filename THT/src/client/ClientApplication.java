@@ -50,11 +50,10 @@ public class ClientApplication extends SimpleApplication implements
         LOGGER.log(Level.FINE, "notifyLobby: LobbyRoom = ", lobbyRoom);
         //TODO: Update GUI
     }
-
+    
     @Override
-    public void notifyPlayerConnection(Player player) {
+    public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) { 
         LOGGER.log(Level.FINE, "notifyPlayerConnection: Player = ", player);
-        //TODO: Update GUI
     }
 
     @Override
@@ -66,4 +65,5 @@ public class ClientApplication extends SimpleApplication implements
        ClientApplication clientApplication = new ClientApplication();
        clientApplication.start();
     }
+
 }

@@ -6,11 +6,13 @@
 package networkutil;
 
 import api.models.LobbyRoom;
+import com.jme3.network.serializing.Serializable;
 
 /**
  *
  * @author truls
  */
+@Serializable
 public class LeaveRoomMessage extends AbstractTCPMessage{
     
     
