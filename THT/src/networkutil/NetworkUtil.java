@@ -17,19 +17,10 @@ public class NetworkUtil {
     public static final String SERVER_HOSTNAME = "localhost";
     
     public static void initSerializables(){
-        // TODO: register for all new message types
-        /*Serializer.registerClass(DiskStateMessage.class);
-        Serializer.registerClass(GameStateMessage.class);
-        Serializer.registerClass(InitMessage.class);
-        Serializer.registerClass(InitAckMessage.class);
-        Serializer.registerClass(JoinMessage.class);
-        Serializer.registerClass(JoinAckMessage.class);
-        Serializer.registerClass(StartMessage.class);
-        Serializer.registerClass(PlayerMoveMessage.class);
-        Serializer.registerClass(DiskStateMessage.class);
-        Serializer.registerClass(RequestStartMessage.class);
-        Serializer.registerClass(DiskState.class);
-        Serializer.registerClass(TimeMessage.class);
-*/
+        Serializer.registerClass(JoinRoomMessage.class);
+        Serializer.registerClass(JoinRoomAckMessage.class);
+        Serializer.registerClass(LeaveRoomMessage.class);
+        Serializer.registerClass(ReadyMessage.class);
+        Serializer.registerClass(LobbyRoomsMessage.class);
     }
 }
