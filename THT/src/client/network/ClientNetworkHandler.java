@@ -11,7 +11,6 @@ import api.LobbySelectionListener;
 import api.PlayerConnectionEmitter;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
-import client.ClientApplication;
 import com.jme3.network.Client;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
