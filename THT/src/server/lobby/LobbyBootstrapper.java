@@ -18,7 +18,10 @@ public class LobbyBootstrapper {
         LobbyApplication lobbyApplication = new LobbyApplication();
         NetworkHandler networkHandler = new NetworkHandler();
         //TODO: connect listeners
-        
+        networkHandler.addConnectionListener(lobbyApplication);
+        networkHandler.addLobbySelectionListener(lobbyApplication);
+        lobbyApplication.addLobbyListener(networkHandler);
+        lobbyApplication.addPlayerConnectionListener(networkHandler);
         //Start application headless
         lobbyApplication.start(JmeContext.Type.Headless);
     }

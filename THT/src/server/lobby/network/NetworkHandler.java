@@ -11,6 +11,7 @@ import api.LobbySelectionListener;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
 import api.models.Player;
+import com.jme3.network.ConnectionListener;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import java.io.IOException;
@@ -63,6 +64,10 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     @Override
     public void notifyPlayerConnection(Player player) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void addConnectionListener(ConnectionListener cl){
+        server.addConnectionListener(cl);
     }
     
 }
