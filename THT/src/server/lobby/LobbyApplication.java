@@ -59,7 +59,7 @@ public class LobbyApplication extends SimpleApplication implements LobbyEmitter,
     
     /**
      * not the same as connectionAdded. 
-     * This is for when a player connects to a lobby.
+     * This is for when a player connects to a lobby room.
      * @param p 
      */
     private void notifyPlayerConnectionListener(Player p){
@@ -68,6 +68,11 @@ public class LobbyApplication extends SimpleApplication implements LobbyEmitter,
         }
     }
 
+    /**
+     * when a player connects to the lobby server.
+     * @param server
+     * @param conn 
+     */
     @Override
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
