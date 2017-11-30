@@ -36,13 +36,13 @@ public class ClientApplication extends SimpleApplication implements
         
         clientNetworkHandler = new ClientNetworkHandler();
         
+        clientNetworkHandler.connectToServer();
+        
         clientNetworkHandler.getClientLobbyHandler().addLobbyListener(this);
         clientNetworkHandler.getClientLobbyHandler().addPlayerConnectionListener(this);
         
         addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());
         //TODO Create GUI
-        
-        clientNetworkHandler.connectToServer();
     }
 
     @Override

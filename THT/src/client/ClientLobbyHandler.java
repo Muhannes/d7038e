@@ -30,7 +30,9 @@ public class ClientLobbyHandler implements
     private PlayerConnectionListener playerConnectionListener;
     private LobbyListener lobbyListener;
     
-    public ClientLobbyHandler(Client client){
+    public ClientLobbyHandler(){}
+    
+    void initMessageListener(Client client){
         client.addMessageListener(this, JoinRoomAckMessage.class);
         client.addMessageListener(this, LobbyRoomsMessage.class);
     }
