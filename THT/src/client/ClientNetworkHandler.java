@@ -19,6 +19,7 @@ import com.jme3.network.Network;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import networkutil.NetworkUtil;
 
 /**
  *
@@ -33,7 +34,9 @@ public class ClientNetworkHandler implements
     
     private ClientLobbyHandler clientLobbyHandler;
     
-    public ClientNetworkHandler(){}
+    public ClientNetworkHandler(){
+        NetworkUtil.initSerializables();
+    }
     
     void connectToServer(){
         try{

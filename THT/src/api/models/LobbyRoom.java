@@ -17,6 +17,7 @@ public class LobbyRoom {
     private List<Player> players = new ArrayList<>();
     private int roomID;
     private static int idCounter = 0;
+    private static final int MAX_PLAYERS = 10;
 
     public LobbyRoom() {
         roomID = idCounter;
@@ -35,6 +36,10 @@ public class LobbyRoom {
         return players;
     }
     
+    public boolean canJoin(){
+        return players.size() < MAX_PLAYERS;
+    }
+    
     public SerializedLobbyRoom toSerializable(){
         return new SerializedLobbyRoom(players, roomID);
     }
@@ -51,6 +56,6 @@ public class LobbyRoom {
             }
             this.id = id;
         }
-                
+        
     }
 }

@@ -13,5 +13,5 @@ import api.models.LobbyRoom;
  */
 public interface LobbySelectionListener {
     
-    void notifyLobbySelection(LobbyRoom lobbyRoom);
+    void notifyLobbySelection(LobbyRoom lobbyRoom, int playerID);
 }

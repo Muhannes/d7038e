@@ -5,6 +5,7 @@
  */
 package api;
 
+import api.models.LobbyRoom;
 import api.models.Player;
 
 /**
@@ -13,5 +14,5 @@ import api.models.Player;
  */
 public interface PlayerConnectionListener {
     
-    void notifyPlayerConnection(Player player);
+    void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom);
 }
