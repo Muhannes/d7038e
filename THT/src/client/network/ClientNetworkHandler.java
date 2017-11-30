@@ -3,18 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client;
+package client.network;
 
-import api.LobbyEmitter;
-import api.LobbyListener;
-import api.LobbySelectionListener;
-import api.PlayerConnectionEmitter;
-import api.PlayerConnectionListener;
-import api.models.LobbyRoom;
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
-import com.jme3.network.Message;
-import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -36,15 +28,16 @@ public class ClientNetworkHandler implements
     
     public ClientNetworkHandler(){
         NetworkUtil.initSerializables();
+        clientLobbyHandler = new ClientLobbyHandler();
     }
     
-    void connectToServer(){
+    public void connectToServer(){
         try{
             LOGGER.log(Level.FINE, "Trying to connect to server");
-            client = Network.connectToServer("localhost", 7020);
+            client = Network.connectToServer(NetworkUtil.SERVER_HOSTNAME, NetworkUtil.LOBBY_SERVER_PORT);
             client.addClientStateListener(this);
             
-            clientLobbyHandler = new ClientLobbyHandler(client);
+            clientLobbyHandler.initMessageListener(client);
           
             client.start();          
         }catch(IOException ex){
@@ -64,5 +57,9 @@ public class ClientNetworkHandler implements
     
     public ClientLobbyHandler getClientLobbyHandler(){
         return clientLobbyHandler;
+    }
+    
+    public void destroy(){
+        client.close();
     }
 }

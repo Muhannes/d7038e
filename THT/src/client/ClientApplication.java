@@ -5,6 +5,7 @@
  */
 package client;
 
+import client.network.ClientNetworkHandler;
 import api.LobbyListener;
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
@@ -36,13 +37,18 @@ public class ClientApplication extends SimpleApplication implements
         
         clientNetworkHandler = new ClientNetworkHandler();
         
+        clientNetworkHandler.connectToServer();
+        
         clientNetworkHandler.getClientLobbyHandler().addLobbyListener(this);
         clientNetworkHandler.getClientLobbyHandler().addPlayerConnectionListener(this);
         
         addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());
         //TODO Create GUI
-        
-        clientNetworkHandler.connectToServer();
+    }
+    
+    @Override
+    public void destroy(){
+        clientNetworkHandler.destroy();
     }
 
     @Override

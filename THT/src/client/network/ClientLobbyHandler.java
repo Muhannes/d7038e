@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client;
+package client.network;
 
 import api.LobbyEmitter;
 import api.LobbyListener;
@@ -30,7 +30,9 @@ public class ClientLobbyHandler implements
     private PlayerConnectionListener playerConnectionListener;
     private LobbyListener lobbyListener;
     
-    public ClientLobbyHandler(Client client){
+    public ClientLobbyHandler(){}
+    
+    void initMessageListener(Client client){
         client.addMessageListener(this, JoinRoomAckMessage.class);
         client.addMessageListener(this, LobbyRoomsMessage.class);
     }
