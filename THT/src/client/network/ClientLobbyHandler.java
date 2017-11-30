@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client;
+package client.network;
 
 import api.LobbyEmitter;
 import api.LobbyListener;

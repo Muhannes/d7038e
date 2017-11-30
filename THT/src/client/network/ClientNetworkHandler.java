@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client;
+package client.network;
 
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
@@ -31,7 +31,7 @@ public class ClientNetworkHandler implements
         clientLobbyHandler = new ClientLobbyHandler();
     }
     
-    void connectToServer(){
+    public void connectToServer(){
         try{
             LOGGER.log(Level.FINE, "Trying to connect to server");
             client = Network.connectToServer(NetworkUtil.SERVER_HOSTNAME, NetworkUtil.LOBBY_SERVER_PORT);

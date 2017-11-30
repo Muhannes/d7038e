@@ -5,6 +5,7 @@
  */
 package client;
 
+import client.network.ClientNetworkHandler;
 import api.LobbyListener;
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
