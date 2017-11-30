@@ -5,7 +5,7 @@
  */
 package networkutil;
 
-import api.models.LobbyRoom.SerializedLobbyRoom;
+import api.models.LobbyRoom;
 import com.jme3.network.serializing.Serializable;
 
 /**
@@ -14,12 +14,12 @@ import com.jme3.network.serializing.Serializable;
  */
 @Serializable
 public class JoinRoomAckMessage extends AbstractTCPMessage {
-    public SerializedLobbyRoom lobbyRoom;
+    public LobbyRoom lobbyRoom;
     
     public JoinRoomAckMessage() {
     }
     
-    public JoinRoomAckMessage(SerializedLobbyRoom lobbyRoom){
+    public JoinRoomAckMessage(LobbyRoom lobbyRoom){
         this.lobbyRoom = lobbyRoom;
     }
 }

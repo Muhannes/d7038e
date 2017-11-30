@@ -40,22 +40,4 @@ public class LobbyRoom {
         return players.size() < MAX_PLAYERS;
     }
     
-    public SerializedLobbyRoom toSerializable(){
-        return new SerializedLobbyRoom(players, roomID);
-    }
-    
-    @Serializable
-    public class SerializedLobbyRoom{
-        private int id;
-        private String[] playerNames;
-        
-        private SerializedLobbyRoom(List<Player> players, int id){
-            playerNames = new String[players.size()];
-            for(int i = 0; i < players.size(); i++){
-                playerNames[i] = players.get(i).getName();
-            }
-            this.id = id;
-        }
-        
-    }
 }

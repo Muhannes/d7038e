@@ -110,7 +110,7 @@ public class LobbyApplication extends SimpleApplication implements LobbyEmitter,
     @Override
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
-        nonLobbyPlayers.add(new Player(conn.getId()));
+        nonLobbyPlayers.add(new Player(conn.getId(), "John Doe")); //TODO: Change name 
         for (LobbyRoom lobbyRoom : lobbyRooms) {
             notifyLobbyListeners(lobbyRoom);
         }
