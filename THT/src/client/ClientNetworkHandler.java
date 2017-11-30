@@ -39,7 +39,7 @@ public class ClientNetworkHandler implements
     private Client client;
     
     public ClientNetworkHandler(){
-        
+       
     }
     
     void connectToServer(){
