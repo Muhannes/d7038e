@@ -22,8 +22,6 @@ public class LobbyBootstrapper {
         networkHandler.addLobbySelectionListener(lobbyApplication);
         lobbyApplication.addLobbyListener(networkHandler);
         lobbyApplication.addPlayerConnectionListener(networkHandler);
-        //Start application headless
-        lobbyApplication.start(JmeContext.Type.Headless);
     }
     
 }

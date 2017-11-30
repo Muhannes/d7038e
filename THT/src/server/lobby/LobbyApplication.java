@@ -24,7 +24,7 @@ import server.lobby.network.NetworkHandler;
  *
  * @author truls
  */
-public class LobbyApplication extends SimpleApplication implements LobbyEmitter, LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
+public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
     List<PlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
     List<LobbyListener> lobbyListeners = new ArrayList<>();
     List<LobbyRoom> lobbyRooms = new ArrayList();
@@ -33,13 +33,7 @@ public class LobbyApplication extends SimpleApplication implements LobbyEmitter,
 
     public LobbyApplication(NetworkHandler networkHandler) {
         this.networkHandler = networkHandler;
-    }
-    
-    @Override
-    public void simpleInitApp() {
-        //TODO: all
         lobbyRooms.add(new LobbyRoom());//must be atleast one lobby room.
-        
     }
     
     public synchronized LobbyRoom getLobbyRoom(int id){
