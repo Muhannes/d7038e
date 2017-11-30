@@ -44,6 +44,11 @@ public class ClientApplication extends SimpleApplication implements
         addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());
         //TODO Create GUI
     }
+    
+    @Override
+    public void destroy(){
+        clientNetworkHandler.destroy();
+    }
 
     @Override
     public void notifyLobby(LobbyRoom lobbyRoom) {

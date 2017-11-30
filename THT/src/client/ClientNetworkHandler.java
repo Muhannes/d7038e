@@ -58,4 +58,8 @@ public class ClientNetworkHandler implements
     public ClientLobbyHandler getClientLobbyHandler(){
         return clientLobbyHandler;
     }
+    
+    public void destroy(){
+        client.close();
+    }
 }
