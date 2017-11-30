@@ -5,10 +5,13 @@
  */
 package api;
 
+import api.models.Player;
+
 /**
  *
  * @author truls
  */
 public interface PlayerConnectionListener {
     
+    void notifyPlayerConnection(Player player);
 }
