@@ -27,11 +27,22 @@ public class ClientApplication extends SimpleApplication implements
     private static final Logger LOGGER = Logger.getLogger(ClientApplication.class.getName());
     
     private LobbySelectionListener lobbySelectionListener;
+    
+    private ClientNetworkHandler clientNetworkHandler;
 
     @Override
     public void simpleInitApp() {
         Logger.getLogger("").setLevel(Level.FINE);
+        
+        clientNetworkHandler = new ClientNetworkHandler();
+        
+        clientNetworkHandler.addLobbyListener(this);
+        clientNetworkHandler.addPlayerConnectionListener(this);
+        
+        addLobbySelectionListener(clientNetworkHandler);
         //TODO Create GUI
+        
+        clientNetworkHandler.connectToServer();
     }
 
     @Override
@@ -51,4 +62,8 @@ public class ClientApplication extends SimpleApplication implements
         this.lobbySelectionListener = lobbySelectionListener;
     }
     
+    public static void main(String[] args){
+       ClientApplication clientApplication = new ClientApplication();
+       clientApplication.start();
+    }
 }
