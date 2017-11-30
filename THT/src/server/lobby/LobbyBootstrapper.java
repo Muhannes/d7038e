@@ -15,8 +15,8 @@ import server.lobby.network.NetworkHandler;
 public class LobbyBootstrapper {
     public LobbyBootstrapper(){
         
-        LobbyApplication lobbyApplication = new LobbyApplication();
         NetworkHandler networkHandler = new NetworkHandler();
+        LobbyApplication lobbyApplication = new LobbyApplication(networkHandler);
         //TODO: connect listeners
         networkHandler.addConnectionListener(lobbyApplication);
         networkHandler.addLobbySelectionListener(lobbyApplication);

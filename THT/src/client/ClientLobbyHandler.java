@@ -57,7 +57,7 @@ public class ClientLobbyHandler implements
     }
 
     @Override
-    public void notifyLobbySelection(LobbyRoom lobbyRoom) {
+    public void notifyLobbySelection(LobbyRoom lobbyRoom, int playerID) {
         
     }
     
