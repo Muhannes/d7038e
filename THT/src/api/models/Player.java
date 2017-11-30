@@ -10,5 +10,13 @@ package api.models;
  * @author truls
  */
 public class Player {
+    private final int id;
+
+    public Player(int id) {
+        this.id = id;
+    }
     
+    public int getID(){
+        return id;
+    }
 }

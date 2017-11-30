@@ -50,6 +50,10 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
         server.addMessageListener(new LobbyMessageListener()); //TODO: Add messagetypes here.
         System.out.println("ServerListener activated and added to server");
     }
+    
+    public void sendJoinRoomAckMessage(boolean ok, int playerID){
+        
+    }
 
     @Override
     public void notifyLobby(LobbyRoom lobbyRoom) {
@@ -62,7 +66,7 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     }
 
     @Override
-    public void notifyPlayerConnection(Player player) {
+    public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
