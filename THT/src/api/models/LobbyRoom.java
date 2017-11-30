@@ -31,11 +31,30 @@ public class LobbyRoom {
         players.add(p);
     }
     
+    public boolean removePlayer(int playerID){
+        for (Player player : players) {
+            if (player.getID() == playerID) {
+                players.remove(player);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public List<Player> getPlayers(){
         return players;
     }
     
     public boolean canJoin(){
         return players.size() < MAX_PLAYERS;
+    }
+    
+    public boolean isMember(int playerID){
+        for (Player player : players) {
+            if (player.getID() == playerID) {
+                return true;
+            }
+        }
+        return false;
     }
 }

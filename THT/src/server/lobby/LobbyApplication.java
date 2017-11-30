@@ -36,7 +36,7 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
         lobbyRooms.add(new LobbyRoom());//must be atleast one lobby room.
     }
     
-    public synchronized LobbyRoom getLobbyRoom(int id){
+    private LobbyRoom getLobbyRoom(int id){
         for (LobbyRoom lobbyRoom : lobbyRooms) {
             if (lobbyRoom.getID() == id) {
                 return lobbyRoom;
@@ -45,13 +45,17 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
         return null;
     }
     
-    public synchronized Player getPlayer(int id){
+    private Player getPlayer(int id){
         for (Player player : nonLobbyPlayers) {
             if (player.getID() == id) {
                 return player;
             }
         }
         return null;
+    }
+    
+    private void removePlayer(int id){
+        nonLobbyPlayers.remove(getPlayer(id));
     }
 
     @Override
@@ -65,15 +69,27 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
         }
     }
 
+    /**
+     * Adds the player to the lobby room if it exists and is not full.
+     * If the rooms does not exist, use the given lobbyRoom.
+     * If both above options wont work, send back joinack false.
+     * @param newLobbyRoom
+     * @param playerID 
+     */
     @Override
     public void notifyLobbySelection(LobbyRoom newLobbyRoom, int playerID) {
         boolean ok = true;
         LobbyRoom localLR = getLobbyRoom(newLobbyRoom.getID());
-        if (localLR != null && localLR.canJoin()) {
-            localLR.addPlayer(getPlayer(playerID));
+        if (localLR != null) {
+            if (localLR.removePlayer(playerID)) {
+                //Nothing
+            } else {
+                localLR.addPlayer(getPlayer(playerID)); // Add to room
+                removePlayer(playerID); // remove from nonlobby list
+            }
             notifyPlayerConnectionListeners(getPlayer(playerID), localLR);
         } else if(localLR == null){
-            lobbyRooms.add(newLobbyRoom);
+            lobbyRooms.add(newLobbyRoom); // add new lobbyRoom to list
         } else {
             ok = false;
         }

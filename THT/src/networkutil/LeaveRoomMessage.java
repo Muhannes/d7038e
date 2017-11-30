@@ -5,12 +5,21 @@
  */
 package networkutil;
 
+import api.models.LobbyRoom;
+
 /**
  *
  * @author truls
  */
 public class LeaveRoomMessage extends AbstractTCPMessage{
     
+    
+    public LobbyRoom lobbyRoom;
+    
     public LeaveRoomMessage(){}
     
+    
+    public LeaveRoomMessage(LobbyRoom lobbyRoom){
+        this.lobbyRoom = lobbyRoom;
+    }
 }

@@ -26,23 +26,19 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
     @Override
     public void messageReceived(HostedConnection source, Message m) {
         if (m instanceof JoinRoomMessage) {
-            onJoinRoomMessage((JoinRoomMessage) m, source);
+            onChangeRoomMessage(((JoinRoomMessage) m).lobbyRoom, source);
             
         } else if (m instanceof LeaveRoomMessage) {
-            onLeaveRoomMessage((LeaveRoomMessage) m, source);
+            onChangeRoomMessage(((LeaveRoomMessage) m).lobbyRoom, source);
             
         }
     }
     
-    private void onJoinRoomMessage(JoinRoomMessage m, HostedConnection source){
+    private void onChangeRoomMessage(LobbyRoom lobbyRoom, HostedConnection source){
         int playerID = source.getId();
-        if (m.lobbyRoom != null) {
-            notifyLobbySelectionListeners(m.lobbyRoom, playerID);
+        if (lobbyRoom != null) {
+            notifyLobbySelectionListeners(lobbyRoom, playerID);
         }
-        
-    }
-    
-    private void onLeaveRoomMessage(LeaveRoomMessage m, HostedConnection source){
         
     }
 
