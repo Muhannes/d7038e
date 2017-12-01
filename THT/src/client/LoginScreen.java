@@ -48,7 +48,6 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         
         /** Create a new NiftyGUI object */
         nifty = niftyDisplay.getNifty();
-        nifty.setDebugOptionPanelColors(true);
 
         /** Read your XML and initialize your custom ScreenController */
         nifty.fromXml("Interface/login.xml", "start", this); 
