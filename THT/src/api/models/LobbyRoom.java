@@ -5,6 +5,8 @@
  */
 package api.models;
 
+import api.LobbyEmitter;
+import api.LobbyListener;
 import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,9 @@ import java.util.List;
  *
  * @author truls
  */
-public class LobbyRoom {
+public class LobbyRoom implements LobbyEmitter{
+    private final List<LobbyListener> lobbyListeners  = new ArrayList<>();
+    
     private List<Player> players = new ArrayList<>();
     private int roomID;
     private static int idCounter = 0;
@@ -33,13 +37,30 @@ public class LobbyRoom {
     }
     
     public boolean removePlayer(int playerID){
-        for (Player player : players) {
-            if (player.getID() == playerID) {
-                players.remove(player);
-                return true;
-            }
+        Player p = getPlayer(playerID);
+        if (p != null) {
+            p.setReady(false);
+            players.remove(p);
+            return true;
         }
         return false;
+    }
+    
+    /**
+     * sets the chosen player to ready,
+     * returns true if all players in lobby is ready.
+     * @param playerID
+     * @return 
+     */
+    public boolean setPlayerReady(int playerID){
+        Player p = getPlayer(playerID);
+        p.setReady(true);
+        for (Player player : players) {
+            if (!player.isReady()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     public List<Player> getPlayers(){
@@ -50,12 +71,23 @@ public class LobbyRoom {
         return players.size() < MAX_PLAYERS;
     }
     
-    public boolean isMember(int playerID){
+    public Player getPlayer(int playerID){
         for (Player player : players) {
             if (player.getID() == playerID) {
-                return true;
+                return player;
             }
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public void addLobbyListener(LobbyListener lobbyListener) {
+        lobbyListeners.add(lobbyListener);
+    }
+    
+    private void notifyLobbyListeners(){
+        for (LobbyListener lobbyListener : lobbyListeners) {
+            lobbyListener.notifyLobby(this);
+        }
     }
 }

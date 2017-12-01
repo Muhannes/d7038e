@@ -17,11 +17,14 @@ public class LobbyBootstrapper {
     public static void main(String[] args) throws InterruptedException{
         
         NetworkHandler networkHandler = new NetworkHandler();
-        LobbyApplication lobbyApplication = new LobbyApplication(networkHandler);
+        LobbyHolder lobbyHolder = new LobbyHolder();
+        LobbyStarter lobbyStarter = new LobbyStarter(lobbyHolder);
+        LobbyApplication lobbyApplication = new LobbyApplication(networkHandler, lobbyHolder);
         //TODO: connect listeners
         networkHandler.addConnectionListener(lobbyApplication);
         networkHandler.addLobbySelectionListener(lobbyApplication);
-        lobbyApplication.addLobbyListener(networkHandler);
+        networkHandler.addPlayerReadyListener(lobbyStarter);
+        lobbyHolder.addLobbyListener(networkHandler);
         lobbyApplication.addPlayerConnectionListener(networkHandler);
         while(true){//Ugly solution
             Thread.sleep(1000);

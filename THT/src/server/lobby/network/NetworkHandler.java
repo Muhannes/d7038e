@@ -9,6 +9,8 @@ import api.LobbyListener;
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
 import api.PlayerConnectionListener;
+import api.PlayerReadyEmitter;
+import api.PlayerReadyListener;
 import api.models.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.ConnectionListener;
@@ -23,7 +25,7 @@ import networkutil.NetworkUtil;
  *
  * @author hannes
  */
-public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, PlayerConnectionListener{
+public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, PlayerConnectionListener, PlayerReadyEmitter{
     
     
     private Server server;
@@ -55,8 +57,11 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
         System.out.println("ServerListener activated and added to server");
     }
     
-    public void sendJoinRoomAckMessage(boolean ok, int playerID){
-        
+    public void sendJoinRoomAckMessage(boolean ok, int playerID, int roomID){
+        if (ok) {
+            server.getConnection(playerID).setAttribute(LobbyNetworkStates.ROOM_ID, roomID);
+            //TODO: notify rest!
+        }
     }
 
     @Override
@@ -76,6 +81,11 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     
     public void addConnectionListener(ConnectionListener cl){
         server.addConnectionListener(cl);
+    }
+
+    @Override
+    public void addPlayerReadyListener(PlayerReadyListener playerReadyListener) {
+        lobbyMessageListener.addPlayerReadyListener(playerReadyListener);
     }
     
 }

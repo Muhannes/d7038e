@@ -5,47 +5,38 @@
  */
 package server.lobby;
 
-import api.LobbyEmitter;
 import api.LobbyListener;
 import api.LobbySelectionListener;
 import api.PlayerConnectionEmitter;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
 import api.models.Player;
-import com.jme3.app.SimpleApplication;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Server;
 import java.util.ArrayList;
 import java.util.List;
+import server.lobby.network.LobbyNetworkStates;
 import server.lobby.network.NetworkHandler;
 
 /**
  *
  * @author truls
  */
-public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
+public class LobbyApplication implements LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
     List<PlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
     List<LobbyListener> lobbyListeners = new ArrayList<>();
-    List<LobbyRoom> lobbyRooms = new ArrayList();
     List<Player> nonLobbyPlayers = new ArrayList<>();
+    
     NetworkHandler networkHandler;
+    LobbyHolder lobbyHolder;
 
-    public LobbyApplication(NetworkHandler networkHandler) {
+    public LobbyApplication(NetworkHandler networkHandler, LobbyHolder lobbyHolder) {
         this.networkHandler = networkHandler;
-        lobbyRooms.add(new LobbyRoom());//must be atleast one lobby room.
+        this.lobbyHolder = lobbyHolder;
     }
     
-    private LobbyRoom getLobbyRoom(int id){
-        for (LobbyRoom lobbyRoom : lobbyRooms) {
-            if (lobbyRoom.getID() == id) {
-                return lobbyRoom;
-            }
-        }
-        return null;
-    }
-    
-    private Player getPlayer(int id){
+    private Player getNonLobbyPlayer(int id){
         for (Player player : nonLobbyPlayers) {
             if (player.getID() == id) {
                 return player;
@@ -55,18 +46,7 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
     }
     
     private void removePlayer(int id){
-        nonLobbyPlayers.remove(getPlayer(id));
-    }
-
-    @Override
-    public void addLobbyListener(LobbyListener lobbyListener) {
-        lobbyListeners.add(lobbyListener);
-    }
-    
-    private void notifyLobbyListeners(LobbyRoom lobbyRoom){
-        for (LobbyListener lobbyListener : lobbyListeners) {
-            lobbyListener.notifyLobby(lobbyRoom);
-        }
+        nonLobbyPlayers.remove(getNonLobbyPlayer(id));
     }
 
     /**
@@ -79,21 +59,23 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
     @Override
     public void notifyLobbySelection(LobbyRoom newLobbyRoom, int playerID) {
         boolean ok = true;
-        LobbyRoom localLR = getLobbyRoom(newLobbyRoom.getID());
+        Player player = getNonLobbyPlayer(playerID);
+        int returnID = newLobbyRoom.getID();
+        LobbyRoom localLR = lobbyHolder.getLobbyRoom(newLobbyRoom.getID());
         if (localLR != null) {
             if (localLR.removePlayer(playerID)) {
-                //Nothing
+                returnID = -1;
             } else {
-                localLR.addPlayer(getPlayer(playerID)); // Add to room
+                localLR.addPlayer(player); // Add to room
                 removePlayer(playerID); // remove from nonlobby list
             }
-            notifyPlayerConnectionListeners(getPlayer(playerID), localLR);
+            notifyPlayerConnectionListeners(player, localLR);
         } else if(localLR == null){
-            lobbyRooms.add(newLobbyRoom); // add new lobbyRoom to list
+            lobbyHolder.addLobbyRoom(newLobbyRoom); // add new lobbyRoom to list
         } else {
             ok = false;
         }
-        networkHandler.sendJoinRoomAckMessage(ok, playerID);
+        networkHandler.sendJoinRoomAckMessage(ok, playerID, returnID);
     }
 
     @Override
@@ -121,9 +103,11 @@ public class LobbyApplication implements LobbyEmitter, LobbySelectionListener, P
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
         nonLobbyPlayers.add(new Player(conn.getId(), "John Doe")); //TODO: Change name 
-        for (LobbyRoom lobbyRoom : lobbyRooms) {
+        conn.setAttribute(LobbyNetworkStates.ROOM_ID, -1);
+        // TODO: Notify the new player about available rooms!
+        /*for (LobbyRoom lobbyRoom : lobbyHolder.getRooms()) {
             notifyLobbyListeners(lobbyRoom);
-        }
+        }*/
     }
 
     @Override

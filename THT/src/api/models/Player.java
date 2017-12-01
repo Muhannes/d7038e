@@ -12,10 +12,12 @@ package api.models;
 public class Player {
     private final int id;
     private final String name;
+    private boolean ready;
 
     public Player(int id, String name) {
         this.id = id;
         this.name = name;
+        this.ready = false;
     }
     
     public String getName(){
@@ -25,4 +27,13 @@ public class Player {
     public int getID(){
         return id;
     }
+    
+    public void setReady(boolean ready){
+        this.ready = ready;
+    }
+    
+    public boolean isReady(){
+        return this.ready;
+    }
+    
 }

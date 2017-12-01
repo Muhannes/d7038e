@@ -7,6 +7,8 @@ package server.lobby.network;
 
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
+import api.PlayerReadyEmitter;
+import api.PlayerReadyListener;
 import api.models.LobbyRoom;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
@@ -15,22 +17,33 @@ import java.util.ArrayList;
 import java.util.List;
 import networkutil.JoinRoomMessage;
 import networkutil.LeaveRoomMessage;
+import networkutil.ReadyMessage;
 
 /**
  *
  * @author hannes
  */
-class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySelectionEmitter {
+class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySelectionEmitter, PlayerReadyEmitter {
     private final List<LobbySelectionListener> lobbySelectionListeners = new ArrayList<>();
-
+    private final List<PlayerReadyListener> playerReadyListeners = new ArrayList<>();
+    
     @Override
     public void messageReceived(HostedConnection source, Message m) {
         if (m instanceof JoinRoomMessage) {
-            onChangeRoomMessage(((JoinRoomMessage) m).lobbyRoom, source);
+            if ((int) source.getAttribute(LobbyNetworkStates.ROOM_ID) == -1) { // if not already in a room
+                onChangeRoomMessage(((JoinRoomMessage) m).lobbyRoom, source);
+            }
             
         } else if (m instanceof LeaveRoomMessage) {
-            onChangeRoomMessage(((LeaveRoomMessage) m).lobbyRoom, source);
+            if ((int) source.getAttribute(LobbyNetworkStates.ROOM_ID) != -1) { // if in a room
+                onChangeRoomMessage(((LeaveRoomMessage) m).lobbyRoom, source);
+            }
             
+        } else if (m instanceof ReadyMessage) {
+            int roomID = (int) source.getAttribute(LobbyNetworkStates.ROOM_ID);
+            if (roomID != -1) { // if in a room
+                onReadyMessage(roomID);
+            }
         }
     }
     
@@ -39,6 +52,10 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
         if (lobbyRoom != null) {
             notifyLobbySelectionListeners(lobbyRoom, playerID);
         }
+        
+    }
+    
+    private void onReadyMessage(int roomID){
         
     }
 
@@ -51,6 +68,11 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
         for (LobbySelectionListener lobbySelectionListener : lobbySelectionListeners) {
             lobbySelectionListener.notifyLobbySelection(lobbyRoom, playerID);
         }
+    }
+
+    @Override
+    public void addPlayerReadyListener(PlayerReadyListener playerReadyListener) {
+        playerReadyListeners.add(playerReadyListener);
     }
     
 }
