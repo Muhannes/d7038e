@@ -14,21 +14,23 @@ import java.util.logging.Logger;
 import networkutil.NetworkUtil;
 
 /**
- *
+ * Master class of network related stuff.
  * @author truls
  */
-public class ClientNetworkHandler implements 
+public class ClientNetworkManager implements 
         ClientStateListener{
     
-    private static final Logger LOGGER = Logger.getLogger(ClientNetworkHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ClientNetworkManager.class.getName());
     
     private Client client;
     
     private ClientLobbyHandler clientLobbyHandler;
+    private ClientLoginHandler clientLoginHandler;
     
-    public ClientNetworkHandler(){
+    public ClientNetworkManager(){
         NetworkUtil.initSerializables();
         clientLobbyHandler = new ClientLobbyHandler();
+        clientLoginHandler = new ClientLoginHandler();
     }
     
     public void connectToServer(){
@@ -38,6 +40,7 @@ public class ClientNetworkHandler implements
             client.addClientStateListener(this);
             
             clientLobbyHandler.initMessageListener(client);
+            clientLoginHandler.initMessageListener(client);
           
             client.start();          
         }catch(IOException ex){
@@ -57,5 +60,9 @@ public class ClientNetworkHandler implements
     
     public ClientLobbyHandler getClientLobbyHandler(){
         return clientLobbyHandler;
+    }
+    
+    public ClientLoginHandler getClientLoginHandler(){
+        return clientLoginHandler;
     }
 }
