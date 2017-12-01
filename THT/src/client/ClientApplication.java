@@ -50,6 +50,7 @@ public class ClientApplication extends SimpleApplication implements
         
         LoginScreen loginScreen = new LoginScreen();
         loginScreen.initialize(stateManager, this);
+        flyCam.setEnabled(false);
     }
 
     @Override
