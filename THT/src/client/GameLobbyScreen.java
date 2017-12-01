@@ -1,4 +1,5 @@
 /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -6,7 +7,6 @@
 package client;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author truls
+ * @author ted
  */
-public class LoginScreen extends AbstractAppState implements ScreenController{    
-    
+public class GameLobbyScreen extends AbstractAppState implements ScreenController{
+
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
     private Application app;
@@ -39,15 +39,14 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         nifty = niftyDisplay.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/screen.xml", "start", this);
+        nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
         
         // attach the Nifty display to the gui view port as a processor
-        this.onStartScreen();
+        app.getGuiViewPort().addProcessor(niftyDisplay);
     }
 
     @Override
     public void bind(Nifty nifty, Screen screen) {
-        System.out.println("New Bind : " + nifty + " : " + screen);
         //TODO: 
     }
 
@@ -68,6 +67,10 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     public void quitGame(){
         System.out.println("Stopping!");
         app.stop();
+    }
+    
+    public String getPlayers(){
+        return "John doe";
     }
     
 }

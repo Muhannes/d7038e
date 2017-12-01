@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
+  <useStyles filename="nifty-default-styles.xml" />
+  <useControls filename="nifty-default-controls.xml" />
+  <screen id="gamelobby" controller="client.GameLobbyScreen" visibleToMouse="true">
+    <layer id="background" childLayout="center"></layer>
+    <layer id="foreground" childLayout="vertical">
+      <panel id="panel_top" height="25%" width="75%" align="center" childLayout="center">
+        <text text="Room Lobby # " font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+      </panel>
+      <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal" >
+          <!-- players here
+          <text text="${CALL.getRoomLoobies()}" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+          -->
+      </panel>
+      <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal" >
+          <!-- chatt here -->
+          <control name="button" label="lobby" id="returnToLobby" align="center" valign="center" visibleToMouse="True">
+              <interact onClick="startGame(lobby)"/>
+          </control>
+      </panel>
+    </layer>
+  </screen>
+</nifty>
