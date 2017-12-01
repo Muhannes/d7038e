@@ -47,6 +47,11 @@ public class ClientNetworkManager implements
             ex.printStackTrace();
         }
     }
+    
+    public synchronized void cleanUp(){
+        client.close();
+    }
+    
 
     @Override
     public void clientConnected(Client c) {

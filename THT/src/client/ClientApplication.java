@@ -13,7 +13,6 @@ import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
 import api.models.Player;
 import com.jme3.app.SimpleApplication;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +60,15 @@ public class ClientApplication extends SimpleApplication implements
         
         flyCam.setEnabled(false);
         setDisplayStatView(false);
+    }
+    
+    @Override
+    public void destroy(){
+        clientNetworkManager.cleanUp();
+        // Clean up network resources
+        
+        super.destroy();
+        // Clean up the rest
     }
 
     @Override
