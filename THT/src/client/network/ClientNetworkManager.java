@@ -50,12 +50,12 @@ public class ClientNetworkManager implements
 
     @Override
     public void clientConnected(Client c) {
-        LOGGER.log(Level.FINE, "Connected to server");   
+        LOGGER.log(Level.INFO, "Connected to server");   
     }
 
     @Override
     public void clientDisconnected(Client c, DisconnectInfo info) {
-        LOGGER.log(Level.FINE, "Disconnected from server.\nReason: ", info.reason);  
+        LOGGER.log(Level.INFO, "Disconnected from server.\nReason: {0}", info.reason);  
     }
     
     public ClientLobbyHandler getClientLobbyHandler(){
