@@ -24,14 +24,23 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
+    private NiftyJmeDisplay niftyDisplay;
     private Application app;
+    
+    private LobbyScreen lobbyScreen;
+    
+    public LoginScreen(LobbyScreen lobbyScreen){   
+        this.lobbyScreen = lobbyScreen;
+    }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
+        System.out.println("Init LoginScreen");
         super.initialize(stateManager, app);        
         this.app = app;
-        NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+        
+        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
@@ -39,10 +48,17 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         nifty = niftyDisplay.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/screen.xml", "start", this);
+        nifty.fromXml("Interface/screen.xml", "start", this); 
         
         // attach the Nifty display to the gui view port as a processor
-        this.onStartScreen();
+        app.getViewPort().addProcessor(niftyDisplay);
+    }
+    
+    @Override
+    public void cleanup(){
+        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+        System.out.println("Cleanup loginscreen");
+        app.getViewPort().removeProcessor(niftyDisplay);
     }
 
     @Override
@@ -59,14 +75,19 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     @Override
     public void onEndScreen() {
         System.out.println("On end screen!");
+        //app.getViewPort().removeProcessor(niftyDisplay);
     }
 
     public void startGame(String nextScreen){
-        nifty.gotoScreen(nextScreen);
+        LOGGER.log(Level.FINE, "Start game");
+        System.out.println("Nextscreen: " + nextScreen);
+        app.getStateManager().detach(this);
+        app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
-        System.out.println("Stopping!");
+        LOGGER.log(Level.FINE, "Quit game");
+        app.getStateManager().detach(this);
         app.stop();
     }
     

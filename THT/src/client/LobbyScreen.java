@@ -21,16 +21,20 @@ import java.util.logging.Logger;
  */
 public class LobbyScreen extends AbstractAppState implements ScreenController{
 
-    private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LobbyScreen.class.getName());
     private Nifty nifty;
+    private NiftyJmeDisplay niftyDisplay;
     private Application app;
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
+        System.out.println("Init LobbyScreen");
+        
         super.initialize(stateManager, app);        
         this.app = app;
-        NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+        
+        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
@@ -42,6 +46,12 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
+    }
+    
+    @Override
+    public void cleanup(){
+        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+        app.getViewPort().removeProcessor(niftyDisplay);
     }
 
     @Override
@@ -60,7 +70,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
     }
 
     public void startGame(String nextScreen){
-        nifty.gotoScreen(nextScreen);
+        System.out.println("Starting");
+        //nifty.gotoScreen(nextScreen);
     }
     
     public void quitGame(){

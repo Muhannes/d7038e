@@ -36,7 +36,6 @@ public class ClientApplication extends SimpleApplication implements
         Logger.getLogger("").setLevel(Level.FINE);
         
         LOGGER.log(Level.FINE, "simpleInitApp");
-        System.out.println("Hej");
         
         /*clientNetworkHandler = new ClientNetworkHandler();
         
@@ -48,9 +47,13 @@ public class ClientApplication extends SimpleApplication implements
         addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
         //TODO Create GUI
         
-        LoginScreen loginScreen = new LoginScreen();
-        loginScreen.initialize(stateManager, this);
+        LobbyScreen lobbyScreen = new LobbyScreen();
+        LoginScreen loginScreen = new LoginScreen(lobbyScreen);
+        
+        stateManager.attach(loginScreen);
+        
         flyCam.setEnabled(false);
+        setDisplayStatView(false);
     }
 
     @Override
