@@ -5,15 +5,17 @@
  */
 package client;
 
+import client.network.ClientLoginHandler;
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -28,15 +30,15 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     private Application app;
     
     private LobbyScreen lobbyScreen;
+    private ClientLoginHandler clientLoginHandler;
     
-    public LoginScreen(LobbyScreen lobbyScreen){   
+    public LoginScreen(ClientLoginHandler clientLoginHandler, LobbyScreen lobbyScreen){   
         this.lobbyScreen = lobbyScreen;
+        this.clientLoginHandler = clientLoginHandler;
     }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
-        LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        System.out.println("Init LoginScreen");
         super.initialize(stateManager, app);        
         this.app = app;
         
@@ -46,9 +48,10 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         
         /** Create a new NiftyGUI object */
         nifty = niftyDisplay.getNifty();
+        nifty.setDebugOptionPanelColors(true);
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/screen.xml", "start", this); 
+        nifty.fromXml("Interface/login.xml", "start", this); 
         
         // attach the Nifty display to the gui view port as a processor
         app.getViewPort().addProcessor(niftyDisplay);
@@ -56,37 +59,35 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     
     @Override
     public void cleanup(){
-        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
-        System.out.println("Cleanup loginscreen");
         app.getViewPort().removeProcessor(niftyDisplay);
     }
 
     @Override
     public void bind(Nifty nifty, Screen screen) {
-        System.out.println("New Bind : " + nifty + " : " + screen);
-        //TODO: 
+        // Nothing
     }
 
     @Override
     public void onStartScreen() {
-        System.out.println("On start screen!");
+        // Nothing
     }
 
     @Override
     public void onEndScreen() {
-        System.out.println("On end screen!");
-        //app.getViewPort().removeProcessor(niftyDisplay);
+        // Nothing
     }
 
-    public void startGame(String nextScreen){
-        LOGGER.log(Level.FINE, "Start game");
-        System.out.println("Nextscreen: " + nextScreen);
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(lobbyScreen);
+    public void startGame(){
+        TextField field = nifty.getScreen("start").findNiftyControl("textfieldUsername", TextField.class);
+        String username = field.getRealText();
+        LOGGER.log(Level.INFO, "Username = {0}", new Object[]{username});
+        if(username.length() != 0){
+            app.getStateManager().detach(this);
+            app.getStateManager().attach(lobbyScreen);
+        }
     }
     
     public void quitGame(){
-        LOGGER.log(Level.FINE, "Quit game");
         app.getStateManager().detach(this);
         app.stop();
     }

@@ -28,7 +28,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
-        LOGGER.log(Level.FINE, "Initializing LoginScreen");
+        LOGGER.log(Level.INFO, "Initializing LoginScreen");
         super.initialize(stateManager, app);        
         this.app = app;
         NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
