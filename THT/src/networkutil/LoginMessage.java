@@ -5,11 +5,14 @@
  */
 package networkutil;
 
+import com.jme3.network.serializing.Serializable;
+
 /**
  *
  * @author truls
  */
-public class LoginMessage {
+@Serializable
+public class LoginMessage extends AbstractTCPMessage{
     
     public String username;
     

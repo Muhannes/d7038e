@@ -5,10 +5,13 @@
  */
 package networkutil;
 
+import com.jme3.network.serializing.Serializable;
+
 /**
  *
  * @author truls
  */
+@Serializable
 public class LoginAckMessage extends AbstractTCPMessage{
 
     public boolean accepted;
