@@ -8,10 +8,14 @@
     </layer>
     <layer id="foreground" childLayout="vertical">
       <panel id="panel_top" height="25%" width="75%" align="center" childLayout="center">
-        <text text="Lobby" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+        <text text="Welcome to the lobby, where you can see all the available games.Press the game icon to join." font="Interface/Fonts/Default.fnt" width="100%" height="100%" wrap="true" />
       </panel>
       <panel id="panel_mid" height="50%" width="75%" align="center" childLayout="center">
-        <text text="Welcome to the lobby, where you can see all the available games.Press the game icon to join." font="Interface/Fonts/Default.fnt" width="100%" height="100%" wrap="true" />
+        <!-- show games available -->        
+        <control id="scrollbarPanelId" name="scrollPanel" horizontal="false" height="225px">
+          <panel id="myScrollStuff" width="370px" childLayout="vertical"/>
+            
+        </control>
       </panel>
       <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal" >
         <panel id="panel_bottom_left" height="50%" width="50%" valign="center" childLayout="center">
@@ -19,7 +23,11 @@
               <interact onClick="startGame(roomLobby)"/>
           </control>            
         </panel>
-        <panel id="panel_bottom_right" height="50%" width="50%" valign="center" childLayout="center"></panel>
+        <panel id="panel_bottom_right" height="50%" width="50%" valign="center" childLayout="center">
+          <control name="button" label="Quit" id="Quit" align="center" valign="center" visiableToMouse="true">            <interact onClick="startGame(roomLobby)"/>
+            <interact onClick="quitGame()"/>
+          </control>
+          </panel>
       </panel>
     </layer>
   </screen>

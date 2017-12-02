@@ -47,7 +47,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
     }
-    
+        
     @Override
     public void cleanup(){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
@@ -61,7 +61,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
 
     @Override
     public void onStartScreen() {
-        System.out.println("On start screen!");
+        System.out.println("On start screen!");        
     }
 
     @Override
