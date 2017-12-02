@@ -26,19 +26,17 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
         addLobbyRoom(new LobbyRoom());//must be atleast one lobby room.
     }
     
-    public final void addLobbyRoom(LobbyRoom lobbyRoom){
-        // Maybe check possibility here?
-        
-        addLobbyListeners(lobbyRoom);
+    public synchronized final void addLobbyRoom(LobbyRoom lobbyRoom){
+        // TODO: Check if ok here? so the check will be synchronized too?
         lobbyRooms.add(lobbyRoom);
         notifyLobbyListeners(lobbyRoom);
     }
     
-    public List<LobbyRoom> getRooms(){
+    public synchronized List<LobbyRoom> getRooms(){
         return lobbyRooms;
     }
     
-    public LobbyRoom getLobbyRoom(int id){
+    public synchronized LobbyRoom getLobbyRoom(int id){
         for (LobbyRoom lobbyRoom : lobbyRooms) {
             if (lobbyRoom.getID() == id) {
                 return lobbyRoom;
@@ -52,11 +50,21 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
     }
     
     public boolean addPlayer(Player p, int roomID){
-        return getLobbyRoom(roomID).addPlayer(p);
+        LobbyRoom lr = getLobbyRoom(roomID);
+        boolean ok =  lr.addPlayer(p);
+        if (ok) {
+            notifyLobbyListeners(lr);
+        }
+        return ok;
     }
     
     public Player removePlayer(int playerID, int roomID){
-        return getLobbyRoom(roomID).removePlayer(playerID);
+        LobbyRoom lr = getLobbyRoom(roomID);
+        Player p =  lr.removePlayer(playerID);
+        if (p != null) {
+            notifyLobbyListeners(lr);
+        }
+        return p;
     }
 
     @Override
@@ -67,15 +75,6 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
     @Override
     public void addLobbyListener(LobbyListener lobbyListener) {
         lobbyListeners.add(lobbyListener);
-        for (LobbyRoom room : getRooms()) {
-            addLobbyListeners(room);
-        }
-    }
-    
-    private void addLobbyListeners(LobbyRoom lobbyRoom){
-        for (LobbyListener lobbyListener : lobbyListeners) {
-            lobbyRoom.addLobbyListener(lobbyListener);
-        }
     }
     
     private void notifyLobbyListeners(LobbyRoom lobbyRoom){

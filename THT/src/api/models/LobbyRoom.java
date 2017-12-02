@@ -15,11 +15,11 @@ import java.util.List;
  *
  * @author truls
  */
-public class LobbyRoom implements LobbyEmitter{
+public class LobbyRoom{
     private final List<LobbyListener> lobbyListeners  = new ArrayList<>();
     
-    private List<Player> players = new ArrayList<>();
-    private int roomID;
+    private final List<Player> players = new ArrayList<>();
+    private final int roomID;
     private static int idCounter = 0;
     private static final int MAX_PLAYERS = 10;
 
@@ -28,11 +28,11 @@ public class LobbyRoom implements LobbyEmitter{
         idCounter++;
     }
     
-    public int getID(){
+    public synchronized int getID(){
         return roomID;
     }
     
-    public boolean addPlayer(Player p){
+    public synchronized boolean addPlayer(Player p){
         if (canJoin()) {
             players.add(p);
             return true;
@@ -40,7 +40,7 @@ public class LobbyRoom implements LobbyEmitter{
         return false;
     }
     
-    public Player removePlayer(int playerID){
+    public synchronized Player removePlayer(int playerID){
         Player p = getPlayer(playerID);
         if (p != null) {
             p.setReady(false);
@@ -55,7 +55,7 @@ public class LobbyRoom implements LobbyEmitter{
      * @param playerID
      * @return 
      */
-    public boolean setPlayerReady(int playerID){
+    public synchronized boolean setPlayerReady(int playerID){
         Player p = getPlayer(playerID);
         p.setReady(true);
         for (Player player : players) {
@@ -66,15 +66,15 @@ public class LobbyRoom implements LobbyEmitter{
         return true;
     }
     
-    public List<Player> getPlayers(){
+    public synchronized List<Player> getPlayers(){
         return players;
     }
     
-    public boolean canJoin(){
+    public synchronized boolean canJoin(){
         return players.size() < MAX_PLAYERS;
     }
     
-    public Player getPlayer(int playerID){
+    public synchronized Player getPlayer(int playerID){
         for (Player player : players) {
             if (player.getID() == playerID) {
                 return player;
@@ -83,19 +83,9 @@ public class LobbyRoom implements LobbyEmitter{
         return null;
     }
     
-    public void clearRoom(){
+    public synchronized void clearRoom(){
         lobbyListeners.clear();
         players.clear();
     }
 
-    @Override
-    public void addLobbyListener(LobbyListener lobbyListener) {
-        lobbyListeners.add(lobbyListener);
-    }
-    
-    private void notifyLobbyListeners(){
-        for (LobbyListener lobbyListener : lobbyListeners) {
-            lobbyListener.notifyLobby(this);
-        }
-    }
 }
