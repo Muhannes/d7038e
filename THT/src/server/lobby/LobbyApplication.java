@@ -61,19 +61,30 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
         boolean ok = true;
         Player player = getNonLobbyPlayer(playerID);
         int returnID = newLobbyRoom.getID();
-        LobbyRoom localLR = lobbyHolder.getLobbyRoom(newLobbyRoom.getID());
-        if (localLR != null) {
-            if (localLR.removePlayer(playerID)) {
+        LobbyRoom localLR = lobbyHolder.getLobbyRoom(returnID);
+        if (player == null){ // player wants to leave lobbyroom
+            player = lobbyHolder.removePlayer(playerID, newLobbyRoom.getID());
+            if (player != null){ // Player was in room he claimed to be.
                 returnID = -1;
-            } else {
-                localLR.addPlayer(player); // Add to room
-                removePlayer(playerID); // remove from nonlobby list
+                nonLobbyPlayers.add(player);
+                notifyPlayerConnectionListeners(player, localLR);
+            } else { // Player tried to leave room he was not in.
+                ok = false;
             }
-            notifyPlayerConnectionListeners(player, localLR);
-        } else if(localLR == null){
-            lobbyHolder.addLobbyRoom(newLobbyRoom); // add new lobbyRoom to list
-        } else {
-            ok = false;
+        } else { // Player wants to join a lobby
+            if (localLR != null) { // Room exists
+                boolean joined = lobbyHolder.addPlayer(player, returnID); // add to room
+                if (joined) { // join was ok
+                    removePlayer(playerID); // remove from nonlobby list
+                    notifyPlayerConnectionListeners(player, localLR);
+                } else {
+                    ok = false;
+                }
+            } else { // Player wants to create new room
+                newLobbyRoom.clearRoom();
+                newLobbyRoom.addPlayer(player);
+                lobbyHolder.addLobbyRoom(newLobbyRoom);
+            }   
         }
         networkHandler.sendJoinRoomAckMessage(ok, playerID, returnID);
     }
@@ -104,15 +115,15 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
         //Create new Player object
         nonLobbyPlayers.add(new Player(conn.getId(), "John Doe")); //TODO: Change name 
         conn.setAttribute(LobbyNetworkStates.ROOM_ID, -1);
-        // TODO: Notify the new player about available rooms!
-        /*for (LobbyRoom lobbyRoom : lobbyHolder.getRooms()) {
-            notifyLobbyListeners(lobbyRoom);
-        }*/
+        // Notify the new player about available rooms!
+        List<HostedConnection> conns = new ArrayList<>();
+        conns.add(conn);
+        networkHandler.sendLobbyRoomsMessage(lobbyHolder.getRooms(), conns);
     }
 
     @Override
     public void connectionRemoved(Server server, HostedConnection conn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: Remove it from its lobbyRoom
     }
     
 }

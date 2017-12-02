@@ -5,7 +5,7 @@
  */
 package client;
 
-import client.network.ClientNetworkHandler;
+import client.network.ClientNetworkManager;
 import api.LobbyListener;
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
@@ -29,31 +29,46 @@ public class ClientApplication extends SimpleApplication implements
     
     private LobbySelectionListener lobbySelectionListener;
     
-    private ClientNetworkHandler clientNetworkHandler;
+    private ClientNetworkManager clientNetworkManager;
 
     @Override
     public void simpleInitApp() {
-        Logger.getLogger("").setLevel(Level.FINE);
+        // Default logger
+        Logger.getLogger("").setLevel(Level.SEVERE);
         
-        LOGGER.log(Level.FINE, "simpleInitApp");
+        // Our loggers, tune the level
+        Logger.getLogger(LoginScreen.class.getName()).setLevel(Level.INFO);
         
-        /*clientNetworkHandler = new ClientNetworkHandler();
+        // Turning off Niftys verbose logging
+        Logger.getLogger("de.lessvoid.nifty").setLevel(Level.SEVERE);
+        Logger.getLogger("NiftyInputEventHandlingLog").setLevel(Level.SEVERE);
         
-        clientNetworkHandler.connectToServer();
+        clientNetworkManager = new ClientNetworkManager();
         
-        clientNetworkHandler.getClientLobbyHandler().addLobbyListener(this);
-        clientNetworkHandler.getClientLobbyHandler().addPlayerConnectionListener(this);
+        //clientNetworkManager.connectToServer();
         
-        addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
+        clientNetworkManager.getClientLobbyHandler().addLobbyListener(this);
+        clientNetworkManager.getClientLobbyHandler().addPlayerConnectionListener(this);
+        
+        //addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
         //TODO Create GUI
         
         LobbyScreen lobbyScreen = new LobbyScreen();
-        LoginScreen loginScreen = new LoginScreen(lobbyScreen);
+        LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginHandler(), lobbyScreen);
         
         stateManager.attach(loginScreen);
         
         flyCam.setEnabled(false);
         setDisplayStatView(false);
+    }
+    
+    @Override
+    public void destroy(){
+        clientNetworkManager.cleanUp();
+        // Clean up network resources
+        
+        super.destroy();
+        // Clean up the rest
     }
 
     @Override

@@ -14,11 +14,19 @@ import api.PlayerReadyListener;
 import api.models.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.ConnectionListener;
+import com.jme3.network.Filters;
+import com.jme3.network.HostedConnection;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+import networkutil.JoinRoomAckMessage;
 import networkutil.JoinRoomMessage;
 import networkutil.LeaveRoomMessage;
+import networkutil.LobbyRoomsMessage;
 import networkutil.NetworkUtil;
 
 /**
@@ -58,15 +66,30 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     }
     
     public void sendJoinRoomAckMessage(boolean ok, int playerID, int roomID){
+        JoinRoomAckMessage message = new JoinRoomAckMessage(ok);
+        HostedConnection conn = server.getConnection(playerID);
         if (ok) {
-            server.getConnection(playerID).setAttribute(LobbyNetworkStates.ROOM_ID, roomID);
-            //TODO: notify rest!
+            conn.setAttribute(LobbyNetworkStates.ROOM_ID, roomID);
+            server.broadcast(Filters.equalTo(conn), message);
+        } else {
+            server.broadcast(Filters.equalTo(conn), message);
         }
+    }
+    
+    public void sendLobbyRoomsMessage(List<LobbyRoom> lobbyRooms, List<HostedConnection> clients){
+        LobbyRoomsMessage message = new LobbyRoomsMessage(lobbyRooms);
+        server.broadcast(Filters.in(clients), message);
     }
 
     @Override
     public void notifyLobby(LobbyRoom lobbyRoom) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<LobbyRoom> rooms = new ArrayList<>();
+        rooms.add(lobbyRoom);
+        // Get all clients not in a lobbyRoom
+        Predicate<HostedConnection> predicate = p -> (int) p.getAttribute(LobbyNetworkStates.ROOM_ID) != -1;
+        List<HostedConnection> clients = getFilteredHosts(predicate);
+        
+        sendLobbyRoomsMessage(rooms, clients);
     }
 
     @Override
@@ -76,7 +99,7 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
 
     @Override
     public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: Make message to send to all players in lobbyRoom notifying that player has joined.
     }
     
     public void addConnectionListener(ConnectionListener cl){
@@ -86,6 +109,14 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     @Override
     public void addPlayerReadyListener(PlayerReadyListener playerReadyListener) {
         lobbyMessageListener.addPlayerReadyListener(playerReadyListener);
+    }
+    
+    private List<HostedConnection> getFilteredHosts(Predicate p){
+        List<HostedConnection> hosts = new ArrayList();
+        Collection connections = server.getConnections();
+        hosts.addAll(connections);
+        hosts.removeIf(p);
+        return hosts;
     }
     
 }

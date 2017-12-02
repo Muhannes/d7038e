@@ -5,21 +5,20 @@
  */
 package networkutil;
 
-import api.models.LobbyRoom;
 import com.jme3.network.serializing.Serializable;
 
 /**
  *
- * @author hannes
+ * @author truls
  */
 @Serializable
-public class JoinRoomAckMessage extends AbstractTCPMessage {
-    public boolean ok;
+public class LoginMessage extends AbstractTCPMessage{
     
-    public JoinRoomAckMessage() {
-    }
+    public String username;
     
-    public JoinRoomAckMessage(boolean ok){
-        this.ok = ok;
+    public LoginMessage(){}
+    
+    public LoginMessage(String username){
+        this.username = username;
     }
 }
