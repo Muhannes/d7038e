@@ -11,23 +11,22 @@
         <text text="Welcome to the lobby, where you can see all the available games.Press the game icon to join." font="Interface/Fonts/Default.fnt" width="100%" height="100%" wrap="true" />
       </panel>
       <panel id="panel_mid" height="50%" width="75%" align="center" childLayout="center">
+        <control id="myListBox" name="listBox" width="75%" vertical="optional" horizontal="optional" displayItems="4" selection="Single" />        
+        
         <!-- show games available -->        
-        <control id="scrollbarPanelId" name="scrollPanel" horizontal="false" height="225px">
-          <panel id="myScrollStuff" width="370px" childLayout="vertical"/>
-            
-        </control>
+        <!-- Use this in start menu!
+        <control id="#imageSelect" name="imageSelect" width="126px" imageWidth="80px" imageHeight="80px" imageList="Interface/scaryMenu.jpg,Interface/Wallpaper-Horror-045.jpg" />
+        -->
       </panel>
-      <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal" >
-        <panel id="panel_bottom_left" height="50%" width="50%" valign="center" childLayout="center">
-          <control name="button" label="RoomLobby" id="RoomLobby" align="center" valign="center" visibleToMouse="True">
-              <interact onClick="startGame(roomLobby)"/>
-          </control>            
+      <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal">
+        <panel id="panel_bottom_left" height="25%" width="75%" align="center" childLayout="horizontal" >
+            <control id="chatId" name="nifty-chat" width="75%" height="100%" lines="14" sendLabel="Send Message" />
         </panel>
-        <panel id="panel_bottom_right" height="50%" width="50%" valign="center" childLayout="center">
-          <control name="button" label="Quit" id="Quit" align="center" valign="center" visiableToMouse="true">            <interact onClick="startGame(roomLobby)"/>
-            <interact onClick="quitGame()"/>
-          </control>
-          </panel>
+        <panel id="panel_bottom_right" height="25%" width="25%" align="right" childLayout="horizontal">
+              <control name="button" label="Quit" id="Quit" visiableToMouse="true">            
+                  <interact onClick="quitGame()"/>
+              </control>              
+        </panel>          
       </panel>
     </layer>
   </screen>
