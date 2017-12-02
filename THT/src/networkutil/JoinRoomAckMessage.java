@@ -14,12 +14,12 @@ import com.jme3.network.serializing.Serializable;
  */
 @Serializable
 public class JoinRoomAckMessage extends AbstractTCPMessage {
-    public LobbyRoom lobbyRoom;
+    public boolean ok;
     
     public JoinRoomAckMessage() {
     }
     
-    public JoinRoomAckMessage(LobbyRoom lobbyRoom){
-        this.lobbyRoom = lobbyRoom;
+    public JoinRoomAckMessage(boolean ok){
+        this.ok = ok;
     }
 }

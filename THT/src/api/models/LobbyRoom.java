@@ -32,18 +32,21 @@ public class LobbyRoom implements LobbyEmitter{
         return roomID;
     }
     
-    public void addPlayer(Player p){
-        players.add(p);
+    public boolean addPlayer(Player p){
+        if (canJoin()) {
+            players.add(p);
+            return true;
+        }
+        return false;
     }
     
-    public boolean removePlayer(int playerID){
+    public Player removePlayer(int playerID){
         Player p = getPlayer(playerID);
         if (p != null) {
             p.setReady(false);
             players.remove(p);
-            return true;
         }
-        return false;
+        return p;
     }
     
     /**
@@ -78,6 +81,11 @@ public class LobbyRoom implements LobbyEmitter{
             }
         }
         return null;
+    }
+    
+    public void clearRoom(){
+        lobbyListeners.clear();
+        players.clear();
     }
 
     @Override

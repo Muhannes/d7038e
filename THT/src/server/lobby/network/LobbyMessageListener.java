@@ -42,7 +42,7 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
         } else if (m instanceof ReadyMessage) {
             int roomID = (int) source.getAttribute(LobbyNetworkStates.ROOM_ID);
             if (roomID != -1) { // if in a room
-                onReadyMessage(roomID);
+                onReadyMessage(source.getId(), roomID);
             }
         }
     }
@@ -55,8 +55,8 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
         
     }
     
-    private void onReadyMessage(int roomID){
-        
+    private void onReadyMessage(int playerID, int roomID){
+        notifyPlayerReadyListeners(playerID, roomID);
     }
 
     @Override
@@ -75,4 +75,9 @@ class LobbyMessageListener implements MessageListener<HostedConnection>, LobbySe
         playerReadyListeners.add(playerReadyListener);
     }
     
+    private void notifyPlayerReadyListeners(int playerID, int roomID){
+        for (PlayerReadyListener playerReadyListener : playerReadyListeners) {
+            playerReadyListener.notifyPlayerReady(playerID, roomID);
+        }
+    }
 }

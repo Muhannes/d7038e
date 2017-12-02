@@ -26,11 +26,12 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
         addLobbyRoom(new LobbyRoom());//must be atleast one lobby room.
     }
     
-    public void addLobbyRoom(LobbyRoom lobbyRoom){
+    public final void addLobbyRoom(LobbyRoom lobbyRoom){
         // Maybe check possibility here?
         
         addLobbyListeners(lobbyRoom);
         lobbyRooms.add(lobbyRoom);
+        notifyLobbyListeners(lobbyRoom);
     }
     
     public List<LobbyRoom> getRooms(){
@@ -48,6 +49,14 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
     
     public Player getPlayer(int playerID, int roomID){
         return getLobbyRoom(roomID).getPlayer(playerID);
+    }
+    
+    public boolean addPlayer(Player p, int roomID){
+        return getLobbyRoom(roomID).addPlayer(p);
+    }
+    
+    public Player removePlayer(int playerID, int roomID){
+        return getLobbyRoom(roomID).removePlayer(playerID);
     }
 
     @Override
@@ -69,4 +78,9 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
         }
     }
     
+    private void notifyLobbyListeners(LobbyRoom lobbyRoom){
+        for (LobbyListener lobbyListener : lobbyListeners) {
+            lobbyListener.notifyLobby(lobbyRoom);
+        }
+    }
 }
