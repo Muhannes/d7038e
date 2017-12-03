@@ -27,6 +27,7 @@ import networkutil.JoinRoomAckMessage;
 import networkutil.JoinRoomMessage;
 import networkutil.LeaveRoomMessage;
 import networkutil.LobbyRoomsMessage;
+import networkutil.LoginAckMessage;
 import networkutil.NetworkUtil;
 
 /**
@@ -80,6 +81,10 @@ public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
     public void sendLobbyRoomsMessage(List<LobbyRoom> lobbyRooms, List<HostedConnection> clients){
         LobbyRoomsMessage message = new LobbyRoomsMessage(lobbyRooms);
         server.broadcast(Filters.in(clients), message);
+    }
+    
+    public void sendLoginAckMessage(boolean accepted, int playerID){
+        server.broadcast(Filters.equalTo(server.getConnection(playerID)), new LoginAckMessage(accepted));
     }
 
     @Override

@@ -66,6 +66,18 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
         }
         return p;
     }
+    
+    /**
+     * sets a player in a room ready.
+     * @param playerID
+     * @param roomID
+     * @return true if all players in room is ready
+     */
+    public boolean setPlayerReady(int playerID, int roomID){
+        LobbyRoom lr = getLobbyRoom(roomID);
+        boolean start =  lr.setPlayerReady(playerID);
+        return start;
+    }
 
     @Override
     public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {

@@ -125,14 +125,25 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
 
     @Override
     public void connectionRemoved(Server server, HostedConnection conn) {
-        // TODO: Remove it from its lobbyRoom
+        // Remove it from its lobbyRoom
+        lobbyHolder.removePlayer(conn.getId(), conn.getAttribute(LobbyNetworkStates.ROOM_ID));
     }
 
+    /**
+     * Could be so much more security in this function, but this is how it works now...
+     * @param playerID
+     * @param username 
+     */
     @Override
     public void notifyLogin(int playerID, String username) {
         Player player = getNonLobbyPlayer(playerID);
-        if (player != null) {
+        if (player != null) { // Player is in a room and must already have logged in...
+                              //...Should maybee be a boolean to check this
             player.setName(username);
+            networkHandler.sendLoginAckMessage(true, playerID);
+            
+        } else {
+            networkHandler.sendLoginAckMessage(false, playerID);
         }
     }
     
