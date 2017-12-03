@@ -7,6 +7,7 @@ package server.lobby;
 
 import api.LobbyListener;
 import api.LobbySelectionListener;
+import api.LoginListener;
 import api.PlayerConnectionEmitter;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
@@ -23,7 +24,8 @@ import server.lobby.network.NetworkHandler;
  *
  * @author truls
  */
-public class LobbyApplication implements LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
+public class LobbyApplication implements LobbySelectionListener, PlayerConnectionEmitter, 
+        ConnectionListener, LoginListener{
     List<PlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
     List<LobbyListener> lobbyListeners = new ArrayList<>();
     List<Player> nonLobbyPlayers = new ArrayList<>();
@@ -113,7 +115,7 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
     @Override
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
-        nonLobbyPlayers.add(new Player(conn.getId(), "John Doe")); //TODO: Change name 
+        nonLobbyPlayers.add(new Player(conn.getId(), "Player"+conn.getId()));
         conn.setAttribute(LobbyNetworkStates.ROOM_ID, -1);
         // Notify the new player about available rooms!
         List<HostedConnection> conns = new ArrayList<>();
@@ -124,6 +126,14 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
     @Override
     public void connectionRemoved(Server server, HostedConnection conn) {
         // TODO: Remove it from its lobbyRoom
+    }
+
+    @Override
+    public void notifyLogin(int playerID, String username) {
+        Player player = getNonLobbyPlayer(playerID);
+        if (player != null) {
+            player.setName(username);
+        }
     }
     
 }

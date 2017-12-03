@@ -33,7 +33,7 @@ import networkutil.NetworkUtil;
  *
  * @author hannes
  */
-public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, PlayerConnectionListener, PlayerReadyEmitter{
+public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
     
     
     private Server server;
@@ -41,7 +41,8 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     
     private LobbyMessageListener lobbyMessageListener;
     
-    public NetworkHandler(){
+    public NetworkHandler(LobbyMessageListener msgListener){
+        this.lobbyMessageListener = msgListener;
         NetworkUtil.initSerializables();
         initServer();
     }
@@ -59,7 +60,7 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
             server.close();
         }
         System.out.println("Server started");
-        lobbyMessageListener = new LobbyMessageListener();
+        //lobbyMessageListener = new LobbyMessageListener();
         // add a listener that reacts on incoming network packets
         server.addMessageListener(lobbyMessageListener, JoinRoomMessage.class, LeaveRoomMessage.class); //TODO: Add messagetypes here.
         System.out.println("ServerListener activated and added to server");
@@ -93,22 +94,12 @@ public class NetworkHandler implements LobbyListener, LobbySelectionEmitter, Pla
     }
 
     @Override
-    public void addLobbySelectionListener(LobbySelectionListener lobbySelectionListener) {
-        lobbyMessageListener.addLobbySelectionListener(lobbySelectionListener);
-    }
-
-    @Override
     public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {
         // TODO: Make message to send to all players in lobbyRoom notifying that player has joined.
     }
     
     public void addConnectionListener(ConnectionListener cl){
         server.addConnectionListener(cl);
-    }
-
-    @Override
-    public void addPlayerReadyListener(PlayerReadyListener playerReadyListener) {
-        lobbyMessageListener.addPlayerReadyListener(playerReadyListener);
     }
     
     private List<HostedConnection> getFilteredHosts(Predicate p){
