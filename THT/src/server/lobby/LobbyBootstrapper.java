@@ -20,7 +20,7 @@ public class LobbyBootstrapper {
         NetworkHandler networkHandler = new NetworkHandler(msgListener);
         LobbyHolder lobbyHolder = new LobbyHolder();
         LobbyStarter lobbyStarter = new LobbyStarter(lobbyHolder);
-        LobbyApplication lobbyApplication = new LobbyApplication(networkHandler, lobbyHolder);
+        LobbyConnectionHandler lobbyApplication = new LobbyConnectionHandler(networkHandler, lobbyHolder);
         //TODO: connect listeners
         networkHandler.addConnectionListener(lobbyApplication);
         msgListener.addLobbySelectionListener(lobbyApplication);
