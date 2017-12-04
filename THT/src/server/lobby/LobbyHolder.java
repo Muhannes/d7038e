@@ -9,7 +9,7 @@ import api.LobbyEmitter;
 import api.LobbyListener;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
-import api.models.Player;
+import api.models.PlayerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +45,11 @@ public class LobbyHolder implements LobbyEmitter{
         return null;
     }
     
-    public Player getPlayer(int playerID, int roomID){
+    public PlayerImpl getPlayer(int playerID, int roomID){
         return getLobbyRoom(roomID).getPlayer(playerID);
     }
     
-    public boolean addPlayer(Player p, int roomID){
+    public boolean addPlayer(PlayerImpl p, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         boolean ok =  lr.addPlayer(p);
         if (ok) {
@@ -58,9 +58,9 @@ public class LobbyHolder implements LobbyEmitter{
         return ok;
     }
     
-    public Player removePlayer(int playerID, int roomID){
+    public PlayerImpl removePlayer(int playerID, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
-        Player p =  lr.removePlayer(playerID);
+        PlayerImpl p =  lr.removePlayer(playerID);
         if (p != null) {
             notifyLobbyListeners(lr);
         }

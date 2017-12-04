@@ -11,7 +11,7 @@ import api.LoginListener;
 import api.PlayerConnectionEmitter;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
-import api.models.Player;
+import api.models.PlayerImpl;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Server;
@@ -28,7 +28,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
         ConnectionListener, LoginListener{
     List<PlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
     List<LobbyListener> lobbyListeners = new ArrayList<>();
-    List<Player> nonLobbyPlayers = new ArrayList<>();
+    List<PlayerImpl> nonLobbyPlayers = new ArrayList<>();
     
     NetworkHandler networkHandler;
     LobbyHolder lobbyHolder;
@@ -38,8 +38,8 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
         this.lobbyHolder = lobbyHolder;
     }
     
-    private Player getNonLobbyPlayer(int id){
-        for (Player player : nonLobbyPlayers) {
+    private PlayerImpl getNonLobbyPlayer(int id){
+        for (PlayerImpl player : nonLobbyPlayers) {
             if (player.getID() == id) {
                 return player;
             }
@@ -62,7 +62,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
     @Override
     public void notifyLobbySelection(LobbyRoom newLobbyRoom, int playerID) {
         boolean ok = true;
-        Player player = getNonLobbyPlayer(playerID);
+        PlayerImpl player = getNonLobbyPlayer(playerID);
         int returnID = newLobbyRoom.getID();
         LobbyRoom localLR = lobbyHolder.getLobbyRoom(returnID);
         if (player == null){ // player wants to leave lobbyroom
@@ -104,7 +104,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
      * This is for when a player connects to a lobby room.
      * @param p 
      */
-    private void notifyPlayerConnectionListeners(Player p, LobbyRoom lobbyRoom){
+    private void notifyPlayerConnectionListeners(PlayerImpl p, LobbyRoom lobbyRoom){
         for (PlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             playerConnectionListener.notifyPlayerConnection(p, lobbyRoom);
         }
@@ -118,7 +118,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
     @Override
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
-        nonLobbyPlayers.add(new Player(conn.getId(), "Player"+conn.getId()));
+        nonLobbyPlayers.add(new PlayerImpl(conn.getId(), "Player"+conn.getId()));
         conn.setAttribute(LobbyNetworkStates.ROOM_ID, -1);
         // Notify the new player about available rooms!
         List<HostedConnection> conns = new ArrayList<>();
@@ -139,7 +139,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
      */
     @Override
     public void notifyLogin(int playerID, String username) {
-        Player player = getNonLobbyPlayer(playerID);
+        PlayerImpl player = getNonLobbyPlayer(playerID);
         if (player != null) { // Player is in a room and must already have logged in...
                               //...Should maybee be a boolean to check this
             player.setName(username);

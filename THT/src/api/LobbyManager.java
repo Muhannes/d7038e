@@ -5,14 +5,14 @@
  */
 package api;
 
-import api.models.LobbyRoom;
-import api.models.PlayerImpl;
-
 /**
  *
  * @author truls
  */
-public interface PlayerConnectionListener {
+public interface LobbyManager {
     
-    void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom);
+    boolean join(int roomid);
+
+    void leave(int roomid);
+    
 }

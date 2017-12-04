@@ -5,14 +5,18 @@
  */
 package api;
 
-import api.models.LobbyRoom;
-import api.models.PlayerImpl;
+import java.util.List;
 
 /**
  *
  * @author truls
  */
-public interface PlayerConnectionListener {
+public interface LobbyRoom {
+     
+    boolean join(String id);
     
-    void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom);
+    void leave();
+    
+    List<Player> getPlayers();
+    
 }

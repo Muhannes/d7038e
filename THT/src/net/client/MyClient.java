@@ -73,7 +73,8 @@ public class MyClient extends SimpleApplication implements
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if ( name.equals("login") && !isPressed ){
-            client.getServices().getService(ClientLoginService.class).login("John Doe");
+            boolean result = client.getServices().getService(ClientLoginService.class).login("John Doe");
+            System.out.println("res = " + result);
         }
         
         if ( name.equals("send") && !isPressed ){

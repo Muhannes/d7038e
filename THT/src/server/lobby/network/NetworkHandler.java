@@ -12,12 +12,14 @@ import api.PlayerConnectionListener;
 import api.PlayerReadyEmitter;
 import api.PlayerReadyListener;
 import api.models.LobbyRoom;
-import api.models.Player;
+import api.models.PlayerImpl;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.Filters;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
+import com.jme3.network.service.rmi.RmiHostedService;
+import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +56,11 @@ public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
             System.out.println("Using port " + port);
             // create and start the server
             server = Network.createServer(port);
+            
+            server.getServices().addService(new RpcHostedService());
+            server.getServices().addService(new RmiHostedService());
+            server.getServices().addService(new HostedLobbyService());
+            
             server.start();
             
         } catch (IOException e) {
@@ -103,7 +110,7 @@ public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
     }
 
     @Override
-    public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {
+    public void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom) {
         // TODO: Make message to send to all players in lobbyRoom notifying that player has joined.
     }
     

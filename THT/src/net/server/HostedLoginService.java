@@ -52,7 +52,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-        rmi.share(session, LoginSession.class);
+        rmi.share((byte)channel, session, LoginSession.class);
     }
 
     @Override
@@ -74,9 +74,10 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         }
         
         @Override
-        public void login(String name) {
+        public boolean login(String name) {
             System.out.println("Login request received from connection with ID = " + connection.getId());
-            getCallback().notifyLogin(true);
+            //getCallback().notifyLogin(true);
+            return true;
         }
         
         private LoginSessionListener getCallback(){

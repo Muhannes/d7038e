@@ -11,4 +11,5 @@ package server.lobby.network;
  */
 public class LobbyNetworkStates {
     public static final String ROOM_ID = "ROOM_ID";
+    public static final String PLAYER = "PLAYER";
 }

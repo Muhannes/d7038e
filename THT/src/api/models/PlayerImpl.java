@@ -5,16 +5,18 @@
  */
 package api.models;
 
+import api.Player;
+
 /**
  *
  * @author truls
  */
-public class Player {
+public class PlayerImpl implements Player{
     private final int id;
     private String name;
     private boolean ready;
 
-    public Player(int id, String name) {
+    public PlayerImpl(int id, String name) {
         this.id = id;
         this.name = name;
         this.ready = false;

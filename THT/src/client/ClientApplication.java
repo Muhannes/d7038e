@@ -11,7 +11,7 @@ import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
-import api.models.Player;
+import api.models.PlayerImpl;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +78,7 @@ public class ClientApplication extends SimpleApplication implements
     }
     
     @Override
-    public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) { 
+    public void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom) { 
         LOGGER.log(Level.FINE, "notifyPlayerConnection: Player = ", player);
     }
 
