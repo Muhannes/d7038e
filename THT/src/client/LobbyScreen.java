@@ -60,7 +60,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         super.initialize(stateManager, app);        
         this.app = app;
         
-        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
