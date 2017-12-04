@@ -5,6 +5,7 @@
  */
 package server.lobby;
 
+import server.lobby.network.LobbyMessageListener;
 import server.lobby.network.NetworkHandler;
 
 /**
@@ -15,15 +16,16 @@ public class LobbyBootstrapper {
     
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String[] args) throws InterruptedException{
-        
-        NetworkHandler networkHandler = new NetworkHandler();
+        LobbyMessageListener msgListener = new LobbyMessageListener();
+        NetworkHandler networkHandler = new NetworkHandler(msgListener);
         LobbyHolder lobbyHolder = new LobbyHolder();
         LobbyStarter lobbyStarter = new LobbyStarter(lobbyHolder);
-        LobbyApplication lobbyApplication = new LobbyApplication(networkHandler, lobbyHolder);
+        LobbyConnectionHandler lobbyApplication = new LobbyConnectionHandler(networkHandler, lobbyHolder);
         //TODO: connect listeners
         networkHandler.addConnectionListener(lobbyApplication);
-        networkHandler.addLobbySelectionListener(lobbyApplication);
-        networkHandler.addPlayerReadyListener(lobbyStarter);
+        msgListener.addLobbySelectionListener(lobbyApplication);
+        msgListener.addPlayerReadyListener(lobbyStarter);
+        msgListener.addLoginListener(lobbyApplication);
         lobbyHolder.addLobbyListener(networkHandler);
         lobbyApplication.addPlayerConnectionListener(networkHandler);
         while(true){//Ugly solution

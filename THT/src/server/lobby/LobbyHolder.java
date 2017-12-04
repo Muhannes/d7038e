@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author hannes
  */
-public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
+public class LobbyHolder implements LobbyEmitter{
     
     private final List<LobbyListener> lobbyListeners = new ArrayList<>();
     private final List<LobbyRoom> lobbyRooms = new ArrayList();
@@ -66,10 +66,17 @@ public class LobbyHolder implements LobbyEmitter, PlayerConnectionListener {
         }
         return p;
     }
-
-    @Override
-    public void notifyPlayerConnection(Player player, LobbyRoom lobbyRoom) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    /**
+     * sets a player in a room ready.
+     * @param playerID
+     * @param roomID
+     * @return true if all players in room is ready
+     */
+    public boolean setPlayerReady(int playerID, int roomID){
+        LobbyRoom lr = getLobbyRoom(roomID);
+        boolean start =  lr.setPlayerReady(playerID);
+        return start;
     }
 
     @Override

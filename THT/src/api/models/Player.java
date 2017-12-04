@@ -11,7 +11,7 @@ package api.models;
  */
 public class Player {
     private final int id;
-    private final String name;
+    private String name;
     private boolean ready;
 
     public Player(int id, String name) {
@@ -22,6 +22,10 @@ public class Player {
     
     public String getName(){
         return name;
+    }
+    
+    public void setName(String name){
+        this.name = name;
     }
     
     public int getID(){

@@ -7,6 +7,7 @@ package server.lobby;
 
 import api.LobbyListener;
 import api.LobbySelectionListener;
+import api.LoginListener;
 import api.PlayerConnectionEmitter;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
@@ -23,7 +24,8 @@ import server.lobby.network.NetworkHandler;
  *
  * @author truls
  */
-public class LobbyApplication implements LobbySelectionListener, PlayerConnectionEmitter, ConnectionListener{
+public class LobbyConnectionHandler implements LobbySelectionListener, PlayerConnectionEmitter, 
+        ConnectionListener, LoginListener{
     List<PlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
     List<LobbyListener> lobbyListeners = new ArrayList<>();
     List<Player> nonLobbyPlayers = new ArrayList<>();
@@ -31,7 +33,7 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
     NetworkHandler networkHandler;
     LobbyHolder lobbyHolder;
 
-    public LobbyApplication(NetworkHandler networkHandler, LobbyHolder lobbyHolder) {
+    public LobbyConnectionHandler(NetworkHandler networkHandler, LobbyHolder lobbyHolder) {
         this.networkHandler = networkHandler;
         this.lobbyHolder = lobbyHolder;
     }
@@ -53,6 +55,7 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
      * Adds the player to the lobby room if it exists and is not full.
      * If the rooms does not exist, use the given lobbyRoom.
      * If both above options wont work, send back joinack false.
+     * TODO: Check so that playerconnectionListener is not needed, if not, delete it
      * @param newLobbyRoom
      * @param playerID 
      */
@@ -67,7 +70,8 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
             if (player != null){ // Player was in room he claimed to be.
                 returnID = -1;
                 nonLobbyPlayers.add(player);
-                notifyPlayerConnectionListeners(player, localLR);
+                // TODO: Notify player about available lobbyRooms to join.
+                //notifyPlayerConnectionListeners(player, localLR);
             } else { // Player tried to leave room he was not in.
                 ok = false;
             }
@@ -76,11 +80,12 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
                 boolean joined = lobbyHolder.addPlayer(player, returnID); // add to room
                 if (joined) { // join was ok
                     removePlayer(playerID); // remove from nonlobby list
-                    notifyPlayerConnectionListeners(player, localLR);
+                    //notifyPlayerConnectionListeners(player, localLR);
                 } else {
                     ok = false;
                 }
             } else { // Player wants to create new room
+                // TODO: Check best way to create new room (create new serverside, or use the one client sent)
                 newLobbyRoom.clearRoom();
                 newLobbyRoom.addPlayer(player);
                 lobbyHolder.addLobbyRoom(newLobbyRoom);
@@ -113,7 +118,7 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
     @Override
     public void connectionAdded(Server server, HostedConnection conn) {
         //Create new Player object
-        nonLobbyPlayers.add(new Player(conn.getId(), "John Doe")); //TODO: Change name 
+        nonLobbyPlayers.add(new Player(conn.getId(), "Player"+conn.getId()));
         conn.setAttribute(LobbyNetworkStates.ROOM_ID, -1);
         // Notify the new player about available rooms!
         List<HostedConnection> conns = new ArrayList<>();
@@ -123,7 +128,26 @@ public class LobbyApplication implements LobbySelectionListener, PlayerConnectio
 
     @Override
     public void connectionRemoved(Server server, HostedConnection conn) {
-        // TODO: Remove it from its lobbyRoom
+        // Remove it from its lobbyRoom
+        lobbyHolder.removePlayer(conn.getId(), conn.getAttribute(LobbyNetworkStates.ROOM_ID));
+    }
+
+    /**
+     * Could be so much more security in this function, but this is how it works now...
+     * @param playerID
+     * @param username 
+     */
+    @Override
+    public void notifyLogin(int playerID, String username) {
+        Player player = getNonLobbyPlayer(playerID);
+        if (player != null) { // Player is in a room and must already have logged in...
+                              //...Should maybee be a boolean to check this
+            player.setName(username);
+            networkHandler.sendLoginAckMessage(true, playerID);
+            
+        } else {
+            networkHandler.sendLoginAckMessage(false, playerID);
+        }
     }
     
 }
