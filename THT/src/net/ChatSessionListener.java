@@ -15,4 +15,7 @@ public interface ChatSessionListener {
     
     @Asynchronous
     void newMessage(String message);
+    
+    @Asynchronous
+    void playerJoined(String name);
 }

@@ -94,4 +94,9 @@ public class MyClient extends SimpleApplication implements
     public void newMessage(String message) {
         System.out.println("Received messsage: " + message);
     }
+
+    @Override
+    public void playerJoined(String name) {
+        System.out.println("Player joined: " + name);
+    }
 }

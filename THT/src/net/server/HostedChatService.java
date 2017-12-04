@@ -51,6 +51,10 @@ public class HostedChatService extends AbstractHostedConnectionService{
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, player, ChatSession.class);
         
+        for(ChatSessionImpl p: players){
+            p.playerJoined("" + connection.getId());
+        }
+        
         players.add(player);
     }
 
@@ -99,6 +103,11 @@ public class HostedChatService extends AbstractHostedConnectionService{
         @Override
         public void newMessage(String message) {
             getCallback().newMessage(message);
+        }
+
+        @Override
+        public void playerJoined(String name) {
+            getCallback().playerJoined(name);
         }
     
     }
