@@ -87,6 +87,10 @@ public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
         server.broadcast(Filters.equalTo(server.getConnection(playerID)), new LoginAckMessage(accepted));
     }
 
+    /**
+     * Notifies all clients that is interested to know about the room that has changed status.
+     * @param lobbyRoom 
+     */
     @Override
     public void notifyLobby(LobbyRoom lobbyRoom) {
         List<LobbyRoom> rooms = new ArrayList<>();
@@ -94,7 +98,7 @@ public class NetworkHandler implements LobbyListener, PlayerConnectionListener{
         // Get all clients not in a lobbyRoom
         Predicate<HostedConnection> predicate = p -> (int) p.getAttribute(LobbyNetworkStates.ROOM_ID) != -1;
         List<HostedConnection> clients = getFilteredHosts(predicate);
-        
+        // TODO: Add clients in current room. This way they will be notified something has changed there.
         sendLobbyRoomsMessage(rooms, clients);
     }
 
