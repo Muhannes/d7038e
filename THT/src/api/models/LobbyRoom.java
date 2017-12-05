@@ -5,8 +5,9 @@
  */
 package api.models;
 
-import api.LobbyListener;
+import com.jme3.network.HostedConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,16 +17,17 @@ import java.util.Map;
  * @author truls
  */
 public class LobbyRoom{
-    private final List<LobbyListener> lobbyListeners  = new ArrayList<>();
     
-    private final List<PlayerImpl> players = new ArrayList<>();
+    private final List<HostedConnection> players = new ArrayList<>();
     private final Map<Integer, Boolean> playersReady = new HashMap<>();
     private final int roomID;
+    private final String roomName;
     private static int idCounter = 0;
     private static final int MAX_PLAYERS = 10;
 
     public LobbyRoom() {
         roomID = idCounter;
+        roomName = "Lobby" + roomID;
         idCounter++;
     }
     
@@ -33,22 +35,33 @@ public class LobbyRoom{
         return roomID;
     }
     
-    public synchronized boolean addPlayer(PlayerImpl p){
+    public synchronized String getName(){
+        return roomName;
+    }
+    
+    public synchronized int getMaxPlayers(){
+        return MAX_PLAYERS;
+    }
+    
+    public synchronized int getNumPlayers(){
+        return players.size();
+    }
+    
+    public synchronized boolean addPlayer(HostedConnection p){
         if (canJoin()) {
             players.add(p);
-            playersReady.put(p.getID(), Boolean.FALSE);
+            playersReady.put(p.getId(), Boolean.FALSE);
             return true;
         }
         return false;
     }
     
-    public synchronized PlayerImpl removePlayer(int playerID){
-        PlayerImpl p = getPlayer(playerID);
-        if (p != null) {
-            p.setReady(false);
-            players.remove(p);
+    public synchronized boolean removePlayer(HostedConnection p){
+        boolean removed = players.remove(p);
+        if (removed) {
+            playersReady.remove(p.getId());
         }
-        return p;
+        return removed;
     }
     
     /**
@@ -62,26 +75,18 @@ public class LobbyRoom{
         return playersReady.containsValue(false);
     }
     
-    public synchronized List<PlayerImpl> getPlayers(){
+    public synchronized List<HostedConnection> getPlayers(){
         return players;
+    }
+    
+    public synchronized List<Integer> getPlayerIDs(){
+        List<Integer> ids = new ArrayList<>(Arrays.asList(
+                playersReady.keySet().toArray(new Integer[playersReady.keySet().size()])));
+        return ids;
     }
     
     public synchronized boolean canJoin(){
         return players.size() < MAX_PLAYERS;
-    }
-    
-    public synchronized PlayerImpl getPlayer(int playerID){
-        for (PlayerImpl player : players) {
-            if (player.getID() == playerID) {
-                return player;
-            }
-        }
-        return null;
-    }
-    
-    public synchronized void clearRoom(){
-        lobbyListeners.clear();
-        players.clear();
     }
 
 }

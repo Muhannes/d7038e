@@ -5,12 +5,6 @@
  */
 package client;
 
-import api.LobbyListener;
-import api.LobbySelectionEmitter;
-import api.LobbySelectionListener;
-import api.PlayerConnectionListener;
-import api.models.LobbyRoom;
-import api.models.PlayerImpl;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,14 +14,9 @@ import network.ClientNetworkManager;
  *
  * @author truls
  */
-public class ClientApplication extends SimpleApplication implements 
-        LobbyListener, 
-        PlayerConnectionListener,
-        LobbySelectionEmitter{
+public class ClientApplication extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(ClientApplication.class.getName());
-    
-    private LobbySelectionListener lobbySelectionListener;
     
     private ClientNetworkManager clientNetworkManager;
     
@@ -66,22 +55,6 @@ public class ClientApplication extends SimpleApplication implements
         
         super.destroy();
         // Clean up the rest
-    }
-
-    @Override
-    public void notifyLobby(LobbyRoom lobbyRoom) {
-        LOGGER.log(Level.FINE, "notifyLobby: LobbyRoom = ", lobbyRoom);
-        //TODO: Update GUI
-    }
-    
-    @Override
-    public void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom) { 
-        LOGGER.log(Level.FINE, "notifyPlayerConnection: Player = ", player);
-    }
-
-    @Override
-    public void addLobbySelectionListener(LobbySelectionListener lobbySelectionListener) {
-        this.lobbySelectionListener = lobbySelectionListener;
     }
     
     public static void main(String[] args){
