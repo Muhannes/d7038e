@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net;
+package network.services.login;
 
 import com.jme3.network.service.rmi.Asynchronous;
 
@@ -11,9 +11,9 @@ import com.jme3.network.service.rmi.Asynchronous;
  *
  * @author truls
  */
-public interface ChatSession {
+public interface LoginSession {
     
     @Asynchronous
-    void sendMessage(String message);
+    boolean login(String name);
     
 }

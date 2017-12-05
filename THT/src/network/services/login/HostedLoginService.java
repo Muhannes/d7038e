@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.server;
+package network.services.login;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -11,8 +11,6 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import net.LoginSession;
-import net.LoginSessionListener;
 
 /**
  *

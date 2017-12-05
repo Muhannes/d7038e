@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.client;
+package network.services.chat;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
-import net.ChatSession;
-import net.ChatSessionListener;
 
 /**
  *

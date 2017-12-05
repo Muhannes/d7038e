@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net;
+package network.services.chat;
 
 import com.jme3.network.service.rmi.Asynchronous;
 
@@ -11,11 +11,9 @@ import com.jme3.network.service.rmi.Asynchronous;
  *
  * @author truls
  */
-public interface ChatSessionListener {
+public interface ChatSession {
     
     @Asynchronous
-    void newMessage(String message);
+    void sendMessage(String message);
     
-    @Asynchronous
-    void playerJoined(String name);
 }
