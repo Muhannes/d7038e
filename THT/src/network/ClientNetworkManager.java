@@ -17,7 +17,6 @@ import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
 import network.util.NetConfig;
-import networkutil.NetworkUtil;
 
 /**
  * Master class of network related stuff.
@@ -30,9 +29,7 @@ public class ClientNetworkManager implements
     
     private Client client;
     
-    public ClientNetworkManager(){
-        //NetworkUtil.initSerializables();
-    }
+    public ClientNetworkManager(){}
     
     public void connectToServer(){
         try{
@@ -47,6 +44,7 @@ public class ClientNetworkManager implements
             client.getServices().addService(new ClientLobbyService());
             System.out.println("services fetched");
             
+            // Not neded since server will send message to client with all serializables.
             //NetworkUtil.initSerializables();
             
             client.start();

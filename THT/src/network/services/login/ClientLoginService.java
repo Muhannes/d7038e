@@ -43,16 +43,13 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
     
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
-        System.out.println("1");
         rmiService = getService(RmiClientService.class);
         if(rmiService == null){
             throw new RuntimeException("ClientLoginService requires RmiService");
         }
         callback = new LoginCallback();
-        System.out.println("2");
         // Share the callback with the server
         rmiService.share((byte)channel, callback, LoginSessionListener.class);
-        System.out.println("3");
     }
     
     private LoginSession getDelegate(){

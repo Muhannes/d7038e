@@ -39,8 +39,6 @@ public class HostedChatService extends AbstractHostedConnectionService{
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
-        System.out.println("HostedChatService: New connection with ID = " + connection.getId());
-        
         // The newly connected client will be represented by this object on
         // the server side
         ChatSessionImpl player = new ChatSessionImpl(connection);

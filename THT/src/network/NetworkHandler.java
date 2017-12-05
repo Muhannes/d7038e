@@ -46,6 +46,18 @@ public class NetworkHandler {
     
     @SuppressWarnings("CallToPrintStackTrace")
     private void initServer(){
+        /*
+        // Maximizing logger output
+        Logger networkLog = Logger.getLogger("com.jme3.network"); 
+        networkLog.setLevel(Level.FINEST);
+        
+        // Even more logs for debugging
+        Logger rootLog = Logger.getLogger("");
+        if( rootLog.getHandlers().length > 0 ) {
+           rootLog.getHandlers()[0].setLevel(Level.FINEST);
+        } 
+        */
+        
         try {
             System.out.println("Using port " + port);
             // create and start the server
@@ -57,6 +69,7 @@ public class NetworkHandler {
             server.getServices().addService(new HostedChatService());
             server.getServices().addService(new HostedLobbyService());
             
+            // Important to call this afer the server has been created!!!
             NetworkUtil.initSerializables();
             
             server.start();
