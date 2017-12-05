@@ -51,19 +51,12 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         nonLobbyPlayers.add(connection);
-        System.out.println("Starting connection1");
         
         LobbyManagerImpl lobbyManager = new LobbyManagerImpl(connection);
         
-        System.out.println("Starting connection2");
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-        
-        System.out.println("Starting connection3");
-        
         rmi.share((byte)channel, lobbyManager, LobbyManager.class);
-        
-        System.out.println("Starting connection4");
     }
     
     private ClientLobbyListener getDelegate(HostedConnection connection){

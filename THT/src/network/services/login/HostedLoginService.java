@@ -11,6 +11,8 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Level;
 import network.util.ConnectionAttribute;
 
 /**
@@ -18,6 +20,8 @@ import network.util.ConnectionAttribute;
  * @author truls
  */
 public class HostedLoginService extends AbstractHostedConnectionService{
+    
+    Logger LOGGER = Logger.getLogger(HostedLoginService.class);
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -43,7 +47,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
-        System.out.println("HostedLoginService: New connection with ID = " + connection.getId());
+        LOGGER.log(Level.INFO, "New connection with ID: {0}", connection.getId());
         
         // The newly connected client will be represented by this object on
         // the server side
@@ -56,8 +60,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
-        System.out.println("Connection ended with ID = " + connection.getId());
-        // Nothing
+        LOGGER.log(Level.INFO, "Connection ended with ID: ", connection.getId());
     }
     
     private class LoginSessionImpl implements LoginSession{
@@ -74,7 +77,8 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         
         @Override
         public void login(String name) {
-            System.out.println("Login request received from connection with ID = " + connection.getId());
+            LOGGER.log(Level.INFO, "Login request received from connection with ID: {0} and name: {1}", 
+                    new Object[]{connection.getId(), name});
             connection.setAttribute(ConnectionAttribute.NAME, name);
             getCallback().notifyLogin(true);
         }
