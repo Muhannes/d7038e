@@ -63,8 +63,8 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
     }
     
     @Override
-    public boolean login(String name) {
-        return getDelegate().login(name);
+    public void login(String name) {
+        getDelegate().login(name);
     }
     
     public void addLoginSessionListener(LoginSessionListener loginSessionListener){

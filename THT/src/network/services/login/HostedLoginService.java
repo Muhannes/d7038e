@@ -11,6 +11,7 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import network.util.ConnectionAttribute;
 
 /**
  *
@@ -72,10 +73,10 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         }
         
         @Override
-        public boolean login(String name) {
+        public void login(String name) {
             System.out.println("Login request received from connection with ID = " + connection.getId());
-            //getCallback().notifyLogin(true);
-            return true;
+            connection.setAttribute(ConnectionAttribute.NAME, name);
+            getCallback().notifyLogin(true);
         }
         
         private LoginSessionListener getCallback(){

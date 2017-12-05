@@ -3,17 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.login;
-
-import com.jme3.network.service.rmi.Asynchronous;
+package network.util;
 
 /**
  *
  * @author truls
  */
-public interface LoginSession {
+public class ConnectionAttribute {
     
-    @Asynchronous
-    void login(String name);
+    public static final String NAME = "name";
     
 }
