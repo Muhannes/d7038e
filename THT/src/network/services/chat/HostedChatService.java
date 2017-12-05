@@ -59,6 +59,12 @@ public class HostedChatService extends AbstractHostedConnectionService{
     @Override
     public void stopHostingOnConnection(HostedConnection hc) {
         // Nothing
+        for (ChatSessionImpl player : players) {
+            if (player.conn.equals(hc)) {
+                players.remove(player);
+                return;
+            }
+        }
     }
     
     /**

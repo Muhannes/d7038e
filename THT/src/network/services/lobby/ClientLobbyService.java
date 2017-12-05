@@ -6,6 +6,7 @@
 package network.services.lobby;
 
 import api.models.LobbyRoom;
+import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
@@ -31,8 +32,8 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     private final int channel;
     // Channel we send on, is it a port though?
     
-    public ClientLobbyService(int channel){
-        this.channel = channel;
+    public ClientLobbyService(){
+        this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
     }
     
     @Override
@@ -40,19 +41,18 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         callback = new ClientLobbyHandlerImpl();
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
-            throw new RuntimeException("ChatClientService requires RMI service");
+            throw new RuntimeException("LobbyService requires RMI service");
         }
         
         // Share the callback with the server
         rmiService.share((byte)channel, callback, ClientLobbyListener.class);
-        getDelegate();
     }
     
     private LobbyManager getDelegate(){
         if(delegate == null){
             delegate = rmiService.getRemoteObject(LobbyManager.class);
             if( delegate == null ) {
-                throw new RuntimeException("No chat session found");
+                throw new RuntimeException("No LobbyManager found");
             } 
         }
         return delegate;
@@ -65,17 +65,17 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
     @Override
     public LobbyRoom join(int roomid) {
-        return delegate.join(roomid);
+        return getDelegate().join(roomid);
     }
 
     @Override
     public void leave() {
-        delegate.leave();
+        getDelegate().leave();
     }
 
     @Override
     public void ready() {
-        delegate.ready();
+        getDelegate().ready();
     }
     
     private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners

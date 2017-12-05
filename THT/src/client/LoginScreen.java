@@ -37,6 +37,7 @@ public class LoginScreen extends AbstractAppState implements
     public LoginScreen(ClientLoginService clientLoginService, LobbyScreen lobbyScreen){   
         this.lobbyScreen = lobbyScreen;
         this.clientLoginService = clientLoginService;
+        this.clientLoginService.addLoginSessionListener(this);
     }
     
     @Override

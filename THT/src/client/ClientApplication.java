@@ -34,9 +34,8 @@ public class ClientApplication extends SimpleApplication{
         
         clientNetworkManager = new ClientNetworkManager();
         
-        //clientNetworkManager.connectToServer();
+        clientNetworkManager.connectToServer();
         
-        //addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
         //TODO Create GUI
         
         LobbyScreen lobbyScreen = new LobbyScreen();

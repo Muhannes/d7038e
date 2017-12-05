@@ -5,6 +5,7 @@
  */
 package networkutil;
 
+import api.models.LobbyRoom;
 import com.jme3.network.serializing.Serializer;
 
 /**
@@ -22,5 +23,6 @@ public class NetworkUtil {
         Serializer.registerClass(LeaveRoomMessage.class);
         Serializer.registerClass(ReadyMessage.class);
         Serializer.registerClass(LobbyRoomsMessage.class);
+        Serializer.registerClass(LobbyRoom.class);
     }
 }

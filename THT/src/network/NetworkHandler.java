@@ -3,13 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.lobby;
+package network;
 
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import network.services.chat.HostedChatService;
+import network.services.lobby.HostedLobbyService;
+import network.services.login.HostedLoginService;
 import networkutil.NetworkUtil;
 
 /**
@@ -22,6 +27,17 @@ public class NetworkHandler {
     private Server server;
     private final int port = NetworkUtil.LOBBY_SERVER_PORT;
     
+    @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String args[]){
+        NetworkHandler nh = new NetworkHandler();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(NetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     
     public NetworkHandler(){
         NetworkUtil.initSerializables();
@@ -39,6 +55,8 @@ public class NetworkHandler {
             server.getServices().addService(new RmiHostedService());
             HostedLobbyService hostedLobbyService = new HostedLobbyService();
             server.getServices().addService(hostedLobbyService);
+            server.getServices().addService(new HostedLoginService());
+            server.getServices().addService(new HostedChatService());
             
             server.start();
             
