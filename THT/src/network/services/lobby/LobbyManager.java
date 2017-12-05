@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.services.lobby;
 
-import java.util.List;
+import api.models.LobbyRoom;
 
 /**
  *
  * @author truls
  */
-public interface LobbyRoom {
-     
-    boolean join(String id);
+public interface LobbyManager {
     
+    LobbyRoom join(int roomid);
+
     void leave();
     
-    List<Player> getPlayers();
+    void ready();
     
 }

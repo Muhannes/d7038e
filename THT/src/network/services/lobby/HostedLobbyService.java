@@ -7,19 +7,17 @@ package network.services.lobby;
 
 import server.lobby.network.*;
 import api.LobbyListener;
-import api.LobbyRoom;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.List;
-import api.LobbyManager;
 import api.Player;
+import api.models.LobbyRoom;
 import api.models.PlayerImpl;
 import com.jme3.network.MessageConnection;
 import java.util.ArrayList;
-import server.lobby.LobbyHolder;
 
 /**
  *
@@ -28,8 +26,7 @@ import server.lobby.LobbyHolder;
 public class HostedLobbyService extends AbstractHostedConnectionService{
     
     private LobbyHolder lobbyHolder;
-    
-    private static int roomIdCounter = 0;
+    private final List<HostedConnection> nonLobbyPlayers = new ArrayList<>();
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -55,8 +52,8 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
+        nonLobbyPlayers.add(connection);
         LobbyManagerImpl lobbyManager = new LobbyManagerImpl(connection);
-        
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
         rmi.share((byte)channel, lobbyManager, LobbyManager.class);
@@ -70,22 +67,42 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     private class LobbyManagerImpl implements LobbyManager{
         
         private HostedConnection connection;
+        private LobbyRoom lobbyRoom;
         
         public LobbyManagerImpl(HostedConnection connection){
             this.connection = connection;
         }
         
         @Override
-        public boolean join(int roomid) {
-            PlayerImpl p = connection.getAttribute(LobbyNetworkStates.PLAYER);
-            boolean joined = lobbyHolder.addPlayer(p, roomid);
-           
-            return joined;
+        public LobbyRoom join(int roomid) {
+            if (lobbyRoom == null) {
+                PlayerImpl p = connection.getAttribute(LobbyNetworkStates.PLAYER);
+                LobbyRoom lr = lobbyHolder.getLobbyRoom(roomid);
+                boolean joined = lr.addPlayer(p);
+                if(joined){
+                    nonLobbyPlayers.remove(connection);
+                    lobbyRoom = lr;
+                    return lobbyRoom;
+                }
+            }
+            return null;
         }
 
         @Override
-        public void leave(int roomid) {
-            lobbyHolder.removePlayer(connection.getId(), roomid);
+        public void leave() {
+            if (lobbyRoom != null) {
+                lobbyRoom.removePlayer(connection.getId());
+                lobbyRoom = null;
+                nonLobbyPlayers.add(connection);
+            }
+        }
+        
+        @Override
+        public void ready(){
+            boolean allReady = lobbyRoom.setPlayerReady(connection.getId());
+            if (allReady) {
+                // TODO: Start game.
+            }
         }
         
     }

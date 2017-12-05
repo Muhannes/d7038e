@@ -5,11 +5,11 @@
  */
 package api.models;
 
-import api.LobbyEmitter;
 import api.LobbyListener;
-import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,6 +19,7 @@ public class LobbyRoom{
     private final List<LobbyListener> lobbyListeners  = new ArrayList<>();
     
     private final List<PlayerImpl> players = new ArrayList<>();
+    private final Map<Integer, Boolean> playersReady = new HashMap<>();
     private final int roomID;
     private static int idCounter = 0;
     private static final int MAX_PLAYERS = 10;
@@ -35,6 +36,7 @@ public class LobbyRoom{
     public synchronized boolean addPlayer(PlayerImpl p){
         if (canJoin()) {
             players.add(p);
+            playersReady.put(p.getID(), Boolean.FALSE);
             return true;
         }
         return false;
@@ -56,14 +58,8 @@ public class LobbyRoom{
      * @return 
      */
     public synchronized boolean setPlayerReady(int playerID){
-        PlayerImpl p = getPlayer(playerID);
-        p.setReady(true);
-        for (PlayerImpl player : players) {
-            if (!player.isReady()) {
-                return false;
-            }
-        }
-        return true;
+        playersReady.put(playerID, Boolean.TRUE);
+        return playersReady.containsValue(false);
     }
     
     public synchronized List<PlayerImpl> getPlayers(){

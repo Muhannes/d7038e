@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server.lobby;
+package network.services.lobby;
 
 import api.LobbyEmitter;
 import api.LobbyListener;
@@ -49,15 +49,16 @@ public class LobbyHolder implements LobbyEmitter{
         return getLobbyRoom(roomID).getPlayer(playerID);
     }
     
-    public boolean addPlayer(PlayerImpl p, int roomID){
+    /*public boolean addPlayer(PlayerImpl p, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         boolean ok =  lr.addPlayer(p);
         if (ok) {
             notifyLobbyListeners(lr);
         }
         return ok;
-    }
+    }*/
     
+    /*
     public PlayerImpl removePlayer(int playerID, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         PlayerImpl p =  lr.removePlayer(playerID);
@@ -65,7 +66,7 @@ public class LobbyHolder implements LobbyEmitter{
             notifyLobbyListeners(lr);
         }
         return p;
-    }
+    }*/
     
     /**
      * sets a player in a room ready.
@@ -73,11 +74,12 @@ public class LobbyHolder implements LobbyEmitter{
      * @param roomID
      * @return true if all players in room is ready
      */
+    /*
     public boolean setPlayerReady(int playerID, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         boolean start =  lr.setPlayerReady(playerID);
         return start;
-    }
+    }*/
 
     @Override
     public void addLobbyListener(LobbyListener lobbyListener) {

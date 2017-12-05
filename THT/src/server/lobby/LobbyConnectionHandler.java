@@ -5,6 +5,7 @@
  */
 package server.lobby;
 
+import network.services.lobby.LobbyHolder;
 import api.LobbyListener;
 import api.LobbySelectionListener;
 import api.LoginListener;
@@ -18,7 +19,7 @@ import com.jme3.network.Server;
 import java.util.ArrayList;
 import java.util.List;
 import server.lobby.network.LobbyNetworkStates;
-import server.lobby.network.NetworkHandler;
+import network.services.lobby.NetworkHandler;
 
 /**
  *
@@ -66,7 +67,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
         int returnID = newLobbyRoom.getID();
         LobbyRoom localLR = lobbyHolder.getLobbyRoom(returnID);
         if (player == null){ // player wants to leave lobbyroom
-            player = lobbyHolder.removePlayer(playerID, newLobbyRoom.getID());
+            //player = lobbyHolder.removePlayer(playerID, newLobbyRoom.getID());
             if (player != null){ // Player was in room he claimed to be.
                 returnID = -1;
                 nonLobbyPlayers.add(player);
@@ -77,13 +78,13 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
             }
         } else { // Player wants to join a lobby
             if (localLR != null) { // Room exists
-                boolean joined = lobbyHolder.addPlayer(player, returnID); // add to room
-                if (joined) { // join was ok
-                    removePlayer(playerID); // remove from nonlobby list
+                //boolean joined = lobbyHolder.addPlayer(player, returnID); // add to room
+                //if (joined) { // join was ok
+                //    removePlayer(playerID); // remove from nonlobby list
                     //notifyPlayerConnectionListeners(player, localLR);
-                } else {
-                    ok = false;
-                }
+                //} else {
+                //    ok = false;
+                //}
             } else { // Player wants to create new room
                 // TODO: Check best way to create new room (create new serverside, or use the one client sent)
                 newLobbyRoom.clearRoom();
@@ -91,7 +92,7 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
                 lobbyHolder.addLobbyRoom(newLobbyRoom);
             }   
         }
-        networkHandler.sendJoinRoomAckMessage(ok, playerID, returnID);
+        //networkHandler.sendJoinRoomAckMessage(ok, playerID, returnID);
     }
 
     @Override
@@ -123,13 +124,13 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
         // Notify the new player about available rooms!
         List<HostedConnection> conns = new ArrayList<>();
         conns.add(conn);
-        networkHandler.sendLobbyRoomsMessage(lobbyHolder.getRooms(), conns);
+        //networkHandler.sendLobbyRoomsMessage(lobbyHolder.getRooms(), conns);
     }
 
     @Override
     public void connectionRemoved(Server server, HostedConnection conn) {
         // Remove it from its lobbyRoom
-        lobbyHolder.removePlayer(conn.getId(), conn.getAttribute(LobbyNetworkStates.ROOM_ID));
+        //lobbyHolder.removePlayer(conn.getId(), conn.getAttribute(LobbyNetworkStates.ROOM_ID));
     }
 
     /**
@@ -143,10 +144,10 @@ public class LobbyConnectionHandler implements LobbySelectionListener, PlayerCon
         if (player != null) { // Player is in a room and must already have logged in...
                               //...Should maybee be a boolean to check this
             player.setName(username);
-            networkHandler.sendLoginAckMessage(true, playerID);
+            //networkHandler.sendLoginAckMessage(true, playerID);
             
         } else {
-            networkHandler.sendLoginAckMessage(false, playerID);
+            //networkHandler.sendLoginAckMessage(false, playerID);
         }
     }
     

@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.services.lobby;
 
 /**
  *
- * @author truls
+ * @author hannes
  */
-public interface LobbyManager {
-    
-    boolean join(int roomid);
-
-    void leave(int roomid);
-    
+public interface ClientLobbyEmitter {
+    void addClientLobbyListener(ClientLobbyListener clientLobbyListener);
 }
