@@ -5,7 +5,6 @@
  */
 package client;
 
-import client.network.ClientNetworkManager;
 import api.LobbyListener;
 import api.LobbySelectionEmitter;
 import api.LobbySelectionListener;
@@ -15,6 +14,7 @@ import api.models.PlayerImpl;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.ClientNetworkManager;
 
 /**
  *
@@ -30,7 +30,7 @@ public class ClientApplication extends SimpleApplication implements
     private LobbySelectionListener lobbySelectionListener;
     
     private ClientNetworkManager clientNetworkManager;
-
+    
     @Override
     public void simpleInitApp() {
         // Default logger
@@ -47,14 +47,11 @@ public class ClientApplication extends SimpleApplication implements
         
         //clientNetworkManager.connectToServer();
         
-        clientNetworkManager.getClientLobbyHandler().addLobbyListener(this);
-        clientNetworkManager.getClientLobbyHandler().addPlayerConnectionListener(this);
-        
         //addLobbySelectionListener(clientNetworkHandler.getClientLobbyHandler());*/
         //TODO Create GUI
         
         LobbyScreen lobbyScreen = new LobbyScreen();
-        LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginHandler(), lobbyScreen);
+        LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
         
         stateManager.attach(loginScreen);
         
