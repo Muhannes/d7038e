@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import network.services.chat.HostedChatService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.HostedLoginService;
+import network.util.NetConfig;
 import networkutil.NetworkUtil;
 
 /**
@@ -25,7 +26,7 @@ public class NetworkHandler {
     
     
     private Server server;
-    private final int port = NetworkUtil.LOBBY_SERVER_PORT;
+    private final int port = NetConfig.SERVER_PORT;
     
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){

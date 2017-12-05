@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
+import network.util.NetConfig;
 import networkutil.NetworkUtil;
 
 /**
@@ -36,8 +37,8 @@ public class ClientNetworkManager implements
     public void connectToServer(){
         try{
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
-                    new Object[]{NetworkUtil.SERVER_HOSTNAME, NetworkUtil.LOBBY_SERVER_PORT});
-            client = Network.connectToServer(NetworkUtil.SERVER_HOSTNAME, NetworkUtil.LOBBY_SERVER_PORT);
+                    new Object[]{NetConfig.SERVER_NAME, NetConfig.SERVER_PORT});
+            client = Network.connectToServer(NetConfig.SERVER_NAME, NetConfig.SERVER_PORT);
             
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
