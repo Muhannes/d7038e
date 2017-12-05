@@ -5,8 +5,10 @@
  */
 package network;
 
+import api.models.LobbyRoom;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
+import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
@@ -16,7 +18,6 @@ import network.services.chat.HostedChatService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.HostedLoginService;
 import network.util.NetConfig;
-import networkutil.NetworkUtil;
 
 /**
  *
@@ -70,7 +71,7 @@ public class NetworkHandler {
             server.getServices().addService(new HostedLobbyService());
             
             // Important to call this afer the server has been created!!!
-            NetworkUtil.initSerializables();
+            initSerializables();
             
             server.start();
             
@@ -81,5 +82,8 @@ public class NetworkHandler {
         System.out.println("Server started");
     }
     
+    private static void initSerializables(){
+        Serializer.registerClass(LobbyRoom.class);
+    }
     
 }
