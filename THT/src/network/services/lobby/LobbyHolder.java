@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server.lobby;
+package network.services.lobby;
 
 import api.LobbyEmitter;
 import api.LobbyListener;
 import api.PlayerConnectionListener;
 import api.models.LobbyRoom;
-import api.models.Player;
+import api.models.PlayerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,27 +45,28 @@ public class LobbyHolder implements LobbyEmitter{
         return null;
     }
     
-    public Player getPlayer(int playerID, int roomID){
+    public PlayerImpl getPlayer(int playerID, int roomID){
         return getLobbyRoom(roomID).getPlayer(playerID);
     }
     
-    public boolean addPlayer(Player p, int roomID){
+    /*public boolean addPlayer(PlayerImpl p, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         boolean ok =  lr.addPlayer(p);
         if (ok) {
             notifyLobbyListeners(lr);
         }
         return ok;
-    }
+    }*/
     
-    public Player removePlayer(int playerID, int roomID){
+    /*
+    public PlayerImpl removePlayer(int playerID, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
-        Player p =  lr.removePlayer(playerID);
+        PlayerImpl p =  lr.removePlayer(playerID);
         if (p != null) {
             notifyLobbyListeners(lr);
         }
         return p;
-    }
+    }*/
     
     /**
      * sets a player in a room ready.
@@ -73,11 +74,12 @@ public class LobbyHolder implements LobbyEmitter{
      * @param roomID
      * @return true if all players in room is ready
      */
+    /*
     public boolean setPlayerReady(int playerID, int roomID){
         LobbyRoom lr = getLobbyRoom(roomID);
         boolean start =  lr.setPlayerReady(playerID);
         return start;
-    }
+    }*/
 
     @Override
     public void addLobbyListener(LobbyListener lobbyListener) {

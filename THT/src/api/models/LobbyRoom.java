@@ -5,11 +5,11 @@
  */
 package api.models;
 
-import api.LobbyEmitter;
 import api.LobbyListener;
-import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -18,7 +18,8 @@ import java.util.List;
 public class LobbyRoom{
     private final List<LobbyListener> lobbyListeners  = new ArrayList<>();
     
-    private final List<Player> players = new ArrayList<>();
+    private final List<PlayerImpl> players = new ArrayList<>();
+    private final Map<Integer, Boolean> playersReady = new HashMap<>();
     private final int roomID;
     private static int idCounter = 0;
     private static final int MAX_PLAYERS = 10;
@@ -32,16 +33,17 @@ public class LobbyRoom{
         return roomID;
     }
     
-    public synchronized boolean addPlayer(Player p){
+    public synchronized boolean addPlayer(PlayerImpl p){
         if (canJoin()) {
             players.add(p);
+            playersReady.put(p.getID(), Boolean.FALSE);
             return true;
         }
         return false;
     }
     
-    public synchronized Player removePlayer(int playerID){
-        Player p = getPlayer(playerID);
+    public synchronized PlayerImpl removePlayer(int playerID){
+        PlayerImpl p = getPlayer(playerID);
         if (p != null) {
             p.setReady(false);
             players.remove(p);
@@ -56,17 +58,11 @@ public class LobbyRoom{
      * @return 
      */
     public synchronized boolean setPlayerReady(int playerID){
-        Player p = getPlayer(playerID);
-        p.setReady(true);
-        for (Player player : players) {
-            if (!player.isReady()) {
-                return false;
-            }
-        }
-        return true;
+        playersReady.put(playerID, Boolean.TRUE);
+        return playersReady.containsValue(false);
     }
     
-    public synchronized List<Player> getPlayers(){
+    public synchronized List<PlayerImpl> getPlayers(){
         return players;
     }
     
@@ -74,8 +70,8 @@ public class LobbyRoom{
         return players.size() < MAX_PLAYERS;
     }
     
-    public synchronized Player getPlayer(int playerID){
-        for (Player player : players) {
+    public synchronized PlayerImpl getPlayer(int playerID){
+        for (PlayerImpl player : players) {
             if (player.getID() == playerID) {
                 return player;
             }

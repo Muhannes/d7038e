@@ -5,6 +5,7 @@
  */
 package server.lobby;
 
+import network.services.lobby.LobbyHolder;
 import api.LobbyListener;
 import api.PlayerReadyEmitter;
 import api.PlayerReadyListener;

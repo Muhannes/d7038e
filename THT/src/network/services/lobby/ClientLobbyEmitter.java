@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server.lobby.network;
+package network.services.lobby;
 
 /**
  *
  * @author hannes
  */
-public class LobbyNetworkStates {
-    public static final String ROOM_ID = "ROOM_ID";
-    public static final String PLAYER = "PLAYER";
+public interface ClientLobbyEmitter {
+    void addClientLobbyListener(ClientLobbyListener clientLobbyListener);
 }

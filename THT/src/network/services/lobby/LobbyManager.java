@@ -3,16 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.services.lobby;
 
 import api.models.LobbyRoom;
-import api.models.PlayerImpl;
 
 /**
  *
  * @author truls
  */
-public interface PlayerConnectionListener {
+public interface LobbyManager {
     
-    void notifyPlayerConnection(PlayerImpl player, LobbyRoom lobbyRoom);
+    LobbyRoom join(int roomid);
+
+    void leave();
+    
+    void ready();
+    
 }
