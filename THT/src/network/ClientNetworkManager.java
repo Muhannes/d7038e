@@ -31,7 +31,7 @@ public class ClientNetworkManager implements
     private Client client;
     
     public ClientNetworkManager(){
-        NetworkUtil.initSerializables();
+        //NetworkUtil.initSerializables();
     }
     
     public void connectToServer(){
@@ -43,9 +43,11 @@ public class ClientNetworkManager implements
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
             client.getServices().addService(new ClientLoginService());
-            //client.getServices().addService(new ClientChatService());
-            //client.getServices().addService(new ClientLobbyService());
+            client.getServices().addService(new ClientChatService());
+            client.getServices().addService(new ClientLobbyService());
             System.out.println("services fetched");
+            
+            //NetworkUtil.initSerializables();
             
             client.start();
             System.out.println("client Started");
