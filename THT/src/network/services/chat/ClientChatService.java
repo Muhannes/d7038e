@@ -81,6 +81,13 @@ public class ClientChatService extends AbstractClientService implements ChatSess
                 l.playerJoined(name);
             }
         }
+
+        @Override
+        public void playerLeft(String name) {
+            for(ChatSessionListener l : listeners){
+                l.playerLeft(name);
+            }
+        }
         
     }
     

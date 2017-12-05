@@ -107,6 +107,11 @@ public class HostedChatService extends AbstractHostedConnectionService{
         public void playerJoined(String name) {
             getCallback().playerJoined(name);
         }
+
+        @Override
+        public void playerLeft(String name) {
+            getCallback().playerLeft(name);
+        }
     
     }
     
