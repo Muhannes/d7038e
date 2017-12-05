@@ -23,7 +23,7 @@ public class ClientApplication extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         // Default logger
-        Logger.getLogger("").setLevel(Level.SEVERE);
+        Logger.getLogger("").setLevel(Level.INFO);
         
         // Our loggers, tune the level
         Logger.getLogger(LoginScreen.class.getName()).setLevel(Level.INFO);
@@ -40,7 +40,6 @@ public class ClientApplication extends SimpleApplication{
         
         LobbyScreen lobbyScreen = new LobbyScreen();
         LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
-        
         stateManager.attach(loginScreen);
         
         flyCam.setEnabled(false);

@@ -53,10 +53,10 @@ public class NetworkHandler {
             
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
-            HostedLobbyService hostedLobbyService = new HostedLobbyService();
-            server.getServices().addService(hostedLobbyService);
             server.getServices().addService(new HostedLoginService());
-            server.getServices().addService(new HostedChatService());
+            //server.getServices().addService(new HostedChatService());
+            //HostedLobbyService hostedLobbyService = new HostedLobbyService();
+            //server.getServices().addService(hostedLobbyService);
             
             server.start();
             

@@ -18,11 +18,6 @@ public class NetworkUtil {
     public static final String SERVER_HOSTNAME = "localhost";
     
     public static void initSerializables(){
-        Serializer.registerClass(JoinRoomMessage.class);
-        Serializer.registerClass(JoinRoomAckMessage.class);
-        Serializer.registerClass(LeaveRoomMessage.class);
-        Serializer.registerClass(ReadyMessage.class);
-        Serializer.registerClass(LobbyRoomsMessage.class);
         Serializer.registerClass(LobbyRoom.class);
     }
 }

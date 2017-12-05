@@ -12,6 +12,7 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import network.util.ConnectionAttribute;
+import utils.eventbus.EventBus;
 
 /**
  *
@@ -51,6 +52,9 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
+        if (rmi == null) {
+            throw new Error("RMI is null!");
+        }
         rmi.share((byte)channel, session, LoginSession.class);
     }
 
@@ -77,6 +81,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
             System.out.println("Login request received from connection with ID = " + connection.getId());
             connection.setAttribute(ConnectionAttribute.NAME, name);
             getCallback().notifyLogin(true);
+            EventBus.publish(new LoginEvent(connection), LoginEvent.class);
         }
         
         private LoginSessionListener getCallback(){

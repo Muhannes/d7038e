@@ -42,11 +42,12 @@ public class ClientNetworkManager implements
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
             client.getServices().addService(new ClientLoginService());
-            client.getServices().addService(new ClientChatService());
-            client.getServices().addService(new ClientLobbyService());
+            //client.getServices().addService(new ClientChatService());
+            //client.getServices().addService(new ClientLobbyService());
             System.out.println("services fetched");
             
             client.start();
+            System.out.println("client Started");
         }catch(IOException ex){
             ex.printStackTrace();
         }

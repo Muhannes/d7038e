@@ -14,13 +14,17 @@ import java.util.List;
 import api.models.LobbyRoom;
 import com.jme3.network.MessageConnection;
 import java.util.ArrayList;
+import network.services.login.LoginEvent;
 import network.util.ConnectionAttribute;
+import utils.eventbus.Event;
+import utils.eventbus.EventBus;
+import utils.eventbus.EventListener;
 
 /**
  *
  * @author truls
  */
-public class HostedLobbyService extends AbstractHostedConnectionService{
+public class HostedLobbyService extends AbstractHostedConnectionService implements EventListener{
     
     private LobbyHolder lobbyHolder;
     private final List<HostedConnection> nonLobbyPlayers = new ArrayList<>();
@@ -42,6 +46,8 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
+        setAutoHost(false);
+        EventBus.subscribe(this);
         rmiService = getService(RmiHostedService.class);
         if(rmiService == null) {
             throw new RuntimeException("LobbyService requires an RMI service.");
@@ -78,6 +84,14 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     @Override
     public void stopHostingOnConnection(HostedConnection hc) {
         //TODO: quit player
+        nonLobbyPlayers.remove(hc);
+    }
+
+    @Override
+    public void notifyEvent(Event event, Class<? extends Event> T) {
+        if (T == LoginEvent.class) {
+            startHostingOnConnection(((LoginEvent)event).conn);
+        }
     }
     
     private class LobbyManagerImpl implements LobbyManager{
