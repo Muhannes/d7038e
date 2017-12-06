@@ -12,17 +12,25 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Chat;
+import de.lessvoid.nifty.controls.Label;
+import de.lessvoid.nifty.controls.ListBox;
+import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.controls.label.LabelControl;
+import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.services.chat.ChatSessionListener;
+import network.services.chat.ClientChatService;
+import network.services.lobby.ClientLobbyListener;
 
 /**
  *
  * @author ted
  */
-public class GameLobbyScreen extends AbstractAppState implements ScreenController{
+public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
@@ -33,11 +41,13 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
     private Chat chat;
-
+    private ClientChatService ccs;
     
-    GameLobbyScreen(LobbyScreen lobbyScreen, String gameName) {
+    GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, String gameName) {
         this.lobbyScreen = lobbyScreen;
-        this.gameName = gameName;
+        this.ccs = ccs;
+        ccs.addChatSessionListener(this);
+        this.gameName = gameName;        
         this.players = new ArrayList<>();
     }
     
@@ -59,6 +69,11 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
+                      
+        //nifty.setDebugOptionPanelColors(true);
+        
+        LOGGER.log(Level.FINE, "Amount of players : " + players.size());
+        
     }
 
     @Override
@@ -87,6 +102,9 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     @Override
     public void onStartScreen() {
         System.out.println("On start screen in GameLobbyScreen!");
+        for(String name : players){
+            playerJoinedLobby(name);
+        }
     }
 
     @Override
@@ -100,14 +118,84 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(lobbyScreen);
+//        app.getStateManager().detach(this);
+//        app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
         System.out.println("Stopping!");
         app.getStateManager().detach(this);
         app.stop();
+    }
+
+    /**
+     * A new message arrived.
+     * @param message 
+     */
+    @Override
+    public void newMessage(String message) {
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
+        field.addItem(message);
+    }
+
+    /**
+     * Send chat message to server.
+     * Server will delegate it to all receiptiants.
+     */
+    public void sendToServer(){
+        System.out.println("Sending to server");
+        TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
+        String chatInput = field.getRealText();
+        if(chatInput != null){
+            System.out.println("New Input : " + chatInput);
+            ccs.sendMessage(chatInput);
+        }
+        field.setText("");
+    }
+    
+    /**
+     * new player joined the room
+     * @param name 
+     */
+    @Override
+    public void playerJoinedChat(String name) {
+        //Display new player in chat.
+              
+        
+        newMessage(name + " has joined the chat!");
+    }
+
+    /**
+     * player left the room
+     * @param name 
+     */
+    @Override
+    public void playerLeftChat(String name) {
+        //Player left from room.
+        newMessage(name + " Left the chat!");
+    }
+
+    @Override
+    public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
+        // Nothing
+    }
+
+    @Override
+    public void playerJoinedLobby(String name) {
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.addItem(name); 
+    }
+
+    @Override
+    public void playerLeftLobby(String name) {
+        
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.removeItem(name);
+    }
+
+    @Override
+    public void playerReady(String name, boolean ready) {
+        //TODO: display readyness
     }
     
 }

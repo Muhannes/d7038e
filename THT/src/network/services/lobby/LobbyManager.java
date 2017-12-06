@@ -5,8 +5,8 @@
  */
 package network.services.lobby;
 
-import api.models.LobbyRoom;
 import com.jme3.network.service.rmi.Asynchronous;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface LobbyManager {
     
-    LobbyRoom join(int roomid);
+    List<String> join(int roomid);
 
     @Asynchronous
     void leave();
@@ -23,7 +23,7 @@ public interface LobbyManager {
     @Asynchronous
     void ready();
     
-    LobbyRoom createLobby(String lobbyName);
+    boolean createLobby(String lobbyName);
     
     Map<String, Integer> getAllRooms();
     

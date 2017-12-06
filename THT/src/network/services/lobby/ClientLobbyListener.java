@@ -16,10 +16,10 @@ public interface ClientLobbyListener {
     void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers);
     
     @Asynchronous
-    void playerJoined(String name);
+    void playerJoinedLobby(String name);
     
     @Asynchronous
-    void playerLeft(String name);
+    void playerLeftLobby(String name);
     
     @Asynchronous
     void playerReady(String name, boolean ready);
