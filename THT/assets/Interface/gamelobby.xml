@@ -2,14 +2,6 @@
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
   <useStyles filename="nifty-default-styles.xml" />
   <useControls filename="nifty-default-controls.xml" />
-
-<!--  <controlDefinition name="nifty-chat-line">
-    <panel childLayout="horizontal" width="75%" align="center">
-      <image id="#chat-line-icon" width="23px" height="23px"/>
-      <control id="#chat-line-text" name="label" align="left" textHAlign="left" height="23px" width="*" wrap="true"/>
-    </panel>
-  </controlDefinition>
--->
   
   <screen id="gamelobby" controller="client.GameLobbyScreen" visibleToMouse="true">
       <layer id="background" childLayout="center">
@@ -20,12 +12,12 @@
         <text text="Room Lobby" font="Interface/Fonts/Default.fnt" width="100%" height="10%" />
       </panel>
       <panel id="panel_mid" childLayout="center" width="75%" align="center" height="20%">
-        <panel id="panel_mid_left" childLayout="left" name="returnButton">
+        <panel id="panel_mid_left" childLayout="center" name="returnButton">
             <control name="button" id="returnToLobby" visiableToMouse="true" label="returnToLobby">
                 <interact onClick="returnToLobby()"/>
            </control>
         </panel>
-        <panel id="panel_mid_right" childLayout="right" name="quitButton">
+        <panel id="panel_mid_right" childLayout="center" name="quitButton">
             <control name="button" id="Quit" visiableToMouse="true" label="Quit">
                 <interact onClick="quitGame()"/>
             </control>                

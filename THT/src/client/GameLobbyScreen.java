@@ -70,6 +70,11 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         app.getGuiViewPort().addProcessor(niftyDisplay);
                       
         //nifty.setDebugOptionPanelColors(true);
+        
+        LOGGER.log(Level.FINE, "Amount of players : " + players.size());
+        for(String name : players){
+            playerJoined(name);
+        }
     }
 
     @Override
@@ -111,8 +116,8 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(lobbyScreen);
+//        app.getStateManager().detach(this);
+//        app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
@@ -123,7 +128,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
 
     @Override
     public void newMessage(String message) {
-        System.out.println("New message received" + message);
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
         field.addItem(message);
     }
