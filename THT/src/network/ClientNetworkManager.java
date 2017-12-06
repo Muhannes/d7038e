@@ -55,7 +55,9 @@ public class ClientNetworkManager implements
     }
     
     public synchronized void cleanUp(){
-        client.close();
+        if (client != null && client.isStarted()) {
+            client.close();
+        }
     }
 
     @Override

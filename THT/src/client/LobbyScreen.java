@@ -90,7 +90,10 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
 
         //List of games
         listBox = screen.findNiftyControl("myListBox", ListBox.class);
-        games = new HashMap<>();
+        // Fetching available lobbyRooms
+        games = clientLobbyService.getAllRooms();
+        // Adding them to list
+        listBox.addAllItems(games.keySet());
 
     }    
 

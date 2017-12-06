@@ -14,6 +14,8 @@ import java.util.List;
 import api.models.LobbyRoom;
 import com.jme3.network.MessageConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import network.services.login.LoginEvent;
 import network.util.ConnectionAttribute;
 import utils.eventbus.Event;
@@ -172,6 +174,15 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             } else {
                 return null;
             }
+        }
+
+        @Override
+        public Map<String, Integer> getAllRooms() {
+            Map<String, Integer> rooms = new HashMap<>();
+            for (LobbyRoom room : lobbyHolder.getRooms()) {
+                rooms.put(room.getName(), room.getID());
+            }
+            return rooms;
         }
         
     }
