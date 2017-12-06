@@ -84,6 +84,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
 
     /**
      * When choosing an already existing lobbyRoom
+     * server gives names of players in room
      * @param id
      * @param event 
      */
@@ -109,6 +110,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
      * @param gls 
      */
     public void joinGame(GameLobbyScreen gls){
+        clientLobbyService.addClientLobbyListener(gls);
         System.out.println("Joining game.");
         app.getStateManager().detach(this);
         app.getStateManager().attach(gls);
@@ -195,12 +197,12 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     }
 
     @Override
-    public void playerJoined(String name) {
+    public void playerJoinedLobby(String name) {
         // DO nothing
     }
 
     @Override
-    public void playerLeft(String name) {
+    public void playerLeftLobby(String name) {
         // DO nothing
     }
 

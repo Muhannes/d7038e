@@ -109,10 +109,13 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                         nonLobbyPlayers.remove(connection);
                         lobbyRoom = lr;
                         List<HostedConnection> players = lobbyRoom.getPlayers();
+                        String name = ""+connection.getAttribute(ConnectionAttribute.NAME);
+                        System.out.println("New player name: " + name);
                         for (HostedConnection player : players) {
                             // Send out to each player in room that this one has joined it.
-                            getDelegate(player).
-                                    playerJoined(connection.getAttribute(ConnectionAttribute.NAME));
+                            if (player != connection) {
+                                getDelegate(player).playerJoinedLobby(name);
+                            }
                         }
                         for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
                             getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
@@ -133,8 +136,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                 List<HostedConnection> players = lobbyRoom.getPlayers();
                 for (HostedConnection player : players) {
                     // Send out to each player in room that this one has joined it.
-                    getDelegate(player).
-                            playerLeft(connection.getAttribute(ConnectionAttribute.NAME));
+                    getDelegate(player).playerLeftLobby(connection.getAttribute(ConnectionAttribute.NAME));
                 }
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
                     getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 

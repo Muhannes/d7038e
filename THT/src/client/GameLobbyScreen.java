@@ -24,12 +24,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ClientChatService;
+import network.services.lobby.ClientLobbyListener;
 
 /**
  *
  * @author ted
  */
-public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener{
+public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
@@ -102,7 +103,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void onStartScreen() {
         System.out.println("On start screen in GameLobbyScreen!");
         for(String name : players){
-            playerJoined(name);
+            playerJoinedLobby(name);
         }
     }
 
@@ -157,10 +158,11 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
      * @param name 
      */
     @Override
-    public void playerJoined(String name) {
+    public void playerJoinedChat(String name) {
         //Display new player in chat.
-        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        field.addItem(name);        
+              
+        
+        newMessage(name + " has joined the chat!");
     }
 
     /**
@@ -168,10 +170,32 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
      * @param name 
      */
     @Override
-    public void playerLeft(String name) {
+    public void playerLeftChat(String name) {
         //Player left from room.
+        newMessage(name + " Left the chat!");
+    }
+
+    @Override
+    public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
+        // Nothing
+    }
+
+    @Override
+    public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        field.removeItem(name);        
+        field.addItem(name); 
+    }
+
+    @Override
+    public void playerLeftLobby(String name) {
+        
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.removeItem(name);
+    }
+
+    @Override
+    public void playerReady(String name, boolean ready) {
+        //TODO: display readyness
     }
     
 }
