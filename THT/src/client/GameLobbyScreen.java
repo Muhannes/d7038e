@@ -47,6 +47,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         this.ccs = ccs;
         ccs.addChatSessionListener(this);
         this.gameName = gameName;        
+        this.players = new ArrayList<>();
     }
     
     @Override

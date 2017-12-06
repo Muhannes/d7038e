@@ -47,6 +47,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
         setAutoHost(false);
+        lobbyHolder = new LobbyHolder();
         EventBus.subscribe(this);
         rmiService = getService(RmiHostedService.class);
         if(rmiService == null) {
@@ -111,7 +112,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                                 playerJoined(connection.getAttribute(ConnectionAttribute.NAME));
                     }
                     for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                        getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), 
+                        getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                                 lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                     }
                     return lobbyRoom;
@@ -131,7 +132,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                             playerLeft(connection.getAttribute(ConnectionAttribute.NAME));
                 }
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                    getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), 
+                    getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
                 lobbyRoom = null;
@@ -151,6 +152,25 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             }
             if (allReady) {
                 // TODO: Start game.
+            }
+        }
+
+        @Override
+        public LobbyRoom createLobby(String lobbyName) {
+            LobbyRoom lr = new LobbyRoom(lobbyName);
+            boolean ok = lobbyHolder.addLobbyRoom(lr);
+            if(ok){
+                lobbyRoom = lr;
+                nonLobbyPlayers.remove(connection);
+                lobbyRoom.addPlayer(connection);
+                for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
+                    getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
+                            lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
+                }
+                System.out.println("Done updating listeners!");
+                return lr;
+            } else {
+                return null;
             }
         }
         

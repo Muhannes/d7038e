@@ -5,17 +5,23 @@
  */
 package network.services.lobby;
 
+import com.jme3.network.service.rmi.Asynchronous;
+
 /**
  *
  * @author hannes
  */
 public interface ClientLobbyListener {
-    void updateLobby(String lobbyName, int numPlayers, int maxPlayers);
+    @Asynchronous
+    void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers);
     
+    @Asynchronous
     void playerJoined(String name);
     
+    @Asynchronous
     void playerLeft(String name);
     
+    @Asynchronous
     void playerReady(String name, boolean ready);
     
 }
