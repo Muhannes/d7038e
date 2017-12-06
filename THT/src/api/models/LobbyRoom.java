@@ -33,6 +33,12 @@ public class LobbyRoom{
         idCounter++;
     }
     
+    public LobbyRoom(String name){
+        roomID = idCounter;
+        roomName = name;
+        idCounter++;
+    }
+    
     public synchronized int getID(){
         return roomID;
     }

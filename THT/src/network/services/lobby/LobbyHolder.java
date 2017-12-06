@@ -17,12 +17,13 @@ public class LobbyHolder{
     private final List<LobbyRoom> lobbyRooms = new ArrayList();
 
     public LobbyHolder() {
-        addLobbyRoom(new LobbyRoom());//must be atleast one lobby room.
+        //addLobbyRoom(new LobbyRoom());//must be atleast one lobby room.
     }
     
-    public synchronized final void addLobbyRoom(LobbyRoom lobbyRoom){
+    public synchronized final boolean addLobbyRoom(LobbyRoom lobbyRoom){
         // TODO: Check if ok here? so the check will be synchronized too?
         lobbyRooms.add(lobbyRoom);
+        return true;
     }
     
     public synchronized List<LobbyRoom> getRooms(){

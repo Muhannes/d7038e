@@ -5,9 +5,11 @@
  */
 package client;
 
+import api.models.LobbyRoom;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.network.HostedConnection;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.sun.xml.internal.ws.util.StringUtils;
 import de.lessvoid.nifty.Nifty;
@@ -31,15 +33,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.ClientNetworkManager;
+import network.services.lobby.ClientLobbyListener;
+import network.services.lobby.ClientLobbyService;
+import network.services.lobby.LobbyManager;
+import network.util.ConnectionAttribute;
 
 /**
  *
  * @author ted
  */
-public class LobbyScreen extends AbstractAppState implements ScreenController{
+public class LobbyScreen extends AbstractAppState implements ScreenController, ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LobbyScreen.class.getName());
     private Nifty nifty;
@@ -47,17 +56,23 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
     private Application app;
     private Screen screen;
     private ListBox listBox;
-    private ArrayList<GameLobbyScreen> games;
+    private Map<String, Integer> games;
     private Chat chat;
+    private final ClientLobbyService clientLobbyService;
     
     private GameLobbyScreen gameLobbyScreen;
        
+    public LobbyScreen(ClientLobbyService clientLobbyService){
+        this.clientLobbyService = clientLobbyService;
+    }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
         System.out.println("Init LobbyScreen");
-        super.initialize(stateManager, app);        
+        super.initialize(stateManager, app);   
+        
+        clientLobbyService.addClientLobbyListener(this);
         this.app = app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -75,16 +90,23 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
 
         //List of games
         listBox = screen.findNiftyControl("myListBox", ListBox.class);
-        games = new ArrayList();
+        games = new HashMap<>();
 
     }    
 
     @NiftyEventSubscriber(id="myListBox")
     public void onMyListBoxSelectionChanged(final String id, final ListBoxSelectionChangedEvent<String> event) {
         List<String> selection = event.getSelection();
-        for(String selectedItem : selection) {
-            System.out.println("listbox selection [ " + selectedItem + " ] \nThe index in games is : " + games.get(selection.indexOf(selectedItem)).getName());
-            joinGame(games.get(selection.indexOf(selectedItem)));
+        for(String gameName : selection) {
+            System.out.println("listbox selection [ " + gameName + " ] \nThe game id is : " + games.get(gameName));
+            LobbyRoom lobbyRoom = clientLobbyService.join(games.get(gameName));
+            if (lobbyRoom != null) {
+                GameLobbyScreen gls = new GameLobbyScreen(this, gameName);
+                for (HostedConnection player : lobbyRoom.getPlayers()) {
+                    gls.addPlayers(player.getAttribute(ConnectionAttribute.NAME));
+                }
+                joinGame(gls);
+            }
         }
     }
     
@@ -127,13 +149,15 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         TextField field = nifty.getScreen("lobby").findNiftyControl("textfieldGamename", TextField.class);
         String gamename = field.getRealText();
         if(!gamename.isEmpty()){
-            GameLobbyScreen tmp = new GameLobbyScreen(this, gamename);
-            System.out.println("Trying to create new map!");
-            if(games.add(tmp)){
-                System.out.println("Created the game : " + tmp.getName());
-                listBox.addItem(tmp.getName());   
+            LobbyRoom lobbyRoom = clientLobbyService.createLobby(gamename);
+            if (lobbyRoom != null) {
+                GameLobbyScreen gls = new GameLobbyScreen(this, gamename);
+                gls.addPlayers("me"); //TODO: use real name for me
+                joinGame(gls);
+            } else {
+                System.out.println("Failed to create, server did not approve.");
+                LOGGER.log(Level.FINE, "Server did not approve new name.");
             }
-            System.out.println("Games size : " + games.size());
         } else {
             System.out.println("Failed to created, no name.");
             LOGGER.log(Level.FINE, "Must have a name!");
@@ -144,6 +168,35 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         System.out.println("Stopping!");
         app.getStateManager().detach(this);
         app.stop();
+    }
+
+    @Override
+    public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
+        System.out.println("Update Lobby Received!");
+        for (Object object : listBox.getItems()) {
+            String name = (String) object;
+            if (name == lobbyName) {
+                return;
+            }
+
+        }
+        games.put(lobbyName, roomID);
+        listBox.addItem(lobbyName);
+    }
+
+    @Override
+    public void playerJoined(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void playerLeft(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void playerReady(String name, boolean ready) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
         
 }

@@ -38,6 +38,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     GameLobbyScreen(LobbyScreen lobbyScreen, String gameName) {
         this.lobbyScreen = lobbyScreen;
         this.gameName = gameName;
+        this.players = new ArrayList<>();
     }
     
     @Override

@@ -37,10 +37,12 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager.connectToServer();
         
         //TODO Create GUI
-        
-        LobbyScreen lobbyScreen = new LobbyScreen();
-        LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
-        stateManager.attach(loginScreen);
+        if (LobbyScreen.class != null) {
+            
+            LobbyScreen lobbyScreen = new LobbyScreen(clientNetworkManager.getClientLobbyService());
+            LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
+            stateManager.attach(loginScreen);
+        }
         
         flyCam.setEnabled(false);
         setDisplayStatView(false);

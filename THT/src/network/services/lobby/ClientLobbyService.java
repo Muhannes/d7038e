@@ -77,13 +77,18 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     public void ready() {
         getDelegate().ready();
     }
+
+    @Override
+    public LobbyRoom createLobby(String lobbyName) {
+        return getDelegate().createLobby(lobbyName);
+    }
     
     private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners
 
         @Override
-        public void updateLobby(String lobbyName, int numPlayers, int maxPlayers) {
+        public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
             for (ClientLobbyListener listener : listeners) {
-                listener.updateLobby(lobbyName, numPlayers, maxPlayers);
+                listener.updateLobby(lobbyName, roomID, numPlayers, maxPlayers);
             }
         }
 

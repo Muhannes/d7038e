@@ -6,6 +6,7 @@
 package network.services.lobby;
 
 import api.models.LobbyRoom;
+import com.jme3.network.service.rmi.Asynchronous;
 
 /**
  *
@@ -15,8 +16,12 @@ public interface LobbyManager {
     
     LobbyRoom join(int roomid);
 
+    @Asynchronous
     void leave();
     
+    @Asynchronous
     void ready();
+    
+    LobbyRoom createLobby(String lobbyName);
     
 }
