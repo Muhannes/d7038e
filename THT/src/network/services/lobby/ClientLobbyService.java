@@ -12,6 +12,7 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -81,6 +82,11 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     @Override
     public LobbyRoom createLobby(String lobbyName) {
         return getDelegate().createLobby(lobbyName);
+    }
+
+    @Override
+    public Map<String, Integer> getAllRooms() {
+        return getDelegate().getAllRooms();
     }
     
     private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners
