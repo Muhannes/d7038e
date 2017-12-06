@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import network.services.chat.HostedChatService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.HostedLoginService;
+import network.services.ping.HostedPingService;
 import network.util.NetConfig;
 
 /**
@@ -68,6 +69,7 @@ public class NetworkHandler {
             server.getServices().addService(new HostedLoginService());
             server.getServices().addService(new HostedChatService());
             server.getServices().addService(new HostedLobbyService());
+            server.getServices().addService(new HostedPingService());
             
             // Important to call this afer the server has been created!!!
             initSerializables();
