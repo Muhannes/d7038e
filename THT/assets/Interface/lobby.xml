@@ -21,9 +21,14 @@
                     </control> 
                 </panel>
             </panel>
-            <panel id="panel_bottom" childLayout="horizontal" width="75%" align="center" height="25%">
-                <panel id="panel_bottom_left" childLayout="horizontal" width="75%" align="center" height="25%"/>
-                <panel id="panel_bottom_right" childLayout="horizontal" width="25%" align="right" height="25%">
+       <!--     <panel id="panel_bottom" childLayout="horizontal" width="75%" align="center" height="25%"> -->
+            <panel id="panel_bottom" childLayout="vertical" width="75%" height="25%" align="center">    
+                <panel id="panel_bottom_left" childLayout="center" width="50%" align="center" height="25%">
+                    <control name="button" id="Refresh" visiableToMouse="true" label="Refresh">
+                        <interact onClick="refresh()"/>
+                    </control>   
+                </panel> 
+                <panel id="panel_bottom_right" childLayout="center" width="50%" align="right" height="25%">
                     <control name="button" id="Quit" visiableToMouse="true" label="Quit">
                         <interact onClick="quitGame()"/>
                     </control>    

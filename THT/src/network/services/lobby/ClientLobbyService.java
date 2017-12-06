@@ -84,6 +84,11 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
+    public boolean removeLobby(String lobbyName){
+        return getDelegate().removeLobby(lobbyName);
+    }
+    
+    @Override
     public Map<String, Integer> getAllRooms() {
         return getDelegate().getAllRooms();
     }

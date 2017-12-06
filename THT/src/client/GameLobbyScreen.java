@@ -119,16 +119,22 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         nifty.gotoScreen(nextScreen);
     }
     
-    public void returnToLobby(String name){
+    public void returnToLobby(){
         System.out.println("Returning to lobby!");
-        playerLeftChat(name);
+        if(players.size() == 1){
+            System.out.println("Last player leaving lobby, removing it.");
+            lobbyScreen.removeGame(this.gameName);
+        }
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
     }
     
-    public void quitGame(String name){
-        System.out.println("Stopping!");
-        playerLeftChat(name);
+    public void quitGame(){
+        System.out.println("Stopping " + this.gameName);
+        if(players.size() == 1){
+            //TODO: TELL SERVER TO REMOVE FROM LIST.
+            lobbyScreen.removeGame(this.gameName);
+        } 
         app.getStateManager().detach(this);
         app.stop();
     }

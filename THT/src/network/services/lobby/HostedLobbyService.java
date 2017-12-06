@@ -182,6 +182,10 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                 return false;
             }
         }
+        
+        public boolean removeLobby(String lobbyName){
+            return lobbyHolder.removeLobbyRoom(lobbyName);
+        }
 
         @Override
         public Map<String, Integer> getAllRooms() {
