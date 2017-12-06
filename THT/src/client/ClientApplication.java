@@ -38,7 +38,7 @@ public class ClientApplication extends SimpleApplication{
         
         //TODO Create GUI
         
-        LobbyScreen lobbyScreen = new LobbyScreen();
+        LobbyScreen lobbyScreen = new LobbyScreen(clientNetworkManager.getClientChatService());
         LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
         stateManager.attach(loginScreen);
         

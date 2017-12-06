@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.services.chat.ClientChatService;
 
 /**
  *
@@ -51,7 +52,11 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
     private Chat chat;
     
     private GameLobbyScreen gameLobbyScreen;
-       
+    private ClientChatService ccs;
+    
+    public LobbyScreen(ClientChatService ccs){
+        this.ccs = ccs;
+    }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
@@ -76,7 +81,6 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         //List of games, should receive all the games from server.
         games = new ArrayList();
         listBox = screen.findNiftyControl("myListBox", ListBox.class);        
-        
     }    
 
     @NiftyEventSubscriber(id="myListBox")
@@ -127,9 +131,10 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         TextField field = nifty.getScreen("lobby").findNiftyControl("textfieldGamename", TextField.class);
         String gamename = field.getRealText();
         if(!gamename.isEmpty()){
-            GameLobbyScreen tmp = new GameLobbyScreen(this, gamename);
+            GameLobbyScreen tmp = new GameLobbyScreen(this, ccs, gamename);
             if(games.add(tmp)){
                 LOGGER.log(Level.FINE, "Created new game!", tmp.getName());
+                //ccs.addChatSessionListener(tmp);
                 listBox.addItem(tmp.getName());   
             } else {
                 LOGGER.log(Level.FINE, "Failed to add map to games.");

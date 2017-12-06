@@ -13,6 +13,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Chat;
 import de.lessvoid.nifty.controls.Label;
+import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.controls.label.LabelControl;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
@@ -20,12 +21,14 @@ import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.services.chat.ChatSessionListener;
+import network.services.chat.ClientChatService;
 
 /**
  *
  * @author ted
  */
-public class GameLobbyScreen extends AbstractAppState implements ScreenController{
+public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
@@ -36,10 +39,13 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
     private Chat chat;
+    private ClientChatService ccs;
     
-    GameLobbyScreen(LobbyScreen lobbyScreen, String gameName) {
+    GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, String gameName) {
         this.lobbyScreen = lobbyScreen;
-        this.gameName = gameName;
+        this.ccs = ccs;
+        ccs.addChatSessionListener(this);
+        this.gameName = gameName;        
     }
     
     @Override
@@ -61,7 +67,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
                       
-        
+        nifty.setDebugOptionPanelColors(true);
     }
 
     @Override
@@ -111,6 +117,33 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         System.out.println("Stopping!");
         app.getStateManager().detach(this);
         app.stop();
+    }
+
+    @Override
+    public void newMessage(String message) {
+        
+    }
+
+    public void sendToServer(){
+        System.out.println("Sending to server");
+        TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
+        String chatInput = field.getRealText();
+        if(chatInput != null){
+            System.out.println("New Input : " + chatInput);
+            ccs.sendMessage(chatInput);            
+        }
+    }
+    
+    @Override
+    public void playerJoined(String name) {
+        //Display new player in chat.
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void playerLeft(String name) {
+        //Player left from room.
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

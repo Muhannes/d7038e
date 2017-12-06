@@ -16,31 +16,64 @@
         <image id="" filename="Interface/room.jpg"/>
       </layer>
     <layer id="foreground" childLayout="vertical">
-      <panel id="panel_top" height="25%" width="75%" align="center" childLayout="center">
-        <text text="Room Lobby" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+      <panel id="panel_top" height="10%" width="75%" align="center" childLayout="center">
+        <text text="Room Lobby" font="Interface/Fonts/Default.fnt" width="100%" height="10%" />
       </panel>
-      <panel id="panel_mid" height="25%" width="75%" align="center" childLayout="center">
-<!--
-          <control id="myCustomListBox" name="listBox" height="25%" width="75%" vertical="on" horizontal="off" selection="Disabled" displayItems="15" viewConverterClass="de.lessvoid.nifty.controls.chatcontrol.ChatBoxViewConverter">
-            <control name="nifty-chat-line" controller="de.lessvoid.nifty.controls.listbox.ListBoxItemController"/>              
-        </control>            
--->
-        <control id="chatId" name="nifty-chat" width="100%" height="100%" lines="14" sendLabel="Send Message" />
+      <panel id="panel_mid" childLayout="center" width="75%" align="center" height="20%">
+        <panel id="panel_mid_left" childLayout="left" name="returnButton">
+            <control name="button" id="returnToLobby" visiableToMouse="true" label="returnToLobby">
+                <interact onClick="returnToLobby()"/>
+           </control>
+        </panel>
+        <panel id="panel_mid_right" childLayout="right" name="quitButton">
+            <control name="button" id="Quit" visiableToMouse="true" label="Quit">
+                <interact onClick="quitGame()"/>
+            </control>                
+        </panel>
       </panel>
-      <panel id="panel_bottom" height="25%" width="75%" align="center" childLayout="horizontal" >
-<!--          <text text="${CALL.getName()}" font="Interface/Fonts/Default.fnt" width="100%" height="100%" /> -->
-      </panel>
-            <panel id="panel_bottom" childLayout="horizontal" width="75%" align="center" height="25%">
-                <panel id="panel_bottom_left" childLayout="horizontal" width="75%" align="center" height="25%"/>
-                    <control name="button" id="returnToLobby" visiableToMouse="true" label="returnToLobby">
-                        <interact onClick="returnToLobby()"/>
-                    </control>
-                <panel id="panel_bottom_right" childLayout="horizontal" width="25%" align="right" height="25%">
-                    <control name="button" id="Quit" visiableToMouse="true" label="Quit">
-                        <interact onClick="quitGame()"/>
-                    </control>    
-                </panel>
+      <!-- Panel for chat and players -->
+      <panel id="panel_bottom" height="70%" width="75%" align="center" childLayout="vertical">
+       
+          <panel id="pannel_bottom_windows" width="100%" height="80%" childLayout="horizontal">
+        <!-- Two panels, one for chat one for the players -->
+            <panel id="panel_chat" width="70%" height="100%">
+                <control name="listBox" id="myListBox" horizontal="optional" selection="Disabled" width="75%" vertical="on" displayItems="10"/>
             </panel>
+            <panel id="panel_players" width="30%" height="100%">
+                <control name="listBoxPlayers" id="myListBoxPlayers" horizontal="optional" selection="Disabled" width="75%" vertical="on" displayItems="10"/>
+            </panel>  
+          </panel>
+        
+          <panel id="panel_bottom_input" width="100" height="20%" childLayout="horizontal">
+        <!-- Panels for input and send to server -->
+            <panel id="panel_input">
+                <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" width="25%" text="" maxLength="20"/>
+            </panel>
+            <panel id="panel_button">
+                <control name="button" id="SendMessage" visiableToMouse="true" label="Send Message">
+                    <interact onClick="sendToServer()"/>
+                </control>
+            </panel>               
+          </panel>
+            
+<!--        <panel id="panel_bottom_top_left" childLayout="left" width="70%" height="80%">
+            <control name="listBox" id="myListBox" horizontal="optional" selection="Disabled" width="75%" vertical="on" displayItems="10"/>
+        </panel>
+        <panel id="panel_bottom_top_right" childLayout="right" width="30%" height="80%">
+            <control name="listBoxPlayers" id="myListBoxPlayers" horizontal="optional" selection="Disabled" width="75%" vertical="on" displayItems="10"/>
+        </panel>        
+        <panel id="panel_bottom_bottom" childLayout="center" width="100%" align="center" height="20%">
+        </panel>
+      </panel>
+        <panel id="panel_bottom_input" height="10%" width="100%" childLayout="center">
+              <control id="textfieldChat" name="textfield" textHAlign="center" textVAlign="center" maxLength="40" width="25%" text="Chat"/>
+        </panel> -->
+<!--        <panel id="panel_bottom_button" height="60%" width="75%" childLayout="center"> -->
+<!--        <control id="chatId" name="nifty-chat" width="75%" height="70%" lines="14" sendLabel="Send Message">
+            <interact onClick="sendToServer()"/>
+        </control>                 
+          </panel>  -->
+      </panel>
     </layer>
   </screen>
 </nifty>

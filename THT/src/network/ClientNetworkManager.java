@@ -72,6 +72,10 @@ public class ClientNetworkManager implements
         return client.getServices().getService(ClientLoginService.class);
     }
     
+    public ClientChatService getClientChatService(){
+        return client.getServices().getService(ClientChatService.class);
+    }
+    
     public ClientLobbyService getClientLobbyService(){
         return client.getServices().getService(ClientLobbyService.class);
     }
