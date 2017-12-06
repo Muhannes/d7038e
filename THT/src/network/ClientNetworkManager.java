@@ -8,6 +8,7 @@ package network;
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
 import com.jme3.network.Network;
+import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
@@ -36,7 +37,6 @@ public class ClientNetworkManager implements
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
                     new Object[]{NetConfig.SERVER_NAME, NetConfig.SERVER_PORT});
             client = Network.connectToServer(NetConfig.SERVER_NAME, NetConfig.SERVER_PORT);
-            
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
             client.getServices().addService(new ClientLoginService());
