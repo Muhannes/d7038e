@@ -17,11 +17,13 @@ import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.controls.label.LabelControl;
 import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.text.Text;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ClientChatService;
 
@@ -71,7 +73,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
                       
         //nifty.setDebugOptionPanelColors(true);
         
-        LOGGER.log(Level.FINE, "Amount of players : " + players.size());
         for(String name : players){
             playerJoined(name);
         }
@@ -116,13 +117,16 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-//        app.getStateManager().detach(this);
-//        app.getStateManager().attach(lobbyScreen);
+        
+        app.getStateManager().detach(this);
+        app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
         System.out.println("Stopping!");
+//        playerLeft();
         app.getStateManager().detach(this);
+        ccs.stop();
         app.stop();
     }
 
@@ -153,6 +157,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     @Override
     public void playerLeft(String name) {
         //Player left from room.
+        System.out.println("Leaving room!");
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);        
     }
