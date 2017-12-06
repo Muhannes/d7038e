@@ -3,12 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server.lobby.network;
+package network.services.login;
+
+import com.jme3.network.service.rmi.Asynchronous;
 
 /**
  *
- * @author hannes
+ * @author truls
  */
-public class LobbyNetworkStates {
-    public static final String ROOM_ID = "ROOM_ID";
+public interface LoginSession {
+    
+    @Asynchronous
+    void login(String name);
+    
 }

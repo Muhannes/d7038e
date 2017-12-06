@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package utils.eventbus;
 
 /**
  *
  * @author hannes
  */
-public interface PlayerReadyListener {
-    void notifyPlayerReady(int playerID, int roomID);
+public interface EventListener {
+    void notifyEvent(Event event, Class<? extends Event> T);
 }

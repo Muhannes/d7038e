@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.services.lobby;
 
 /**
  *
  * @author hannes
  */
-public interface PlayerReadyEmitter {
-    void addPlayerReadyListener(PlayerReadyListener playerReadyListener);
+public interface ClientLobbyEmitter {
+    void addClientLobbyListener(ClientLobbyListener clientLobbyListener);
 }

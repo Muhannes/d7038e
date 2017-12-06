@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package utils.eventbus;
 
 /**
  *
  * @author hannes
  */
-public interface LoginEmitter {
-    public void addLoginListener(LoginListener loginListener);
+public class Event {
+    
 }

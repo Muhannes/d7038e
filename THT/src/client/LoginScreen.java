@@ -5,7 +5,6 @@
  */
 package client;
 
-import client.network.ClientLoginHandler;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
@@ -16,12 +15,16 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.services.login.ClientLoginService;
+import network.services.login.LoginSessionListener;
 
 /**
  *
  * @author truls
  */
-public class LoginScreen extends AbstractAppState implements ScreenController{    
+public class LoginScreen extends AbstractAppState implements 
+        ScreenController,
+        LoginSessionListener{    
     
     private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
     private Nifty nifty;
@@ -29,11 +32,12 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
     private Application app;
     
     private LobbyScreen lobbyScreen;
-    private ClientLoginHandler clientLoginHandler;
+    private ClientLoginService clientLoginService;
     
-    public LoginScreen(ClientLoginHandler clientLoginHandler, LobbyScreen lobbyScreen){   
+    public LoginScreen(ClientLoginService clientLoginService, LobbyScreen lobbyScreen){   
         this.lobbyScreen = lobbyScreen;
-        this.clientLoginHandler = clientLoginHandler;
+        this.clientLoginService = clientLoginService;
+        this.clientLoginService.addLoginSessionListener(this);
     }
     
     @Override
@@ -80,8 +84,7 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         String username = field.getRealText();
         LOGGER.log(Level.INFO, "Username = {0}", new Object[]{username});
         if(username.length() != 0){
-            app.getStateManager().detach(this);
-            app.getStateManager().attach(lobbyScreen);
+            clientLoginService.login(username);
         }
     }
     
@@ -89,5 +92,13 @@ public class LoginScreen extends AbstractAppState implements ScreenController{
         app.getStateManager().detach(this);
         app.stop();
     }
-    
+
+    @Override
+    public void notifyLogin(boolean loggedIn) {
+        if(loggedIn){
+            app.getStateManager().detach(this);
+            app.getStateManager().attach(lobbyScreen);
+        }
+    }
+ 
 }

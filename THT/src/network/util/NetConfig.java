@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.util;
 
 /**
  *
  * @author truls
  */
-public interface LobbySelectionEmitter {
-    
-    void addLobbySelectionListener(LobbySelectionListener lobbySelectionListener);
+public class NetConfig {
+    public static String SERVER_NAME = "localhost";
+    public static int SERVER_PORT = 7999;
 }

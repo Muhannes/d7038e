@@ -3,15 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.services.chat;
 
-import api.models.LobbyRoom;
+import com.jme3.network.service.rmi.Asynchronous;
 
 /**
  *
  * @author truls
  */
-public interface LobbySelectionListener {
+public interface ChatSession {
     
-    void notifyLobbySelection(LobbyRoom lobbyRoom, int playerID);
+    @Asynchronous
+    void sendMessage(String message);
+    
 }

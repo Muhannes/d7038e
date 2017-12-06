@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api;
+package network.util;
 
 /**
  *
- * @author hannes
+ * @author truls
  */
-public interface LoginListener {
-    public void notifyLogin(int playerID, String username);
+public class ConnectionAttribute {
+    
+    public static final String NAME = "name";
+    
 }
