@@ -11,14 +11,21 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import network.services.login.LoginEvent;
+import network.util.NetConfig;
+import utils.eventbus.Event;
+import utils.eventbus.EventBus;
+import utils.eventbus.EventListener;
 
 /**
  *
  * @author truls
  */
-public class HostedChatService extends AbstractHostedConnectionService{
+public class HostedChatService extends AbstractHostedConnectionService implements EventListener{
     
     private RmiHostedService rmiHostedService;
     private int channel;
@@ -31,6 +38,8 @@ public class HostedChatService extends AbstractHostedConnectionService{
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
+        setAutoHost(false);
+        EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("ChatHostedService requires an RMI service.");
@@ -48,6 +57,8 @@ public class HostedChatService extends AbstractHostedConnectionService{
         rmi.share((byte)channel, player, ChatSession.class);
         
         for(ChatSessionImpl p: players){
+            
+            System.out.println("writing playerjoined message");
             p.playerJoined("" + connection.getId());
         }
         
@@ -74,6 +85,18 @@ public class HostedChatService extends AbstractHostedConnectionService{
         System.out.println("Chat: " + from.toString() + " said " + message);
         for(ChatSessionImpl player : players){
             player.newMessage(message);
+        }
+    }
+
+    @Override
+    public void notifyEvent(Event event, Class<? extends Event> T) {
+        System.out.println("event occured!");
+        if (T == LoginEvent.class) {
+            
+            System.out.println("login event occured!");
+            LOGGER.log(Level.INFO, "Starting to host chat service for client:  {0}", 
+                    new Object[]{((LoginEvent)event).conn.getId()});
+            startHostingOnConnection(((LoginEvent)event).conn);
         }
     }
     

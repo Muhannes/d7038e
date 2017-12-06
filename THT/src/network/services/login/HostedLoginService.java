@@ -35,6 +35,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
     }
     
     public HostedLoginService(int channel){
+        System.out.println(channel);
         this.channel = channel;
     }
 
@@ -49,7 +50,12 @@ public class HostedLoginService extends AbstractHostedConnectionService{
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "New connection with ID: {0}", connection.getId());
-        
+        // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // The newly connected client will be represented by this object on
         // the server side
         LoginSessionImpl session = new LoginSessionImpl(connection);

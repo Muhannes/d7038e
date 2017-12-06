@@ -36,7 +36,6 @@ public class ClientNetworkManager implements
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
                     new Object[]{NetConfig.SERVER_NAME, NetConfig.SERVER_PORT});
             client = Network.connectToServer(NetConfig.SERVER_NAME, NetConfig.SERVER_PORT);
-            
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
             client.getServices().addService(new ClientLoginService());

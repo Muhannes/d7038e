@@ -63,7 +63,6 @@ public class NetworkHandler {
             System.out.println("Using port " + port);
             // create and start the server
             server = Network.createServer(port);
-            
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedLoginService());
