@@ -23,6 +23,7 @@ public class ClientApplication extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         // Default logger
+        Logger.getLogger("de.lessvoid.nifty").setLevel(Level.SEVERE);
         Logger.getLogger("").setLevel(Level.INFO);
         
         // Our loggers, tune the level

@@ -13,6 +13,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Chat;
 import de.lessvoid.nifty.controls.Label;
+import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.controls.label.LabelControl;
 import de.lessvoid.nifty.elements.Element;
@@ -67,7 +68,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
                       
-        nifty.setDebugOptionPanelColors(true);
+        //nifty.setDebugOptionPanelColors(true);
     }
 
     @Override
@@ -121,7 +122,9 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
 
     @Override
     public void newMessage(String message) {
-        
+        System.out.println("New message received" + message);
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
+        field.addItem(message);
     }
 
     public void sendToServer(){
@@ -130,20 +133,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         String chatInput = field.getRealText();
         if(chatInput != null){
             System.out.println("New Input : " + chatInput);
-            ccs.sendMessage(chatInput);            
+            ccs.sendMessage(chatInput);
         }
+        field.setText("");
     }
     
     @Override
     public void playerJoined(String name) {
         //Display new player in chat.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.addItem(name);        
     }
 
     @Override
     public void playerLeft(String name) {
         //Player left from room.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.removeItem(name);        
     }
     
 }
