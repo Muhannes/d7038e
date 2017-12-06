@@ -9,7 +9,7 @@
         <layer id="foreground" childLayout="vertical">
             <panel id="panel_top" childLayout="center" width="75%" align="center" height="25%"/>
             <panel id="panel_mid_top" childLayout="center" width="75%" align="center" height="45%">
-                <control name="listBox" id="myListBox" horizontal="optional" selection="Single" width="75%" vertical="optional" displayItems="10"/>
+                <control name="listBox" id="myListBox" horizontal="optional" selection="Single" width="75%" vertical="on" displayItems="10"/>
             </panel>
             <panel id="panel_mid_bottom" childLayout="center" width="35%" align="center" height="5%">
                 <panel id="panel_mid_bottom_left" childLayout="center" align="left">

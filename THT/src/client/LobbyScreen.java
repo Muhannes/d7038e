@@ -73,10 +73,10 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
 
-        //List of games
-        listBox = screen.findNiftyControl("myListBox", ListBox.class);
+        //List of games, should receive all the games from server.
         games = new ArrayList();
-
+        listBox = screen.findNiftyControl("myListBox", ListBox.class);        
+        
     }    
 
     @NiftyEventSubscriber(id="myListBox")
@@ -128,20 +128,19 @@ public class LobbyScreen extends AbstractAppState implements ScreenController{
         String gamename = field.getRealText();
         if(!gamename.isEmpty()){
             GameLobbyScreen tmp = new GameLobbyScreen(this, gamename);
-            System.out.println("Trying to create new map!");
             if(games.add(tmp)){
-                System.out.println("Created the game : " + tmp.getName());
+                LOGGER.log(Level.FINE, "Created new game!", tmp.getName());
                 listBox.addItem(tmp.getName());   
-            }
-            System.out.println("Games size : " + games.size());
+            } else {
+                LOGGER.log(Level.FINE, "Failed to add map to games.");
+            }            
         } else {
-            System.out.println("Failed to created, no name.");
             LOGGER.log(Level.FINE, "Must have a name!");
         }
     }
     
     public void quitGame(){
-        System.out.println("Stopping!");
+        LOGGER.log(Level.FINE, "Quitting system!");
         app.getStateManager().detach(this);
         app.stop();
     }

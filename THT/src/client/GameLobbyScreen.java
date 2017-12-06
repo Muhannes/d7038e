@@ -12,6 +12,9 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Chat;
+import de.lessvoid.nifty.controls.Label;
+import de.lessvoid.nifty.controls.label.LabelControl;
+import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
@@ -33,7 +36,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
     private Chat chat;
-
     
     GameLobbyScreen(LobbyScreen lobbyScreen, String gameName) {
         this.lobbyScreen = lobbyScreen;
@@ -58,6 +60,8 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
+                      
+        
     }
 
     @Override
