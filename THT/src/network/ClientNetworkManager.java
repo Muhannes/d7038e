@@ -8,6 +8,7 @@ package network;
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
 import com.jme3.network.Network;
+import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
