@@ -65,7 +65,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public LobbyRoom join(int roomid) {
+    public List<String> join(int roomid) {
         return getDelegate().join(roomid);
     }
 
@@ -80,7 +80,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public LobbyRoom createLobby(String lobbyName) {
+    public boolean createLobby(String lobbyName) {
         return getDelegate().createLobby(lobbyName);
     }
 

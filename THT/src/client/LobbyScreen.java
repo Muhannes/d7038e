@@ -92,12 +92,12 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         List<String> selection = event.getSelection();
         for(String gameName : selection) {
             System.out.println("listbox selection [ " + gameName + " ] \nThe game id is : " + games.get(gameName));
-            LobbyRoom lobbyRoom = clientLobbyService.join(games.get(gameName));
-            if (lobbyRoom != null) {
+            List<String> playerNames = clientLobbyService.join(games.get(gameName));
+            if (playerNames != null) {
                 GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gameName);
-                for (HostedConnection player : lobbyRoom.getPlayers()) {
-                    gls.addPlayers(player.getAttribute(ConnectionAttribute.NAME));
-                    System.out.println("" + player.getAttribute(ConnectionAttribute.NAME));
+                System.out.println("Num of players in room: " + playerNames.size());
+                for (String playerName : playerNames) {
+                    gls.addPlayers(playerName);
                 }
                 joinGame(gls);
             }
@@ -152,8 +152,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         TextField field = nifty.getScreen("lobby").findNiftyControl("textfieldGamename", TextField.class);
         String gamename = field.getRealText();
         if(!gamename.isEmpty()){
-            LobbyRoom lobbyRoom = clientLobbyService.createLobby(gamename);
-            if (lobbyRoom != null) {
+            boolean created = clientLobbyService.createLobby(gamename);
+            if (created) {
                 GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gamename);
                 gls.addPlayers("me"); //TODO: use real name for me
                 joinGame(gls);
