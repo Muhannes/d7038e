@@ -57,8 +57,6 @@ public class HostedChatService extends AbstractHostedConnectionService implement
         rmi.share((byte)channel, player, ChatSession.class);
         
         for(ChatSessionImpl p: players){
-            
-            System.out.println("writing playerjoined message");
             p.playerJoined("" + connection.getId());
         }
         
@@ -90,10 +88,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
 
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
-        System.out.println("event occured!");
         if (T == LoginEvent.class) {
-            
-            System.out.println("login event occured!");
             LOGGER.log(Level.INFO, "Starting to host chat service for client:  {0}", 
                     new Object[]{((LoginEvent)event).conn.getId()});
             startHostingOnConnection(((LoginEvent)event).conn);
