@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import network.services.login.LoginEvent;
+import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
@@ -57,7 +58,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
         rmi.share((byte)channel, player, ChatSession.class);
         
         for(ChatSessionImpl p: players){
-            p.playerJoined("" + connection.getId());
+            p.playerJoinedChat(connection.getAttribute(ConnectionAttribute.NAME));
         }
         
         players.add(player);
@@ -126,13 +127,13 @@ public class HostedChatService extends AbstractHostedConnectionService implement
         }
 
         @Override
-        public void playerJoined(String name) {
-            getCallback().playerJoined(name);
+        public void playerJoinedChat(String name) {
+            getCallback().playerJoinedChat(name);
         }
 
         @Override
-        public void playerLeft(String name) {
-            getCallback().playerLeft(name);
+        public void playerLeftChat(String name) {
+            getCallback().playerLeftChat(name);
         }
     
     }

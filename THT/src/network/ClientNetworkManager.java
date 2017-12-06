@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
+import network.services.ping.ClientPingService;
 import network.util.NetConfig;
 
 /**
@@ -42,6 +43,7 @@ public class ClientNetworkManager implements
             client.getServices().addService(new ClientLoginService());
             client.getServices().addService(new ClientChatService());
             client.getServices().addService(new ClientLobbyService());
+            client.getServices().addService(new ClientPingService());
             System.out.println("services fetched");
             
             // Not neded since server will send message to client with all serializables.

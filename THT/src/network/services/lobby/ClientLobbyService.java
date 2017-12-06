@@ -5,7 +5,6 @@
  */
 package network.services.lobby;
 
-import api.models.LobbyRoom;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
@@ -65,7 +64,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public LobbyRoom join(int roomid) {
+    public List<String> join(int roomid) {
         return getDelegate().join(roomid);
     }
 
@@ -80,7 +79,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public LobbyRoom createLobby(String lobbyName) {
+    public boolean createLobby(String lobbyName) {
         return getDelegate().createLobby(lobbyName);
     }
 
@@ -99,16 +98,17 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         }
 
         @Override
-        public void playerJoined(String name) {
+        public void playerJoinedLobby(String name) {
+            System.out.println(name + " is named received.");
             for (ClientLobbyListener listener : listeners) {
-                listener.playerJoined(name);
+                listener.playerJoinedLobby(name);
             }
         }
 
         @Override
-        public void playerLeft(String name) {
+        public void playerLeftLobby(String name) {
             for (ClientLobbyListener listener : listeners) {
-                listener.playerLeft(name);
+                listener.playerLeftLobby(name);
             }
         }
 

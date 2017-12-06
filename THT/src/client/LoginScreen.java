@@ -86,6 +86,7 @@ public class LoginScreen extends AbstractAppState implements
         if(username.length() != 0){
             clientLoginService.login(username);
         }
+        System.out.println("Username : " + username);
     }
     
     public void quitGame(){
@@ -100,5 +101,4 @@ public class LoginScreen extends AbstractAppState implements
             app.getStateManager().attach(lobbyScreen);
         }
     }
- 
 }

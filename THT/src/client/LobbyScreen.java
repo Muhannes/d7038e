@@ -11,38 +11,22 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.network.HostedConnection;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.sun.xml.internal.ws.util.StringUtils;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.NiftyEventSubscriber;
 import de.lessvoid.nifty.controls.Chat;
-import de.lessvoid.nifty.controls.ChatTextSendEvent;
 import de.lessvoid.nifty.controls.ListBox;
-import de.lessvoid.nifty.controls.ListBox.ListBoxViewConverter;
 import de.lessvoid.nifty.controls.ListBoxSelectionChangedEvent;
-import de.lessvoid.nifty.controls.Scrollbar;
 import de.lessvoid.nifty.controls.TextField;
-import de.lessvoid.nifty.controls.chatcontrol.ChatEntryModelClass;
-import de.lessvoid.nifty.controls.chatcontrol.builder.ChatBuilder;
-import de.lessvoid.nifty.controls.listbox.ListBoxItemProcessor;
-import de.lessvoid.nifty.controls.listbox.builder.ListBoxBuilder;
-import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import de.lessvoid.nifty.tools.SizeValue;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
-import network.ClientNetworkManager;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
-import network.services.lobby.LobbyManager;
+import network.services.login.ClientLoginService;
 import network.util.ConnectionAttribute;
 
 /**
@@ -58,9 +42,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     private Screen screen;
     private ListBox listBox;
     private Map<String, Integer> games;
-    private Chat chat;
-    private final ClientLobbyService clientLobbyService;
     
+    private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
     private ClientChatService ccs;
 
@@ -97,25 +80,40 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         games = clientLobbyService.getAllRooms();
         // Adding them to list
         listBox.addAllItems(games.keySet());
+        
+        //get own name
+        
     }    
 
+    /**
+     * When choosing an already existing lobbyRoom
+     * server gives names of players in room
+     * @param id
+     * @param event 
+     */
     @NiftyEventSubscriber(id="myListBox")
     public void onMyListBoxSelectionChanged(final String id, final ListBoxSelectionChangedEvent<String> event) {
         List<String> selection = event.getSelection();
         for(String gameName : selection) {
             System.out.println("listbox selection [ " + gameName + " ] \nThe game id is : " + games.get(gameName));
-            LobbyRoom lobbyRoom = clientLobbyService.join(games.get(gameName));
-            if (lobbyRoom != null) {
+            List<String> playerNames = clientLobbyService.join(games.get(gameName));
+            if (playerNames != null) {
                 GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gameName);
-                for (HostedConnection player : lobbyRoom.getPlayers()) {
-                    gls.addPlayers(player.getAttribute(ConnectionAttribute.NAME));
+                System.out.println("Num of players in room: " + playerNames.size());
+                for (String playerName : playerNames) {
+                    gls.addPlayers(playerName);
                 }
                 joinGame(gls);
             }
         }
     }
     
+    /**
+     * Enter a GameLobbyScreen
+     * @param gls 
+     */
     public void joinGame(GameLobbyScreen gls){
+        clientLobbyService.addClientLobbyListener(gls);
         System.out.println("Joining game.");
         app.getStateManager().detach(this);
         app.getStateManager().attach(gls);
@@ -150,12 +148,17 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     //    nifty.gotoScreen(nextScreen);
     }
     
+    /**
+     * When creating a new game.
+     * Request server for a new lobbyroom,
+     * if ok, join it.
+     */
     public void newGame(){
         TextField field = nifty.getScreen("lobby").findNiftyControl("textfieldGamename", TextField.class);
         String gamename = field.getRealText();
         if(!gamename.isEmpty()){
-            LobbyRoom lobbyRoom = clientLobbyService.createLobby(gamename);
-            if (lobbyRoom != null) {
+            boolean created = clientLobbyService.createLobby(gamename);
+            if (created) {
                 GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gamename);
                 gls.addPlayers("me"); //TODO: use real name for me
                 joinGame(gls);
@@ -174,6 +177,14 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         app.stop();
     }
 
+    /**
+     * Updates the list of lobbyRooms available to choose
+     * TODO: Deleteion of rooms are not supported yet.
+     * @param lobbyName
+     * @param roomID
+     * @param numPlayers
+     * @param maxPlayers 
+     */
     @Override
     public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
         System.out.println("Update Lobby Received!");
@@ -189,18 +200,18 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     }
 
     @Override
-    public void playerJoined(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void playerJoinedLobby(String name) {
+        // DO nothing
     }
 
     @Override
-    public void playerLeft(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void playerLeftLobby(String name) {
+        // DO nothing
     }
 
     @Override
     public void playerReady(String name, boolean ready) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // DO nothing
     }
         
 }

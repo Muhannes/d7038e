@@ -100,38 +100,45 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         }
         
         @Override
-        public LobbyRoom join(int roomid) {
+        public List<String> join(int roomid) {
+            System.out.println("Player joining (HostedLobbyService)!");
             if (lobbyRoom == null) {
                 LobbyRoom lr = lobbyHolder.getLobbyRoom(roomid);
-                boolean joined = lr.addPlayer(connection);
-                if(joined){
-                    nonLobbyPlayers.remove(connection);
-                    lobbyRoom = lr;
-                    List<HostedConnection> players = lobbyRoom.getPlayers();
-                    for (HostedConnection player : players) {
-                        // Send out to each player in room that this one has joined it.
-                        getDelegate(player).
-                                playerJoined(connection.getAttribute(ConnectionAttribute.NAME));
+                if (lr != null) {
+                    boolean joined = lr.addPlayer(connection);
+                    if(joined){
+                        nonLobbyPlayers.remove(connection);
+                        lobbyRoom = lr;
+                        List<HostedConnection> players = lobbyRoom.getPlayers();
+                        String name = ""+connection.getAttribute(ConnectionAttribute.NAME);
+                        System.out.println("New player name: " + name);
+                        for (HostedConnection player : players) {
+                            // Send out to each player in room that this one has joined it.
+                            if (player != connection) {
+                                getDelegate(player).playerJoinedLobby(name);
+                            }
+                        }
+                        for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
+                            getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
+                                    lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
+                        }
+                        return lobbyRoom.getPlayerNames();
                     }
-                    for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                        getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
-                                lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
-                    }
-                    return lobbyRoom;
                 }
+                
             }
             return null;
         }
 
         @Override
         public void leave() {
+            System.out.println("Player leaving (HostedLobbyService)!");
             if (lobbyRoom != null) {
                 lobbyRoom.removePlayer(connection);
                 List<HostedConnection> players = lobbyRoom.getPlayers();
                 for (HostedConnection player : players) {
                     // Send out to each player in room that this one has joined it.
-                    getDelegate(player).
-                            playerLeft(connection.getAttribute(ConnectionAttribute.NAME));
+                    getDelegate(player).playerLeftLobby(connection.getAttribute(ConnectionAttribute.NAME));
                 }
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
                     getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
@@ -158,7 +165,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         }
 
         @Override
-        public LobbyRoom createLobby(String lobbyName) {
+        public boolean createLobby(String lobbyName) {
             LobbyRoom lr = new LobbyRoom(lobbyName);
             boolean ok = lobbyHolder.addLobbyRoom(lr);
             if(ok){
@@ -170,9 +177,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
                 System.out.println("Done updating listeners!");
-                return lr;
+                return true;
             } else {
-                return null;
+                return false;
             }
         }
 
