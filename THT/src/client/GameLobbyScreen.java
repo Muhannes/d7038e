@@ -72,9 +72,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         //nifty.setDebugOptionPanelColors(true);
         
         LOGGER.log(Level.FINE, "Amount of players : " + players.size());
-        for(String name : players){
-            playerJoined(name);
-        }
+        
     }
 
     @Override
@@ -103,6 +101,9 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     @Override
     public void onStartScreen() {
         System.out.println("On start screen in GameLobbyScreen!");
+        for(String name : players){
+            playerJoined(name);
+        }
     }
 
     @Override
@@ -126,12 +127,20 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         app.stop();
     }
 
+    /**
+     * A new message arrived.
+     * @param message 
+     */
     @Override
     public void newMessage(String message) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
         field.addItem(message);
     }
 
+    /**
+     * Send chat message to server.
+     * Server will delegate it to all receiptiants.
+     */
     public void sendToServer(){
         System.out.println("Sending to server");
         TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
@@ -143,6 +152,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         field.setText("");
     }
     
+    /**
+     * new player joined the room
+     * @param name 
+     */
     @Override
     public void playerJoined(String name) {
         //Display new player in chat.
@@ -150,6 +163,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         field.addItem(name);        
     }
 
+    /**
+     * player left the room
+     * @param name 
+     */
     @Override
     public void playerLeft(String name) {
         //Player left from room.
