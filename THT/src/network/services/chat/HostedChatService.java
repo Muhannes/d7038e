@@ -11,13 +11,13 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import com.sun.istack.internal.logging.Logger;
 import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import network.services.login.LoginEvent;
 import network.util.ConnectionAttribute;
-import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -27,6 +27,8 @@ import utils.eventbus.EventListener;
  * @author truls
  */
 public class HostedChatService extends AbstractHostedConnectionService implements EventListener{
+    
+    private static final Logger LOGGER = Logger.getLogger(HostedChatService.class);
     
     private RmiHostedService rmiHostedService;
     private int channel;
@@ -49,6 +51,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
+        LOGGER.log(Level.INFO, "Chat service started: {0}", connection.getId());
         // The newly connected client will be represented by this object on
         // the server side
         ChatSessionImpl player = new ChatSessionImpl(connection);
@@ -65,10 +68,11 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     }
 
     @Override
-    public void stopHostingOnConnection(HostedConnection hc) {
+    public void stopHostingOnConnection(HostedConnection connection) {
+        LOGGER.log(Level.INFO, "Chat service stoped: {0}", connection.getId());
         // Nothing
         for (ChatSessionImpl player : players) {
-            if (player.conn.equals(hc)) {
+            if (player.conn.equals(connection)) {
                 players.remove(player);
                 return;
             }
@@ -81,7 +85,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
      * @param message Message to be sent
      */
     private void postMessage(ChatSessionImpl from, String message){
-        System.out.println("Chat: " + from.toString() + " said " + message);
+        LOGGER.log(Level.INFO, "Client {0} said: {1}", new Object[]{from.conn.getId(), message});
         for(ChatSessionImpl player : players){
             player.newMessage(message);
         }

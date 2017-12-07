@@ -9,7 +9,9 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
+import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  *
@@ -17,6 +19,8 @@ import java.util.ArrayList;
  */
 public class ClientChatService extends AbstractClientService implements ChatSession{
 
+    private static final Logger LOGGER = Logger.getLogger(ClientChatService.class);
+    
     private ChatSessionCallBack callback = new ChatSessionCallBack();
     // Used to get notifications from the server
     
@@ -70,6 +74,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
         
         @Override
         public void newMessage(String message) {
+            LOGGER.log(Level.FINE, "Message: {0}", message);
             for(ChatSessionListener l : listeners){
                 l.newMessage(message);
             }
@@ -77,6 +82,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
 
         @Override
         public void playerJoinedChat(String name) {
+            LOGGER.log(Level.FINE, "Player joined chat: {0}", name);
             for(ChatSessionListener l : listeners){
                 l.playerJoinedChat(name);
             }
@@ -84,6 +90,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
 
         @Override
         public void playerLeftChat(String name) {
+            LOGGER.log(Level.FINE, "Player left chat: {0}", name);
             for(ChatSessionListener l : listeners){
                 l.playerLeftChat(name);
             }
