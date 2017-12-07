@@ -23,9 +23,9 @@ import java.util.logging.Level;
  */
 public class HostedPingService extends AbstractHostedConnectionService{
     
-    Logger LOGGER = Logger.getLogger(HostedPingService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedPingService.class);
     
-    private static final String PING = "ping";
+    private static final String PING = "Attribute.PING";
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -50,7 +50,8 @@ public class HostedPingService extends AbstractHostedConnectionService{
     }
     
     @Override
-    public void startHostingOnConnection(HostedConnection connection) {        
+    public void startHostingOnConnection(HostedConnection connection) {  
+        LOGGER.log(Level.INFO, "Ping service started. Client id = {0}", connection.getId());
         // The newly connected client will be represented by this object on
         // the server side
         PingerImpl session = new PingerImpl(connection);
@@ -62,22 +63,26 @@ public class HostedPingService extends AbstractHostedConnectionService{
             throw new Error("RMI is null!");
         }
         
-        rmi.share((byte)channel, session, Pinger.class);
+        rmi.share((byte)channel, session, PingSession.class);
+        
+        // Start pinging
+        session.start();
     }
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
+        LOGGER.log(Level.INFO, "Ping service ended. Client id = {0}", connection.getId());
         PingerImpl p = connection.getAttribute(PING);
-        p.cleanup();
+        p.stop();
         connection.setAttribute(PING, null);
     }
     
-    private class PingerImpl implements Pinger{
+    private class PingerImpl implements PingSession{
 
-        private HostedConnection connection;
-        private PingListener callback;
+        private final HostedConnection connection;
+        private PingSessionListener callback;
         
-        private ScheduledExecutorService executor;
+        private final ScheduledExecutorService executor;
         
         private long RTT;
         private long oldTime;
@@ -86,12 +91,6 @@ public class HostedPingService extends AbstractHostedConnectionService{
             this.connection = connection;
             RTT = 0;
             executor = Executors.newScheduledThreadPool(1);
-            
-            Runnable task = () -> {
-                ping();
-            };
-            
-            executor.scheduleAtFixedRate(task, 1, 1, TimeUnit.SECONDS);
         }
         
         private void ping(){
@@ -104,18 +103,26 @@ public class HostedPingService extends AbstractHostedConnectionService{
             RTT = System.currentTimeMillis() - oldTime;
         }
         
-         private PingListener getCallback(){
+        private PingSessionListener getCallback(){
             if(callback == null){
                 RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-                callback = rmi.getRemoteObject(PingListener.class);
+                callback = rmi.getRemoteObject(PingSessionListener.class);
                 if(callback == null){
                     throw new RuntimeException("No client callback found for LoginSessionListener");
                 }
             }
             return callback;
         }
+        
+        private void start(){
+            Runnable task = () -> {
+                ping();
+            };
+            
+            executor.scheduleAtFixedRate(task, 1, 1, TimeUnit.SECONDS);
+        }
          
-        void cleanup(){
+        void stop(){
             executor.shutdownNow();
         }
         

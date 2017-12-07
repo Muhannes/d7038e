@@ -11,7 +11,7 @@ import com.jme3.network.service.rmi.Asynchronous;
  *
  * @author truls
  */
-public interface Pinger {
+public interface PingSession {
     
     @Asynchronous
     void reply(); 
