@@ -9,8 +9,10 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
+import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  *
@@ -18,6 +20,8 @@ import java.util.List;
  */
 public class ClientLoginService extends AbstractClientService implements LoginSession{
 
+    private static final Logger LOGGER = Logger.getLogger(ClientLoginService.class);
+    
     private LoginCallback callback;
     // Used to get notifications from the server
     
@@ -75,9 +79,15 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
         
         @Override
         public void notifyLogin(boolean loggedIn) {
-            for(LoginSessionListener l : listeners){
-                l.notifyLogin(loggedIn);
-            }
+            LOGGER.log(Level.INFO, "Login result: {0}", loggedIn);
+            listeners.forEach(l -> l.notifyLogin(loggedIn));
+        }
+
+        @Override
+        public void notifyLobbyServerInfo(String hostname, int port) {
+            LOGGER.log(Level.INFO, "Lobby server info received. Hostname: {0}, port: {1}",
+                    new Object[]{hostname, port});
+            listeners.forEach(l -> l.notifyLobbyServerInfo(hostname, port));
         }
     
     }

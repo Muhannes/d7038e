@@ -15,4 +15,7 @@ public interface LoginSessionListener {
     
     @Asynchronous
     void notifyLogin(boolean loggedIn);
+    
+    @Asynchronous
+    void notifyLobbyServerInfo(String hostname, int port);
 }

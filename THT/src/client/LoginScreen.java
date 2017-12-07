@@ -101,4 +101,9 @@ public class LoginScreen extends AbstractAppState implements
             app.getStateManager().attach(lobbyScreen);
         }
     }
+
+    @Override
+    public void notifyLobbyServerInfo(String hostname, int port) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
