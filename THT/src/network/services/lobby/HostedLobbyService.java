@@ -101,6 +101,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public List<String> join(int roomid) {
+            System.out.println("Player joining (HostedLobbyService)!");
             if (lobbyRoom == null) {
                 LobbyRoom lr = lobbyHolder.getLobbyRoom(roomid);
                 if (lr != null) {
@@ -131,6 +132,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public void leave() {
+            System.out.println("Player leaving (HostedLobbyService)!");
             if (lobbyRoom != null) {
                 lobbyRoom.removePlayer(connection);
                 List<HostedConnection> players = lobbyRoom.getPlayers();
@@ -179,6 +181,10 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             } else {
                 return false;
             }
+        }
+        
+        public boolean removeLobby(String lobbyName){
+            return lobbyHolder.removeLobbyRoom(lobbyName);
         }
 
         @Override

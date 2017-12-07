@@ -39,4 +39,12 @@ public class LobbyHolder{
         return null;
     }
     
+    public synchronized final boolean removeLobbyRoom(String RoomName){
+        for(LobbyRoom lr : lobbyRooms){
+            lobbyRooms.remove(lr);
+            return true;
+        }
+        return false;
+    }
+    
 }

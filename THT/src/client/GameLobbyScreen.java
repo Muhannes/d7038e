@@ -17,11 +17,13 @@ import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.controls.label.LabelControl;
 import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.text.Text;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
@@ -40,7 +42,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private String gameName;
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
-    private Chat chat;
     private ClientChatService ccs;
     
     GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, String gameName) {
@@ -72,8 +73,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
                       
         //nifty.setDebugOptionPanelColors(true);
         
-        LOGGER.log(Level.FINE, "Amount of players : " + players.size());
-        
+        for(String name : players){
+            playerJoinedChat(name);
+        }
+                
     }
 
     @Override
@@ -118,12 +121,22 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-//        app.getStateManager().detach(this);
-//        app.getStateManager().attach(lobbyScreen);
+        //TODO: REMOVE PLAYER FROM CHAT.
+        if(players.size() == 1){
+            System.out.println("Last player leaving lobby, removing it.");
+            lobbyScreen.removeGame(this.gameName);
+        }
+        app.getStateManager().detach(this);
+        app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
-        System.out.println("Stopping!");
+        System.out.println("Stopping " + this.gameName);
+        //TODO: REMOVE PLAYER FROM CHAT.
+        if(players.size() == 1){
+            //TODO: TELL SERVER TO REMOVE FROM LIST.
+            lobbyScreen.removeGame(this.gameName);
+        } 
         app.getStateManager().detach(this);
         app.stop();
     }
@@ -160,8 +173,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     @Override
     public void playerJoinedChat(String name) {
         //Display new player in chat.
-              
-        
         newMessage(name + " has joined the chat!");
     }
 
@@ -187,8 +198,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     }
 
     @Override
-    public void playerLeftLobby(String name) {
-        
+    public void playerLeftLobby(String name) {        
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
     }

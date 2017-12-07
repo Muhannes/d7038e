@@ -26,5 +26,7 @@ public interface LobbyManager {
     boolean createLobby(String lobbyName);
     
     Map<String, Integer> getAllRooms();
+
+    public boolean removeLobby(String lobbyName);
     
 }

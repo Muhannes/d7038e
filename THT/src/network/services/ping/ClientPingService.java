@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.login;
+package network.services.ping;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -11,33 +11,34 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author truls
  */
-public class ClientLoginService extends AbstractClientService implements LoginSession{
+public class ClientPingService extends AbstractClientService{
 
-    private LoginCallback callback;
-    // Used to get notifications from the server
+    Logger LOGGER = Logger.getLogger(ClientPingService.class.getName());
     
-    private List<LoginSessionListener> listeners = new ArrayList<>();
-    // Used to notify listeners on client side
+    private List<PingListener> listeners = new ArrayList<>();
     
-    private LoginSession delegate;
-    // Handle to a server side object
+    private PingCallback callback;
+    
+    private Pinger delegate;
     
     private RmiClientService rmiService;
     // Used to sync with server and to acctually send data 
     
     private int channel;
     // Channel we send on, is it a port though?
-            
-    public ClientLoginService(){
+    
+    public ClientPingService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
     }
     
-    public ClientLoginService(int channel){
+    public ClientPingService(int channel){
         this.channel = channel;
     }
     
@@ -47,36 +48,35 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
         if(rmiService == null){
             throw new RuntimeException("ClientLoginService requires RmiService");
         }
-        callback = new LoginCallback();
+        
+        callback = new PingCallback();
+        
         // Share the callback with the server
-        rmiService.share((byte)channel, callback, LoginSessionListener.class);
+        rmiService.share((byte)channel, callback, PingListener.class);
     }
     
-    private LoginSession getDelegate(){
+    public Pinger getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(LoginSession.class);
+            delegate = rmiService.getRemoteObject(Pinger.class);
             if(delegate == null){
-                throw new RuntimeException("No remote LoginSession object found");
+                throw new RuntimeException("No remote Pinger object found");
             }
         }
         return delegate;
     }
     
-    @Override
-    public void login(String name) {
-        getDelegate().login(name);
+    void addPingListener(PingListener listener){
+        listeners.add(listener);
     }
     
-    public void addLoginSessionListener(LoginSessionListener loginSessionListener){
-        listeners.add(loginSessionListener);
-    }
-    
-    private class LoginCallback implements LoginSessionListener{
+    private class PingCallback implements PingListener{
         
         @Override
-        public void notifyLogin(boolean loggedIn) {
-            for(LoginSessionListener l : listeners){
-                l.notifyLogin(loggedIn);
+        public void notifyPing(int ms) {
+            LOGGER.log(Level.FINE, "Ping {0} ms", ms);
+            getDelegate().reply();
+            for(PingListener l : listeners){
+                l.notifyPing(ms);
             }
         }
     

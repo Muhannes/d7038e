@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
+import network.services.login.ClientLoginService;
 import network.util.ConnectionAttribute;
 
 /**
@@ -41,9 +42,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     private Screen screen;
     private ListBox listBox;
     private Map<String, Integer> games;
-    private Chat chat;
-    private final ClientLobbyService clientLobbyService;
     
+    private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
     private ClientChatService ccs;
 
@@ -76,10 +76,15 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
 
         //List of games
         listBox = screen.findNiftyControl("myListBox", ListBox.class);
+        
         // Fetching available lobbyRooms
         games = clientLobbyService.getAllRooms();
+        
         // Adding them to list
         listBox.addAllItems(games.keySet());
+        
+        //nifty.setDebugOptionPanelColors(true);
+        
     }    
 
     /**
@@ -111,7 +116,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
      */
     public void joinGame(GameLobbyScreen gls){
         clientLobbyService.addClientLobbyListener(gls);
-        System.out.println("Joining game.");
+        System.out.println("Joining game " + gls.getName());
         app.getStateManager().detach(this);
         app.getStateManager().attach(gls);
         LOGGER.log(Level.FINE, "Wait until the game has loaded.");
@@ -168,6 +173,11 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         }
     }
     
+    public void removeGame(String gameName){
+        System.out.println("Removing " + gameName + " from choices");
+        clientLobbyService.removeLobby(gameName);
+    }
+    
     public void quitGame(){
         LOGGER.log(Level.FINE, "Quitting system!");
         app.getStateManager().detach(this);
@@ -210,6 +220,16 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     public void playerReady(String name, boolean ready) {
         // DO nothing
     }
-        
+    
+    public Map<String, Integer> getGames(){
+        return games;
+    }
+    
+    public void refresh(){
+        listBox.clear();
+        games = clientLobbyService.getAllRooms();        
+        listBox.addAllItems(games.keySet());
+    }    
+  
 }
 
