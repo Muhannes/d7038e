@@ -77,7 +77,7 @@ public class ClientPingService extends AbstractClientService{
         public void notifyPing(int ms) {
             LOGGER.log(Level.FINEST, "Ping {0} ms", ms);
             getDelegate().reply();
-            listeners.forEach((l) -> l.notifyPing(ms));
+            listeners.forEach(l -> l.notifyPing(ms));
         }
     
     }

@@ -75,25 +75,19 @@ public class ClientChatService extends AbstractClientService implements ChatSess
         @Override
         public void newMessage(String message) {
             LOGGER.log(Level.FINE, "Message: {0}", message);
-            for(ChatSessionListener l : listeners){
-                l.newMessage(message);
-            }
+            listeners.forEach(l -> l.newMessage(message));
         }
 
         @Override
         public void playerJoinedChat(String name) {
             LOGGER.log(Level.FINE, "Player joined chat: {0}", name);
-            for(ChatSessionListener l : listeners){
-                l.playerJoinedChat(name);
-            }
+            listeners.forEach(l -> l.playerJoinedChat(name));
         }
 
         @Override
         public void playerLeftChat(String name) {
             LOGGER.log(Level.FINE, "Player left chat: {0}", name);
-            for(ChatSessionListener l : listeners){
-                l.playerLeftChat(name);
-            }
+            listeners.forEach(l -> l.playerLeftChat(name));
         }
         
     }
