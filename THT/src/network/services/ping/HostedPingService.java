@@ -51,7 +51,7 @@ public class HostedPingService extends AbstractHostedConnectionService{
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {  
-        LOGGER.log(Level.INFO, "Ping service started. Client id = {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Ping service started. Client id: {0}", connection.getId());
         // The newly connected client will be represented by this object on
         // the server side
         PingerImpl session = new PingerImpl(connection);
@@ -71,7 +71,7 @@ public class HostedPingService extends AbstractHostedConnectionService{
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "Ping service ended. Client id = {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Ping service stopped. Client id: {0}", connection.getId());
         PingerImpl p = connection.getAttribute(PING);
         p.stop();
         connection.setAttribute(PING, null);

@@ -22,7 +22,7 @@ import utils.eventbus.EventBus;
  */
 public class HostedLoginService extends AbstractHostedConnectionService{
     
-    Logger LOGGER = Logger.getLogger(HostedLoginService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedLoginService.class);
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -48,7 +48,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "New connection with ID: {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Login service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
         try {
             Thread.sleep(50);
@@ -69,7 +69,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "Connection ended with ID: ", connection.getId());
+        LOGGER.log(Level.INFO, "Login service stopped. Client id: {0}", connection.getId());
     }
     
     private class LoginSessionImpl implements LoginSession{

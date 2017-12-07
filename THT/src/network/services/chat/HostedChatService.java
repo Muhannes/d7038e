@@ -51,7 +51,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "Chat service started: {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Chat service started. Client id: {0}", connection.getId());
         // The newly connected client will be represented by this object on
         // the server side
         ChatSessionImpl player = new ChatSessionImpl(connection);
@@ -69,7 +69,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "Chat service stoped: {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
         // Nothing
         for (ChatSessionImpl player : players) {
             if (player.conn.equals(connection)) {
