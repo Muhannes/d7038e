@@ -26,6 +26,7 @@ import network.util.NetConfig;
  */
 public class NetworkHandler {
     
+    private static final Logger LOGGER = Logger.getLogger(NetworkHandler.class.getName());
     
     private Server server;
     private final int port = NetConfig.SERVER_PORT;
@@ -60,8 +61,10 @@ public class NetworkHandler {
         } 
         */
         
+        Logger.getLogger("").setLevel(Level.INFO);
+        
         try {
-            System.out.println("Using port " + port);
+            LOGGER.log(Level.INFO, "Starting server at port: {0}", Integer.toString(port));
             // create and start the server
             server = Network.createServer(port);
             server.getServices().addService(new RpcHostedService());
@@ -80,7 +83,6 @@ public class NetworkHandler {
             e.printStackTrace();
             server.close();
         }
-        System.out.println("Server started");
     }
     
     private static void initSerializables(){
