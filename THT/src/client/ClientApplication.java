@@ -5,7 +5,6 @@
  */
 package client;
 
-import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +38,8 @@ public class ClientApplication extends SimpleApplication{
         
         //TODO Create GUI
         
-        LobbyScreen lobbyScreen = new LobbyScreen(clientNetworkManager.getClientChatService(), clientNetworkManager.getClientLobbyService());
+        LobbyState lobbyScreen = new LobbyState(clientNetworkManager.getClientChatService(), 
+                clientNetworkManager.getClientLobbyService());
         LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
         
         stateManager.attach(loginScreen);

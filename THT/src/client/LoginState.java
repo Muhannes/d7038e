@@ -28,14 +28,14 @@ public class LoginState extends AbstractAppState implements
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
     
-    private LobbyScreen lobbyScreen;
+    private LobbyState lobbyScreen;
     private ClientLoginService clientLoginService;
     
     private String username;
     
     LoginGUI gui;
     
-    public LoginState(ClientLoginService clientLoginService, LobbyScreen lobbyScreen){   
+    public LoginState(ClientLoginService clientLoginService, LobbyState lobbyScreen){   
         this.lobbyScreen = lobbyScreen;
         this.clientLoginService = clientLoginService;
     }

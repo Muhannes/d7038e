@@ -23,11 +23,11 @@ import network.services.lobby.ClientLobbyService;
  *
  * @author ted
  */
-public class LobbyScreen extends AbstractAppState implements 
+public class LobbyState extends AbstractAppState implements 
         LobbyGUIListener,
         ClientLobbyListener{
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LobbyState.class.getName());
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
     private Map<String, Integer> rooms;
@@ -39,9 +39,9 @@ public class LobbyScreen extends AbstractAppState implements
     
     private LobbyGUI gui;
     
-    private String name = null;
+    private String username = null;
 
-    public LobbyScreen(ClientChatService ccs, ClientLobbyService cls){
+    public LobbyState(ClientChatService ccs, ClientLobbyService cls){
         this.clientChatService = ccs;
         this.clientLobbyService = cls;
     }        
@@ -49,7 +49,7 @@ public class LobbyScreen extends AbstractAppState implements
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        System.out.println("Init LobbyScreen with username : " + this.name);
+        System.out.println("Init LobbyScreen with username : " + this.username);
         super.initialize(stateManager, app);   
         
         clientLobbyService.addClientLobbyListener(this);
@@ -98,7 +98,8 @@ public class LobbyScreen extends AbstractAppState implements
      */
     @Override
     public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
-        System.out.println("Update Lobby Received!");
+        LOGGER.log(Level.INFO, "Lobby room udpated. Name: {0}, id: {1}, Players: {2}, "
+                + "Max-players: {3}", new Object[]{lobbyName, roomID, numPlayers, maxPlayers});
         if(rooms.containsKey(lobbyName)){
             return;
         }
@@ -170,12 +171,10 @@ public class LobbyScreen extends AbstractAppState implements
             LOGGER.log(Level.INFO, "Must have a name!");
         }
     }
-  
+    
     public void setUsername(String username){
-        this.name = username;
+        this.username = username;
     }
-
-    
-    
+  
 }
 
