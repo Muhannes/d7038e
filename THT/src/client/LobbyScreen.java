@@ -5,20 +5,12 @@
  */
 package client;
 
-import api.models.LobbyRoom;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.network.HostedConnection;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.NiftyEventSubscriber;
-import de.lessvoid.nifty.controls.Chat;
-import de.lessvoid.nifty.controls.ListBox;
-import de.lessvoid.nifty.controls.ListBoxSelectionChangedEvent;
-import de.lessvoid.nifty.controls.TextField;
-import de.lessvoid.nifty.screen.Screen;
-import de.lessvoid.nifty.screen.ScreenController;
+import gui.lobby.LobbyGUI;
+import gui.lobby.LobbyGUIListener;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,26 +18,25 @@ import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
-import network.services.login.ClientLoginService;
-import network.util.ConnectionAttribute;
 
 /**
  *
  * @author ted
  */
-public class LobbyScreen extends AbstractAppState implements ScreenController, ClientLobbyListener{
+public class LobbyScreen extends AbstractAppState implements 
+        LobbyGUIListener,
+        ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LobbyScreen.class.getName());
-    private Nifty nifty;
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
-    private Screen screen;
-    private ListBox listBox;
-    private Map<String, Integer> games;
+    private Map<String, Integer> rooms;
     
     private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
     private ClientChatService ccs;
+    
+    private LobbyGUI gui;
 
     public LobbyScreen(ClientChatService ccs, ClientLobbyService cls){
         this.ccs = ccs;
@@ -65,49 +56,21 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
-        /** Create a new NiftyGUI object */
-        nifty = niftyDisplay.getNifty();
-
-        /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/lobby.xml", "lobby", this);
+        gui = new LobbyGUI(niftyDisplay);
+        gui.addLobbyGUIListener(this);
         
-        // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
-
-        //List of games
-        listBox = screen.findNiftyControl("myListBox", ListBox.class);
         
         // Fetching available lobbyRooms
-        games = clientLobbyService.getAllRooms();
+        rooms = clientLobbyService.getAllRooms();
         
-        // Adding them to list
-        listBox.addAllItems(games.keySet());
-        
-        //nifty.setDebugOptionPanelColors(true);
-        
+        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
     }    
 
-    /**
-     * When choosing an already existing lobbyRoom
-     * server gives names of players in room
-     * @param id
-     * @param event 
-     */
-    @NiftyEventSubscriber(id="myListBox")
-    public void onMyListBoxSelectionChanged(final String id, final ListBoxSelectionChangedEvent<String> event) {
-        List<String> selection = event.getSelection();
-        for(String gameName : selection) {
-            System.out.println("listbox selection [ " + gameName + " ] \nThe game id is : " + games.get(gameName));
-            List<String> playerNames = clientLobbyService.join(games.get(gameName));
-            if (playerNames != null) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gameName);
-                System.out.println("Num of players in room: " + playerNames.size());
-                for (String playerName : playerNames) {
-                    gls.addPlayers(playerName);
-                }
-                joinGame(gls);
-            }
-        }
+    @Override
+    public void cleanup(){
+        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+        app.getViewPort().removeProcessor(niftyDisplay);
     }
     
     /**
@@ -121,68 +84,6 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         app.getStateManager().attach(gls);
         LOGGER.log(Level.FINE, "Wait until the game has loaded.");
     }
-    
-    @Override
-    public void cleanup(){
-        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
-        app.getViewPort().removeProcessor(niftyDisplay);
-    }
-
-    @Override
-    public void bind(Nifty nifty, Screen screen) {
-        this.screen = screen;
-        this.nifty = nifty;
-        //TODO: 
-    }
-
-    @Override
-    public void onStartScreen() {
-        System.out.println("On start screen in LobbyScreen!");
-    }
-
-    @Override
-    public void onEndScreen() {
-        System.out.println("On end screen!");
-    }
-
-    public void startGame(){
-        System.out.println("Starting");
-    //    nifty.gotoScreen(nextScreen);
-    }
-    
-    /**
-     * When creating a new game.
-     * Request server for a new lobbyroom,
-     * if ok, join it.
-     */
-    public void newGame(){
-        TextField field = nifty.getScreen("lobby").findNiftyControl("textfieldGamename", TextField.class);
-        String gamename = field.getRealText();
-        if(!gamename.isEmpty()){
-            boolean created = clientLobbyService.createLobby(gamename);
-            if (created) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gamename);
-                gls.addPlayers("me"); //TODO: use real name for me
-                joinGame(gls);
-            } else {
-                System.out.println("Failed to create, server did not approve.");
-                LOGGER.log(Level.FINE, "Server did not approve new name.");
-            }
-        } else {
-            LOGGER.log(Level.FINE, "Must have a name!");
-        }
-    }
-    
-    public void removeGame(String gameName){
-        System.out.println("Removing " + gameName + " from choices");
-        clientLobbyService.removeLobby(gameName);
-    }
-    
-    public void quitGame(){
-        LOGGER.log(Level.FINE, "Quitting system!");
-        app.getStateManager().detach(this);
-        app.stop();
-    }
 
     /**
      * Updates the list of lobbyRooms available to choose
@@ -195,15 +96,11 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     @Override
     public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
         System.out.println("Update Lobby Received!");
-        for (Object object : listBox.getItems()) {
-            String name = (String) object;
-            if (name == lobbyName) {
-                return;
-            }
-
+        if(rooms.containsKey(lobbyName)){
+            return;
         }
-        games.put(lobbyName, roomID);
-        listBox.addItem(lobbyName);
+        rooms.put(lobbyName, roomID);
+        gui.addLobbyRoom(lobbyName);
     }
 
     @Override
@@ -222,14 +119,50 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     }
     
     public Map<String, Integer> getGames(){
-        return games;
+        return rooms;
+    }   
+
+    @Override
+    public void onQuitGame() {
+        LOGGER.log(Level.INFO, "Quitting system!");
+        app.getStateManager().detach(this);
+        app.stop();
     }
-    
-    public void refresh(){
-        listBox.clear();
-        games = clientLobbyService.getAllRooms();        
-        listBox.addAllItems(games.keySet());
-    }    
+
+    @Override
+    public void onJoinLobby(String lobbyName) {
+        List<String> playerNames = clientLobbyService.join(rooms.get(lobbyName));
+        // List<String> playerNames = clientLobbyService.join(rooms.get(gameName));
+        if (playerNames != null) {
+            GameLobbyScreen gls = new GameLobbyScreen(this, ccs, lobbyName);
+            LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
+            playerNames.forEach(name -> gls.addPlayers(name));
+            joinGame(gls);
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        rooms = clientLobbyService.getAllRooms();
+        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
+    }
+
+    @Override
+    public void onCreateLobby(String lobbyName) {
+        if(!lobbyName.isEmpty()){
+            boolean created = clientLobbyService.createLobby(lobbyName);
+            if (created) {
+                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, lobbyName);
+                gls.addPlayers("me"); //TODO: use real name for me
+                joinGame(gls);
+            } else {
+                LOGGER.log(Level.INFO, "Server did not approve new name.");
+            }
+        } else {
+            //TODO: Let server check name and return false if name is ""
+            LOGGER.log(Level.INFO, "Must have a name!");
+        }
+    }
   
 }
 

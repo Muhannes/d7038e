@@ -124,7 +124,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         //TODO: REMOVE PLAYER FROM CHAT.
         if(players.size() == 1){
             System.out.println("Last player leaving lobby, removing it.");
-            lobbyScreen.removeGame(this.gameName);
+            //lobbyScreen.removeGame(this.gameName);
         }
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
@@ -135,7 +135,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         //TODO: REMOVE PLAYER FROM CHAT.
         if(players.size() == 1){
             //TODO: TELL SERVER TO REMOVE FROM LIST.
-            lobbyScreen.removeGame(this.gameName);
+            //lobbyScreen.removeGame(this.gameName);
         } 
         app.getStateManager().detach(this);
         app.stop();

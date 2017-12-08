@@ -2,7 +2,7 @@
 <nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
     <useControls filename="nifty-default-controls.xml"/>
     <useStyles filename="nifty-default-styles.xml"/>
-    <screen id="lobby" controller="client.LobbyScreen" visibleToMouse="true">
+    <screen id="lobby" controller="gui.lobby.LobbyGUI" visibleToMouse="true">
         <layer id="background" childLayout="center">
             <image id="" filename="Interface/scaryMenu.jpg"/>
         </layer>
