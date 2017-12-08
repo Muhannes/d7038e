@@ -145,6 +145,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                     getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
+                if(lobbyRoom.getNumPlayers() == 0){
+                    removeLobby(lobbyRoom.getName());
+                }
                 lobbyRoom = null;
                 nonLobbyPlayers.add(connection);
                 
@@ -197,6 +200,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             }
         }
         
+        @Override
         public boolean removeLobby(String lobbyName){
             return lobbyHolder.removeLobbyRoom(lobbyName);
         }
