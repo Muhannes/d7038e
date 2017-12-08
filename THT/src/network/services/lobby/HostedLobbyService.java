@@ -16,6 +16,7 @@ import com.jme3.network.MessageConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import network.services.gamesetup.SetupGameEvent;
 import network.services.login.LoginEvent;
 import network.util.ConnectionAttribute;
 import utils.eventbus.Event;
@@ -164,6 +165,19 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             }
             if (allReady) {
                 // TODO: Start game.
+                Map<Integer, String> playerInfo = new HashMap<>();
+                List<Integer> ids = lobbyRoom.getPlayerIDs();
+                List<String> names = lobbyRoom.getPlayerNames();
+                for (int i = 0; i < names.size(); i++) {
+                    String name = names.get(i);
+                    int id =ids.get(i);
+                    playerInfo.put(id, name);
+                }
+                EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
+                for (HostedConnection player : players) {
+                    // Send out to each player in room that this one has joined it.
+                    getDelegate(player).allReady();
+                }
             }
         }
 

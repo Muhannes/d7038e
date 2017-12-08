@@ -24,4 +24,7 @@ public interface ClientLobbyListener {
     @Asynchronous
     void playerReady(String name, boolean ready);
     
+    @Asynchronous
+    void allReady();
+    
 }
