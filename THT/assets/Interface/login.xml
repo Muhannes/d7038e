@@ -2,7 +2,7 @@
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
   <useStyles filename="nifty-default-styles.xml" />
   <useControls filename="nifty-default-controls.xml" />
-  <screen id="start" controller="client.LoginScreen" visibleToMouse="true">
+  <screen id="start" controller="gui.login.LoginGUI" visibleToMouse="true">
     <layer id="background" childLayout="center">
       <image filename="Interface/Wallpaper-Horror-045.jpg"></image>
     </layer>
@@ -23,7 +23,7 @@
           </control>
         </panel>
         <panel id="panel_bottom_right" height="100%" width="50%" valign="center" childLayout="center">
-          <control name="button" label="Quit" id="QuitButton1" align="center" valign="center" visibleToMouse="True">
+          <control name="button" label="Quit" id="QuitButton" align="center" valign="center" visibleToMouse="True">
               <interact onClick="quitGame()"/>
           </control>
         </panel>

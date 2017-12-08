@@ -34,7 +34,7 @@ import network.services.lobby.ClientLobbyListener;
  */
 public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
 
-    private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
     private Nifty nifty;
     private NiftyJmeDisplay niftyDisplay;
     private Application app;

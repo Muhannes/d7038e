@@ -26,7 +26,7 @@ public class ClientApplication extends SimpleApplication{
         Logger.getLogger("").setLevel(Level.INFO);
         
         // Our loggers, tune the level
-        Logger.getLogger(LoginScreen.class.getName()).setLevel(Level.INFO);
+        Logger.getLogger(LoginState.class.getName()).setLevel(Level.INFO);
         
         // Turning off Niftys verbose logging
         Logger.getLogger("de.lessvoid.nifty").setLevel(Level.SEVERE);
@@ -39,7 +39,7 @@ public class ClientApplication extends SimpleApplication{
         //TODO Create GUI
         
         LobbyScreen lobbyScreen = new LobbyScreen(clientNetworkManager.getClientChatService(), clientNetworkManager.getClientLobbyService());
-        LoginScreen loginScreen = new LoginScreen(clientNetworkManager.getClientLoginService(), lobbyScreen);
+        LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
         stateManager.attach(loginScreen);
         
         flyCam.setEnabled(false);
