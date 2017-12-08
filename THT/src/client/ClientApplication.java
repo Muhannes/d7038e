@@ -5,6 +5,7 @@
  */
 package client;
 
+import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,20 +37,17 @@ public class ClientApplication extends SimpleApplication{
         
         clientNetworkManager.connectToServer();
         
-        //TODO Create GUI
-        
         LobbyState lobbyScreen = new LobbyState(clientNetworkManager.getClientChatService(), 
                 clientNetworkManager.getClientLobbyService());
         LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
         SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), 1);
         
-        //stateManager.attach(setupState);
         stateManager.attach(loginScreen);
         
         flyCam.setEnabled(false);
         setDisplayStatView(false);
         
-        setLostFocusBehavior(lostFocusBehavior.Disabled);
+        setLostFocusBehavior(LostFocusBehavior.Disabled);
     }
     
     @Override
