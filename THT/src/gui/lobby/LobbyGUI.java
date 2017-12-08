@@ -57,9 +57,8 @@ public class LobbyGUI implements ScreenController{
     @NiftyEventSubscriber(id="myListBox")
     public void onMyListBoxSelectionChanged(final String id, final ListBoxSelectionChangedEvent<String> event) {
         List<String> selection = event.getSelection();
-        for(String gameName : selection) {
-            listeners.forEach(l -> l.onJoinLobby(gameName));
-        }
+        selection.forEach(lobbyName -> 
+                listeners.forEach(l -> l.onJoinLobby(lobbyName)));
     }
     
     /**
