@@ -110,7 +110,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private class GameSetupSessionImpl implements GameSetupSession {
 
         private final HostedConnection connection;
-        private int globalID;
+        private int globalID = -1;
         
         private GameSetupSessionImpl(HostedConnection connection){
             this.connection = connection;
@@ -131,12 +131,15 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 
         @Override
         public void ready() {
-            if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
-                readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
+            if (globalID != -1) { // it has joined.
+                if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
+                    readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
+                }
+                if (readyPlayers.size() == players.size()) {
+                    EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+                }
             }
-            if (readyPlayers.size() == players.size()) {
-                EventBus.publish(new StartGameEvent(), StartGameEvent.class);
-            }
+            
         }
         
     }
