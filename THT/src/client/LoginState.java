@@ -9,8 +9,6 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.controls.TextField;
 import gui.login.LoginGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +36,14 @@ public class LoginState extends AbstractAppState implements
     public LoginState(ClientLoginService clientLoginService, LobbyScreen lobbyScreen){   
         this.lobbyScreen = lobbyScreen;
         this.clientLoginService = clientLoginService;
-        this.clientLoginService.addLoginSessionListener(this);
     }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
-        super.initialize(stateManager, app);        
+        super.initialize(stateManager, app);   
+        
+        clientLoginService.addLoginSessionListener(this);  
+        
         this.app = app;
         
         niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -59,6 +59,7 @@ public class LoginState extends AbstractAppState implements
     @Override
     public void cleanup(){
         app.getViewPort().removeProcessor(niftyDisplay);
+        clientLoginService.removeLoginSessionListener(this);
     }
 
     @Override
