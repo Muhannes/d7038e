@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server.play;
+package gui.login;
 
 /**
  *
- * @author hannes
+ * @author truls
  */
-public class PlayBootstrap {
+public interface LoginGUIListener {
+    
+    void onStartGame(String username);
+    
+    void onQuitGame();
     
 }

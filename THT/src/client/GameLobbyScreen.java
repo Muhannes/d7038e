@@ -21,12 +21,14 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.text.Text;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
+import network.services.lobby.ClientLobbyService;
 
 /**
  *
@@ -34,7 +36,7 @@ import network.services.lobby.ClientLobbyListener;
  */
 public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
 
-    private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
     private Nifty nifty;
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
@@ -43,13 +45,15 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
     private ClientChatService ccs;
+    private ClientLobbyService cls;
     
-    GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, String gameName) {
+    GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
         this.lobbyScreen = lobbyScreen;
         this.ccs = ccs;
         ccs.addChatSessionListener(this);
         this.gameName = gameName;        
         this.players = new ArrayList<>();
+        this.cls = cls;        
     }
     
     @Override
@@ -121,22 +125,21 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-        //TODO: REMOVE PLAYER FROM CHAT.
         if(players.size() == 1){
             System.out.println("Last player leaving lobby, removing it.");
             lobbyScreen.removeGame(this.gameName);
         }
+        cls.leave();
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
         System.out.println("Stopping " + this.gameName);
-        //TODO: REMOVE PLAYER FROM CHAT.
         if(players.size() == 1){
-            //TODO: TELL SERVER TO REMOVE FROM LIST.
             lobbyScreen.removeGame(this.gameName);
         } 
+        cls.leave();
         app.getStateManager().detach(this);
         app.stop();
     }
@@ -195,17 +198,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.addItem(name); 
+        playerJoinedChat(name);
     }
 
     @Override
     public void playerLeftLobby(String name) {        
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
+        playerLeftChat(name); //Notice that player is still in chatt, just says left.
     }
 
     @Override
     public void playerReady(String name, boolean ready) {
         //TODO: display readyness
+    }
+    
+    public void gameIsReady(){
+        
     }
     
 }
