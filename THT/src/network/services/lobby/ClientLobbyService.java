@@ -123,6 +123,13 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
                 listener.playerReady(name, ready);
             }
         }
+
+        @Override
+        public void allReady() {
+            for (ClientLobbyListener listener : listeners) {
+                listener.allReady();
+            }
+        }
         
         
     }

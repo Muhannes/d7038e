@@ -34,19 +34,22 @@ public class LobbyScreen extends AbstractAppState implements
     
     private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
-    private ClientChatService ccs;
+
+    private ClientChatService clientChatService;
     
     private LobbyGUI gui;
+    
+    private String name = null;
 
     public LobbyScreen(ClientChatService ccs, ClientLobbyService cls){
-        this.ccs = ccs;
+        this.clientChatService = ccs;
         this.clientLobbyService = cls;
     }        
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        System.out.println("Init LobbyScreen");
+        System.out.println("Init LobbyScreen with username : " + this.name);
         super.initialize(stateManager, app);   
         
         clientLobbyService.addClientLobbyListener(this);
@@ -118,6 +121,11 @@ public class LobbyScreen extends AbstractAppState implements
         // DO nothing
     }
     
+    @Override
+    public void allReady() {
+        // DO nothing
+    }
+    
     public Map<String, Integer> getGames(){
         return rooms;
     }   
@@ -132,9 +140,8 @@ public class LobbyScreen extends AbstractAppState implements
     @Override
     public void onJoinLobby(String lobbyName) {
         List<String> playerNames = clientLobbyService.join(rooms.get(lobbyName));
-        // List<String> playerNames = clientLobbyService.join(rooms.get(gameName));
         if (playerNames != null) {
-            GameLobbyScreen gls = new GameLobbyScreen(this, ccs, lobbyName);
+            GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, lobbyName);
             LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
             playerNames.forEach(name -> gls.addPlayers(name));
             joinGame(gls);
@@ -152,7 +159,7 @@ public class LobbyScreen extends AbstractAppState implements
         if(!lobbyName.isEmpty()){
             boolean created = clientLobbyService.createLobby(lobbyName);
             if (created) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, lobbyName);
+                GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, lobbyName);
                 gls.addPlayers("me"); //TODO: use real name for me
                 joinGame(gls);
             } else {
@@ -164,5 +171,11 @@ public class LobbyScreen extends AbstractAppState implements
         }
     }
   
+    public void setUsername(String username){
+        this.name = username;
+    }
+
+    
+    
 }
 
