@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
+import network.services.gamesetup.ClientGameSetupService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
 import network.services.ping.ClientPingService;
@@ -43,6 +44,7 @@ public class ClientNetworkManager implements
             client.getServices().addService(new ClientChatService());
             client.getServices().addService(new ClientLobbyService());
             client.getServices().addService(new ClientPingService());
+            client.getServices().addService(new ClientGameSetupService());
             System.out.println("services fetched");
             
             // Not neded since server will send message to client with all serializables.
@@ -81,6 +83,10 @@ public class ClientNetworkManager implements
     
     public ClientLobbyService getClientLobbyService(){
         return client.getServices().getService(ClientLobbyService.class);
+    }
+    
+    public ClientGameSetupService getClientGameSetupService(){
+        return client.getServices().getService(ClientGameSetupService.class);
     }
 }
 

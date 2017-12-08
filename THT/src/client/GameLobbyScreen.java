@@ -45,7 +45,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyScreen lobbyScreen;
     private ClientChatService ccs;
-    private ClientLobbyService cls;
+    private ClientLobbyService cls;    
     
     GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
         this.lobbyScreen = lobbyScreen;
@@ -61,8 +61,8 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         LOGGER.log(Level.INFO, "Initializing LoginScreen");
         super.initialize(stateManager, app);        
         this.app = app;
-        
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+        
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
@@ -205,6 +205,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     @Override
     public void allReady() {
         // TODO: change to setupState
+
+        app.getStateManager().detach(this);
+        app.getStateManager().getState(SetupState.class).setEnabled(true);
+
     }
     
     public void gameIsReady(){
