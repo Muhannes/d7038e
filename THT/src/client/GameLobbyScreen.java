@@ -208,4 +208,8 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         //TODO: display readyness
     }
     
+    public void gameIsReady(){
+        
+    }
+    
 }
