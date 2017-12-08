@@ -5,16 +5,19 @@
  */
 package network.services.gamesetup;
 
-import com.jme3.network.service.rmi.Asynchronous;
+import com.jme3.shader.UniformBinding;
+import java.sql.Time;
+import java.util.List;
+import java.util.Random;
 
 /**
  *
  * @author hannes
  */
-public interface GameSetupSession {
-    @Asynchronous
-    void join(int globalID);
+public class GameSetup {
+    private static Random RANDOM = new Random();
     
-    @Asynchronous
-    void ready();
+    public static void setup(List<Integer> players){
+        
+    }
 }

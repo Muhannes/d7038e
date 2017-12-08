@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.util;
+package network.services.gamesetup;
 
 /**
  *
- * @author truls
+ * @author hannes
  */
-public class ConnectionAttribute {
-    
-    public static final String NAME = "name";
-    public static final String GLOBAL_ID = "globalID";
-    
-    
+public interface GameSetupSessionEmitter {
+    void addGameSetupSessionListener(GameSetupSessionListener gameSetupSessionListener);
 }

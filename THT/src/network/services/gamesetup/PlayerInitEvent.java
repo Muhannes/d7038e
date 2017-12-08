@@ -5,16 +5,18 @@
  */
 package network.services.gamesetup;
 
-import com.jme3.network.service.rmi.Asynchronous;
+import api.models.Player;
+import utils.eventbus.Event;
 
 /**
  *
  * @author hannes
  */
-public interface GameSetupSession {
-    @Asynchronous
-    void join(int globalID);
+public class PlayerInitEvent extends Event{
+    Player player;
+
+    public PlayerInitEvent(Player player) {
+        this.player = player;
+    }
     
-    @Asynchronous
-    void ready();
 }
