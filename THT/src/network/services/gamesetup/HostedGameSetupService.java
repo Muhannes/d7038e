@@ -25,13 +25,15 @@ import java.util.logging.Level;
 import network.services.chat.ChatSession;
 import network.services.chat.HostedChatService;
 import network.util.ConnectionAttribute;
+import utils.eventbus.Event;
 import utils.eventbus.EventBus;
+import utils.eventbus.EventListener;
 
 /**
  *
  * @author hannes
  */
-public class HostedGameSetupService extends AbstractHostedConnectionService {
+public class HostedGameSetupService extends AbstractHostedConnectionService implements EventListener {
     
     private static final Logger LOGGER = Logger.getLogger(HostedChatService.class);
     
@@ -42,6 +44,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService {
     private final Map<Integer, String> expectedPlayers = new HashMap<>();
     private final List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
+    private boolean initialized = false;
     
     public HostedGameSetupService(){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
@@ -76,13 +79,32 @@ public class HostedGameSetupService extends AbstractHostedConnectionService {
      * When expected players are received, run this.
      * Creates Player objects for each participant.
      */
-    private void setupGame(){
+    private void setupGame(Map<Integer, String> expectedPlayers){
         for (Integer id : expectedPlayers.keySet()) {
             players.add(new Player(EntityType.Human, new Vector3f(0,0,0), new Quaternion(0, 0, 0, 0), id));
         }
         int monsterID = RANDOM.nextInt(players.size());
         players.get(monsterID).setType(EntityType.Monster);
         
+    }
+
+    private Player getPlayerByID(int id){
+        for (Player player : players) {
+            if (player.getID() == id) {
+                return player;
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public void notifyEvent(Event event, Class<? extends Event> T) {
+        if (T == SetupGameEvent.class) {
+            SetupGameEvent setupGameEvent = (SetupGameEvent) event;
+            
+            setupGame(setupGameEvent.getPlayers());
+            initialized = true;
+        }
     }
     
     private class GameSetupSessionImpl implements GameSetupSession {
@@ -96,17 +118,20 @@ public class HostedGameSetupService extends AbstractHostedConnectionService {
         
         @Override
         public void join(int globalID) {
-            this.globalID = globalID;
-            connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
-            // TODO: Add security to make sure no one takes another ones id!
-            Player p = players.get(globalID);
-            rmiHostedService.getRmiRegistry(connection).getRemoteObject(GameSetupSessionListener.class).initPlayer(p);
+            if (initialized) {
+                this.globalID = globalID;
+                connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
+                // TODO: Add security to make sure no one takes another ones id!
+                Player p = getPlayerByID(globalID);
+                rmiHostedService.getRmiRegistry(connection).getRemoteObject(GameSetupSessionListener.class).initPlayer(p);
+            
+            }
             
         }
 
         @Override
         public void ready() {
-            if (!readyPlayers.contains(globalID)) {
+            if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
                 readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
             }
             if (readyPlayers.size() == players.size()) {
