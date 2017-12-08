@@ -72,6 +72,11 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
         public void initPlayer(Player p) {
             EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
         }
+
+        @Override
+        public void startGame() {
+            EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+        }
         
     }
     

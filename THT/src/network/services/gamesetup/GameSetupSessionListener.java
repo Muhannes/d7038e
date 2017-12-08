@@ -15,4 +15,7 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface GameSetupSessionListener {
     @Asynchronous
     void initPlayer(Player p);
+    
+    @Asynchronous
+    void startGame();
 }
