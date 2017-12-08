@@ -3,11 +3,11 @@
   <useStyles filename="nifty-default-styles.xml" />
   <useControls filename="nifty-default-controls.xml" />
   
-  <screen id="game">
+  <screen id="frame">
     <layer id="foreground" childLayout="center">
         <!-- THE PLAYER/MONSTER GUI -->
         <text id="textId" text="Game" font="Interface/Fonts/Default.fnt" width="100%" height="10%" />
 
     </layer>
-  </screen>
+  </screen>  
 </nifty>

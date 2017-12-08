@@ -41,7 +41,9 @@ public class ClientApplication extends SimpleApplication{
         LobbyState lobbyScreen = new LobbyState(clientNetworkManager.getClientChatService(), 
                 clientNetworkManager.getClientLobbyService());
         LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
+        SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), 1);
         
+        stateManager.attach(setupState);
         stateManager.attach(loginScreen);
         
         flyCam.setEnabled(false);

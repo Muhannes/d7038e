@@ -8,6 +8,7 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 
@@ -15,36 +16,36 @@ import de.lessvoid.nifty.Nifty;
  *
  * @author ted
  */
-public class GameState extends AbstractAppState {
+public class GameState extends BaseAppState {
     
     private Application app;
     private NiftyJmeDisplay niftyDisplay;
     private Nifty nifty;
     
     @Override
-    public void initialize(AppStateManager stateManager, Application app){
-        super.initialize(stateManager, app);        
+    protected void initialize(Application app) {
         this.app = app;
         
-        /** Connect to game server via SetupState **/
+        /** Connect to game server via SetupState **/    
         
-        
-        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
-                
-        /** Create a new NiftyGUI object */
-        nifty = niftyDisplay.getNifty();
-
-        /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/gameState.xml", "game"); 
-        
-        // attach the Nifty display to the gui view port as a processor
-        app.getViewPort().addProcessor(niftyDisplay);
         
         
         //LOAD THE FUCKING MAP
-        
+    }
+
+    @Override
+    protected void cleanup(Application app) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void onEnable() {
+        //Binds all the actions 
+    }
+
+    @Override
+    protected void onDisable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
