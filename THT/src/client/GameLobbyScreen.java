@@ -76,10 +76,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         app.getGuiViewPort().addProcessor(niftyDisplay);
                       
         //nifty.setDebugOptionPanelColors(true);
-        
-        for(String name : players){
-            playerJoinedChat(name);
-        }
                 
     }
 
@@ -125,20 +121,13 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         System.out.println("Returning to lobby!");
-        if(players.size() == 1){
-            System.out.println("Last player leaving lobby, removing it.");
-            lobbyScreen.removeGame(this.gameName);
-        }
         cls.leave();
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
-        System.out.println("Stopping " + this.gameName);
-        if(players.size() == 1){
-            lobbyScreen.removeGame(this.gameName);
-        } 
+        System.out.println("Quitting game");
         cls.leave();
         app.getStateManager().detach(this);
         app.stop();

@@ -5,6 +5,7 @@
  */
 package client;
 
+import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +20,7 @@ public class ClientApplication extends SimpleApplication{
     private static final Logger LOGGER = Logger.getLogger(ClientApplication.class.getName());
     
     private ClientNetworkManager clientNetworkManager;
-    
+        
     @Override
     public void simpleInitApp() {
         // Default logger
@@ -45,6 +46,8 @@ public class ClientApplication extends SimpleApplication{
         
         flyCam.setEnabled(false);
         setDisplayStatView(false);
+        
+        setLostFocusBehavior(lostFocusBehavior.Disabled);
     }
     
     @Override
