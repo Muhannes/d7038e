@@ -45,17 +45,19 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     
     private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
-    private ClientChatService ccs;
+    private ClientChatService clientChatService;
+    
+    private String name = null;
 
     public LobbyScreen(ClientChatService ccs, ClientLobbyService cls){
-        this.ccs = ccs;
+        this.clientChatService = ccs;
         this.clientLobbyService = cls;
     }        
     
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        System.out.println("Init LobbyScreen");
+        System.out.println("Init LobbyScreen with username : " + this.name);
         super.initialize(stateManager, app);   
         
         clientLobbyService.addClientLobbyListener(this);
@@ -100,7 +102,7 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
             System.out.println("listbox selection [ " + gameName + " ] \nThe game id is : " + games.get(gameName));
             List<String> playerNames = clientLobbyService.join(games.get(gameName));
             if (playerNames != null) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gameName);
+                GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, gameName);
                 System.out.println("Num of players in room: " + playerNames.size());
                 for (String playerName : playerNames) {
                     gls.addPlayers(playerName);
@@ -161,8 +163,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         if(!gamename.isEmpty()){
             boolean created = clientLobbyService.createLobby(gamename);
             if (created) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, ccs, gamename);
-                gls.addPlayers("me"); //TODO: use real name for me
+                GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, gamename);
+                gls.addPlayers(this.name); //TODO: use real name for me
                 joinGame(gls);
             } else {
                 System.out.println("Failed to create, server did not approve.");
@@ -231,5 +233,9 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         listBox.addAllItems(games.keySet());
     }    
   
+    public void setUsername(String username){
+        this.name = username;
+    }
+    
 }
 

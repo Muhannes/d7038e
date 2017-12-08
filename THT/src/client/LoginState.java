@@ -33,6 +33,8 @@ public class LoginState extends AbstractAppState implements
     private LobbyScreen lobbyScreen;
     private ClientLoginService clientLoginService;
     
+    private String username;
+    
     LoginGUI gui;
     
     public LoginState(ClientLoginService clientLoginService, LobbyScreen lobbyScreen){   
@@ -64,6 +66,7 @@ public class LoginState extends AbstractAppState implements
     @Override
     public void notifyLogin(boolean loggedIn) {
         if(loggedIn){
+            lobbyScreen.setUsername(username);
             app.getStateManager().detach(this);
             app.getStateManager().attach(lobbyScreen);
         }
@@ -79,6 +82,7 @@ public class LoginState extends AbstractAppState implements
         LOGGER.log(Level.INFO, "Logging in. Username: {0}", username);
         if(username.length() != 0){
             clientLoginService.login(username);
+            this.username = username;
         }
     }
 
