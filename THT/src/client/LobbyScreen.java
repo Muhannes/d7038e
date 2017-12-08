@@ -223,6 +223,11 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
         // DO nothing
     }
     
+    @Override
+    public void allReady() {
+        // DO nothing
+    }
+    
     public Map<String, Integer> getGames(){
         return games;
     }
@@ -236,6 +241,8 @@ public class LobbyScreen extends AbstractAppState implements ScreenController, C
     public void setUsername(String username){
         this.name = username;
     }
+
+    
     
 }
 

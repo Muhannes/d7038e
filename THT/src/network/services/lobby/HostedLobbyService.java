@@ -171,6 +171,10 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                     playerInfo.put(id, name);
                 }
                 EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
+                for (HostedConnection player : players) {
+                    // Send out to each player in room that this one has joined it.
+                    getDelegate(player).allReady();
+                }
             }
         }
 
