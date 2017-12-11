@@ -180,9 +180,7 @@ public class LobbyState extends BaseAppState implements
         app.getGuiViewPort().addProcessor(niftyDisplay);
 
         // Fetching available lobbyRooms
-        System.out.println("here!");
         rooms = clientLobbyService.getAllRooms();
-        System.out.println("here2!");
         rooms.forEach((name, id) -> gui.addLobbyRoom(name));
     }
 

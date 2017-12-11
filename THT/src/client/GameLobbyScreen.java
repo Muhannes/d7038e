@@ -198,7 +198,6 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.addItem(name);
-        playerJoinedChat(name, GLOBAL_CHAT);
     }
 
     @Override
@@ -237,6 +236,9 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
         app.getGuiViewPort().addProcessor(niftyDisplay);
         ccs.addChatSessionListener(this);
         cls.addClientLobbyListener(this);
+        for (String player : players) {
+            playerJoinedLobby(player);
+        }
     }
 
     @Override
