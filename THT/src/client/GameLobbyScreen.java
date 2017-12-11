@@ -190,14 +190,12 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.addItem(name);
-        playerJoinedChat(name, GLOBAL_CHAT);
     }
 
     @Override
     public void playerLeftLobby(String name) {        
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
-        playerLeftChat(name, GLOBAL_CHAT); //Notice that player is still in chatt, just says left.
     }
     
     @Override
