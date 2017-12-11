@@ -31,17 +31,18 @@ import utils.eventbus.EventListener;
  */
 public class HostedLobbyService extends AbstractHostedConnectionService implements EventListener{
     
-    private Logger LOGGER = Logger.getLogger(HostedLobbyService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedLobbyService.class);
+    
+    private static final String LOBBY_SERVICE = "lobby_service";
+    
     private LobbyHolder lobbyHolder;
     private final List<HostedConnection> nonLobbyPlayers = new ArrayList<>();
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
-    
-    
+        
     private int channel;
     // Channel we send on, is it a port though?
-    
     
     public HostedLobbyService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
@@ -67,6 +68,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         nonLobbyPlayers.add(connection);
         
         LobbyManagerImpl lobbyManager = new LobbyManagerImpl(connection);
+        connection.setAttribute(LOBBY_SERVICE, lobbyManager);
         
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
@@ -84,9 +86,11 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     }
 
     @Override
-    public void stopHostingOnConnection(HostedConnection hc) {
-        //TODO: quit player
-        nonLobbyPlayers.remove(hc);
+    public void stopHostingOnConnection(HostedConnection connection) {
+        LobbyManagerImpl lobbyManagerImpl = connection.getAttribute(LOBBY_SERVICE);
+        lobbyManagerImpl.leave();
+        nonLobbyPlayers.remove(connection);
+        
     }
 
     @Override
