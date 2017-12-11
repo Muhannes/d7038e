@@ -76,6 +76,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void cleanup(){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
         app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
     }
 
     public void addPlayers(String name){
