@@ -94,6 +94,11 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     public Map<String, Integer> getAllRooms() {
         return getDelegate().getAllRooms();
     }
+
+    @Override
+    public void removeClientLobbyListener(ClientLobbyListener clientLobbyListener) {
+        listeners.remove(clientLobbyListener);
+    }
     
     private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners
 

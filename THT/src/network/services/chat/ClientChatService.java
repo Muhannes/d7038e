@@ -44,6 +44,10 @@ public class ClientChatService extends AbstractClientService implements ChatSess
         listeners.add(chatSessionListener);
     }
     
+    public void removeChatSessionListener(ChatSessionListener chatSessionListener){
+        listeners.remove(chatSessionListener);
+    }
+    
     @Override
     public void sendMessage(String message, int chat) {
         getDelegate().sendMessage(message, chat);

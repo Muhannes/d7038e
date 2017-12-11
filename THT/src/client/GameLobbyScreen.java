@@ -9,6 +9,7 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.ListBox;
@@ -28,7 +29,7 @@ import network.services.lobby.ClientLobbyService;
  *
  * @author ted
  */
-public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
+public class GameLobbyScreen extends BaseAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
     private Nifty nifty;
@@ -43,24 +44,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
 
     private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
-    GameLobbyScreen(LobbyState lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
+    GameLobbyScreen(ClientChatService ccs, ClientLobbyService cls) {
         this.lobbyScreen = lobbyScreen;
         this.ccs = ccs;
-        ccs.addChatSessionListener(this);
-        this.gameName = gameName;        
+        this.gameName = "No name";        
         this.players = new ArrayList<>();
         this.cls = cls;        
     }
     
     @Override
-    public void initialize(AppStateManager stateManager, Application app){
+    public void initialize(Application app){
         LOGGER.log(Level.INFO, "Initializing LoginScreen");
-        super.initialize(stateManager, app);        
+        //super.initialize(stateManager, app);        
         this.app = app;
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
         
         /** Create a new NiftyGUI object */
         nifty = niftyDisplay.getNifty();
@@ -68,15 +68,13 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         /** Read your XML and initialize your custom ScreenController */
         nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
         
-        // attach the Nifty display to the gui view port as a processor
-        app.getGuiViewPort().addProcessor(niftyDisplay);
                       
         //nifty.setDebugOptionPanelColors(true);
                 
     }
 
     @Override
-    public void cleanup(){
+    public void cleanup(Application app){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
@@ -92,6 +90,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public String getName(){
         return this.gameName;
+    }
+    
+    public void setName(String gameName){
+        this.gameName = gameName;
     }
     
     @Override
@@ -118,8 +120,14 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     public void returnToLobby(){
         cls.leave();
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(lobbyScreen);
+        GameLobbyScreen gls = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                gls.setEnabled(false);
+                app.getStateManager().getState(LobbyState.class).setEnabled(true);
+            }
+        });
     }
     
     public void quitGame(){
@@ -209,12 +217,33 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void allReady() {
         // TODO: change to setupState
         LOGGER.fine("allReady method in GameLobbyScreen");
-        app.getStateManager().detach(this);
-        app.getStateManager().getState(SetupState.class).setEnabled(true);
+        GameLobbyScreen gls = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                gls.setEnabled(false);
+                app.getStateManager().getState(SetupState.class).setEnabled(true);}
+            });
     }
     
     public void gameIsReady(){
         
+    }
+
+    @Override
+    protected void onEnable() {
+        // attach the Nifty display to the gui view port as a processor
+        app.getGuiViewPort().addProcessor(niftyDisplay);
+        ccs.addChatSessionListener(this);
+        cls.addClientLobbyListener(this);
+    }
+
+    @Override
+    protected void onDisable() {
+        ccs.removeChatSessionListener(this);
+        cls.removeClientLobbyListener(this);
+        app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
     }
 
 }

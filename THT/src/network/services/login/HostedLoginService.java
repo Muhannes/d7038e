@@ -89,8 +89,8 @@ public class HostedLoginService extends AbstractHostedConnectionService{
             LOGGER.log(Level.INFO, "Login request received from connection with ID: {0} and name: {1}", 
                     new Object[]{connection.getId(), name});
             connection.setAttribute(ConnectionAttribute.NAME, name);
-            getCallback().notifyLogin(true);
             EventBus.publish(new LoginEvent(connection), LoginEvent.class);
+            // NOTE: Moved login ack to lobbySession (Due to client trying to access LobbyManager before shared)
         }
         
         private LoginSessionListener getCallback(){

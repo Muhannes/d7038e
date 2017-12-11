@@ -11,4 +11,5 @@ package network.services.lobby;
  */
 public interface ClientLobbyEmitter {
     void addClientLobbyListener(ClientLobbyListener clientLobbyListener);
+    void removeClientLobbyListener(ClientLobbyListener clientLobbyListener);
 }
