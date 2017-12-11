@@ -159,18 +159,17 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         @Override
         public void ready(){
             System.out.println("Player is ready (HostedLobbyService)!");
-            boolean playerIsReady = lobbyRoom.setPlayerReady(connection.getId());
-            //everyoneIsReady ++; //One more is ready
+            boolean allReady = lobbyRoom.setPlayerReady(connection.getId());
             
             List<HostedConnection> players = lobbyRoom.getPlayers();
             
-            //for (HostedConnection player : players) {
+            for (HostedConnection player : players) {
                 // Send out to each player in room that this one is ready.
-            getDelegate(players.get(0)).playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
-            //}
+                System.out.println("sending to one player");
+                getDelegate(players.get(0)).playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
+            }
             System.out.println("How many are ready ? " + everyoneIsReady + " / " + lobbyRoom.getPlayers().size());
-            //if (playerIsReady && !((everyoneIsReady) < lobbyRoom.getPlayers().size())) {
-            if(playerIsReady){
+            if(allReady){
                 System.out.println("Players are ready on server-side");
                 // TODO: Start game.
                 Map<Integer, String> playerInfo = new HashMap<>();
