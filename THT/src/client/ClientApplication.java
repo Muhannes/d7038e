@@ -24,7 +24,7 @@ public class ClientApplication extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         // Default logger
-        Logger.getLogger("").setLevel(Level.FINE);
+        Logger.getLogger("").setLevel(Level.INFO);
         
         // Our loggers, tune the level
         Logger.getLogger(LoginState.class.getName()).setLevel(Level.INFO);

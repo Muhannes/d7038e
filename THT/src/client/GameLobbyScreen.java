@@ -200,7 +200,6 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     public void playerLeftLobby(String name) {        
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
-        playerLeftChat(name, GLOBAL_CHAT); //Notice that player is still in chatt, just says left.
     }
     
     @Override
@@ -218,9 +217,10 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
             @Override
             public void run() {
                 gls.setEnabled(false);
-                app.getStateManager().getState(SetupState.class).setEnabled(true);}
-            });
-    }
+                app.getStateManager().getState(SetupState.class).setEnabled(true);
+            }
+        });              
+     }
     
     public void gameIsReady(){
         

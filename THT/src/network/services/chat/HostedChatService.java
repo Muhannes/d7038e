@@ -67,9 +67,6 @@ public class HostedChatService extends AbstractHostedConnectionService implement
         int id = ChatSpace.Chat.GLOBAL.ordinal();
         ChatSpace space = ChatSpace.getChatSpace(id);
         
-        space.getParticipants().forEach(p -> 
-                p.playerJoinedChat(connection.getAttribute(ConnectionAttribute.NAME), id));
-        
         space.add(player);
     }
 

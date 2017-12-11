@@ -66,6 +66,8 @@ public class ChatSpace {
      * @param participant Participant to remove
      */
     void remove(ChatSessionImpl participant){
+        System.out.println(participant);
+        System.out.println(participants.toString());
         participants.remove(participant);
         participants.forEach(p -> p.playerLeftChat(participant.getName(), id));
     }
