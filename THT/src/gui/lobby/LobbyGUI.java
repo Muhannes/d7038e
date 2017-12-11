@@ -36,6 +36,8 @@ public class LobbyGUI implements ScreenController{
 
         /** Read your XML and initialize your custom ScreenController */
         nifty.fromXml("Interface/lobby.xml", "lobby", this);
+        
+        nifty.setDebugOptionPanelColors(true);
     }
     
     @Override
