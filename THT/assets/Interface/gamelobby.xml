@@ -10,13 +10,16 @@
     <layer id="foreground" childLayout="vertical">
       <panel id="panel_top" height="10%" width="75%" align="center" childLayout="center">
         <text id="textId" text="Room Lobby" font="Interface/Fonts/Default.fnt" width="100%" height="10%" />
+        <control name="button" id="PlayerReady" visiableToMouse="true" label="PlayerReady">
+            <interact onClick="PressingReady()"/>
+        </control>
       </panel>
       <panel id="panel_mid" childLayout="vertical" width="75%" align="center" height="20%">
         <panel id="panel_mid_left" childLayout="center" name="returnButton">
             <control name="button" id="returnToLobby" visiableToMouse="true" label="returnToLobby">
                 <interact onClick="returnToLobby()"/>
            </control>
-        </panel>
+        </panel>d        
         <panel id="panel_mid_right" childLayout="center" name="quitButton">
             <control name="button" id="Quit" visiableToMouse="true" label="Quit">
                 <interact onClick="quitGame()"/>
@@ -39,7 +42,7 @@
           <panel id="panel_bottom_input" width="100%" height="10%" childLayout="horizontal">            
         <!-- Panels for input and send to server -->
             <panel id="panel_input" childLayout="center" with="50%">
-                <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" width="25%" text="" maxLength="20"/>
+                <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" width="75%" text="" maxLength="20"/>
             </panel>
             <panel id="panel_button" childLayout="center" width="50%">
                 <control name="button" id="SendMessage" visiableToMouse="true" label="Send Message">
