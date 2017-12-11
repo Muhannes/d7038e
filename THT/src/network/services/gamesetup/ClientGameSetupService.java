@@ -20,7 +20,7 @@ import utils.eventbus.EventBus;
  */
 public class ClientGameSetupService extends AbstractClientService implements GameSetupSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientChatService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientGameSetupService.class);
     
     private GameSetupSession delegate;
     // Handle to a server side object

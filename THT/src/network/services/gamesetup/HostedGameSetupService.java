@@ -132,7 +132,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         @Override
         public void join(int globalID) {
             if (initialized && !joined) {
-                System.out.println("Join received by id: " + globalID);
+                LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;
                 connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
                 // TODO: Add security to make sure no one takes another ones id!
@@ -141,7 +141,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                         getRemoteObject(GameSetupSessionListener.class).initPlayer(p);
                 joined = true;
             } else {
-                System.out.println("Join failed, was not initialized(or already joined)!");
+                LOGGER.fine("Join failed, was not initialized(or already joined)!");
             }
         }
 

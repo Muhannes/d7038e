@@ -12,13 +12,14 @@ import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.sun.istack.internal.logging.Logger;
 
 /**
  *
  * @author truls
  */
 public class ClientLobbyService extends AbstractClientService implements ClientLobbyEmitter, LobbyManager{
-    
+    private static final Logger LOGGER = Logger.getLogger(ClientLobbyService.class);
     private List<ClientLobbyListener> listeners = new ArrayList<>();
     
     private ClientLobbyListener callback;
@@ -75,7 +76,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
     @Override
     public void ready() {
-        System.out.println("Pressed ready! (clientlobbyservice) ");
+        LOGGER.fine("Pressed ready! (clientlobbyservice) ");
         getDelegate().ready();
     }
 
@@ -105,7 +106,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void playerJoinedLobby(String name) {
-            System.out.println(name + " join message received.");
+            LOGGER.fine(name + " join message received.");
             for (ClientLobbyListener listener : listeners) {
                 listener.playerJoinedLobby(name);
             }
@@ -120,7 +121,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void playerReady(String name, boolean ready) {
-            System.out.println("Player : " + name + " is ready.");
+            LOGGER.fine("Player : " + name + " is ready.");
             for (ClientLobbyListener listener : listeners) {
                 listener.playerReady(name, ready);
             }
@@ -128,7 +129,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void allReady() {
-            System.out.println("Everyone is ready!");
+            LOGGER.fine("Everyone is ready!");
             for (ClientLobbyListener listener : listeners) {
                 listener.allReady();
             }
