@@ -77,8 +77,6 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     @Override
     public void cleanup(Application app){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
     }
 
     public void addPlayers(String name){
@@ -105,9 +103,7 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     @Override
     public void onStartScreen() {
         LOGGER.fine("On start screen in GameLobbyScreen!");
-        for(String name : players){
-            playerJoinedLobby(name);
-        }
+        System.out.println("onStartScreen");
     }
 
     @Override

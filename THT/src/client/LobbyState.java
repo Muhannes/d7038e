@@ -66,7 +66,6 @@ public class LobbyState extends BaseAppState implements
      * @param gls 
      */
     public void joinGame(GameLobbyScreen gls){
-        clientLobbyService.addClientLobbyListener(gls);
         LOGGER.log(Level.FINE, "Joining game {0}", gls.getName());
         LobbyState ls = this;
         app.enqueue(new Runnable() {
