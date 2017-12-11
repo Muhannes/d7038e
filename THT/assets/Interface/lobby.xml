@@ -7,32 +7,29 @@
             <image id="" filename="Interface/scaryMenu.jpg"/>
         </layer>
         <layer id="foreground" childLayout="vertical">
-            <panel id="panel_top" childLayout="center" width="75%" align="center" height="25%"/>
-            <panel id="panel_mid_top" childLayout="center" width="75%" align="center" height="45%">
-                <control name="listBox" id="myListBox" horizontal="optional" selection="Single" width="75%" vertical="on" displayItems="10"/>
-            </panel>
-            <panel id="panel_mid_bottom" childLayout="center" width="35%" align="center" height="5%">
-                <panel id="panel_mid_bottom_left" childLayout="center" align="left">
-                    <control name="textfield" id="textfieldGamename" textHAlign="center" textVAlign="center" width="25%" text="Game name" maxLength="20"/>
-                </panel>
-                <panel id="panel_mid_bottom_right" childLayout="center" align="right">
-                    <control name="button" id="NewGame" visiableToMouse="true" label="NewGame">
-                        <interact onClick="newGame()"/>
-                    </control> 
-                </panel>
-            </panel>
-       <!--     <panel id="panel_bottom" childLayout="horizontal" width="75%" align="center" height="25%"> -->
-            <panel id="panel_bottom" childLayout="vertical" width="75%" height="25%" align="center">    
-                <panel id="panel_bottom_left" childLayout="center" width="50%" align="center" height="25%">
-                    <control name="button" id="Refresh" visiableToMouse="true" label="Refresh">
+            <panel id="panel_filler" childLayout="vertical" height="10%"/>
+                <panel id="panel_content" childLayout="vertical" width="75%" align="center">
+                    <panel childLayout="center" align="right" padding="10px,0px">
+                    <control name="button" id="Refresh" visibleToMouse="true" align="right" label="Refresh">
                         <interact onClick="refresh()"/>
-                    </control>   
-                </panel> 
-                <panel id="panel_bottom_right" childLayout="center" width="50%" align="right" height="25%">
-                    <control name="button" id="Quit" visiableToMouse="true" label="Quit">
-                        <interact onClick="quitGame()"/>
-                    </control>    
+                    </control> 
+                    </panel> 
+                    <control id="myListBox" name="listBox" selection="Single" vertical="on" displayItems="10"/>
+                    <panel id="panel_mid" childLayout="horizontal" align="center" padding="10px,0px">
+                        <panel id="panel_mid_left" childLayout="center" align="left">
+                            <control name="textfield" id="textfieldGamename" textHAlign="center" textVAlign="center" maxLength="45"/>
+                        </panel>
+                        <panel id="panel_mid_right" childLayout="center" align="right">
+                            <control name="button" id="NewGame" visiableToMouse="true" label="Create">
+                                <interact onClick="newGame()"/>
+                            </control> 
+                        </panel>
+                    </panel>
                 </panel>
+            <panel id="panel_quit_button" childLayout="horizontal" align="right" padding="10px">
+                <control name="button" id="Quit" visibleToMouse="true" align="right" label="Quit">
+                    <interact onClick="quitGame()"/>
+                </control>    
             </panel>
         </layer>
     </screen>
