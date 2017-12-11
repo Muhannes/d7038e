@@ -109,7 +109,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
-        System.out.println("Event received: " + T);
         if (T == SetupGameEvent.class) {
             SetupGameEvent setupGameEvent = (SetupGameEvent) event;
             

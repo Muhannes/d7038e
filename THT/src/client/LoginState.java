@@ -62,6 +62,7 @@ public class LoginState extends AbstractAppState implements
     public void cleanup(){
         app.getViewPort().removeProcessor(niftyDisplay);
         clientLoginService.removeLoginSessionListener(this);
+        niftyDisplay.getNifty().exit();
     }
 
     @Override

@@ -13,12 +13,28 @@ import com.jme3.network.service.rmi.Asynchronous;
  */
 public interface ChatSessionListener {
     
+    /**
+     * This method is inovoked when a new message is
+     * received from the server
+     * @param message Message
+     * @param chat Id of the chat that the message was posted in
+     */
     @Asynchronous
-    void newMessage(String message);
+    void newMessage(String message, int chat);
     
+    /**
+     * This method is invoked when a new paricipant joins a chat
+     * @param name Name of chat participant
+     * @param chat Id of chat
+     */
     @Asynchronous
-    void playerJoinedChat(String name);
+    void playerJoinedChat(String name, int chat);
     
+    /**
+     * This method is invoked when a participant leaves a chat
+     * @param name Name of chat participant
+     * @param chat Id of chat
+     */
     @Asynchronous
-    void playerLeftChat(String name);
+    void playerLeftChat(String name, int chat);
 }

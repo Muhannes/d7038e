@@ -45,8 +45,18 @@ public class ClientChatService extends AbstractClientService implements ChatSess
     }
     
     @Override
-    public void sendMessage(String message) {
-        getDelegate().sendMessage(message);
+    public void sendMessage(String message, int chat) {
+        getDelegate().sendMessage(message, chat);
+    }
+    
+    @Override
+    public void joinchat(int chat){
+        getDelegate().joinchat(chat);
+    }
+
+    @Override
+    public void leavechat(int chat){
+        getDelegate().leavechat(chat);
     }
 
     @Override
@@ -73,21 +83,21 @@ public class ClientChatService extends AbstractClientService implements ChatSess
     private class ChatSessionCallBack implements ChatSessionListener{
         
         @Override
-        public void newMessage(String message) {
-            LOGGER.log(Level.FINE, "Message: {0}", message);
-            listeners.forEach(l -> l.newMessage(message));
+        public void newMessage(String message, int chat) {
+            LOGGER.log(Level.FINE, "Chat: {0},  Message: {1}", new Object[]{chat, message});
+            listeners.forEach(l -> l.newMessage(message, chat));
         }
 
         @Override
-        public void playerJoinedChat(String name) {
-            LOGGER.log(Level.FINE, "Player joined chat: {0}", name);
-            listeners.forEach(l -> l.playerJoinedChat(name));
+        public void playerJoinedChat(String name, int chat) {
+            LOGGER.log(Level.FINE, "Player {0} joined chat: {1}", new Object[]{name, chat});
+            listeners.forEach(l -> l.playerJoinedChat(name, chat));
         }
 
         @Override
-        public void playerLeftChat(String name) {
-            LOGGER.log(Level.FINE, "Player left chat: {0}", name);
-            listeners.forEach(l -> l.playerLeftChat(name));
+        public void playerLeftChat(String name, int chat) {
+            LOGGER.log(Level.FINE, "Player {0} left chat: {1}", new Object[]{name, chat});
+            listeners.forEach(l -> l.playerLeftChat(name, chat));
         }
         
     }

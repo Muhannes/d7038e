@@ -49,7 +49,6 @@ public class LobbyState extends AbstractAppState implements
     @Override
     public void initialize(AppStateManager stateManager, Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        System.out.println("Init LobbyScreen with username : " + this.username);
         super.initialize(stateManager, app);   
         
         clientLobbyService.addClientLobbyListener(this);
@@ -74,6 +73,7 @@ public class LobbyState extends AbstractAppState implements
     public void cleanup(){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
         app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
     }
     
     /**
@@ -82,10 +82,9 @@ public class LobbyState extends AbstractAppState implements
      */
     public void joinGame(GameLobbyScreen gls){
         clientLobbyService.addClientLobbyListener(gls);
-        System.out.println("Joining game " + gls.getName());
+        LOGGER.log(Level.FINE, "Joining game {0}", gls.getName());
         app.getStateManager().detach(this);
         app.getStateManager().attach(gls);
-        LOGGER.log(Level.FINE, "Wait until the game has loaded.");
     }
 
     /**
