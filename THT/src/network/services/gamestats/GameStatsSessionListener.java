@@ -11,4 +11,8 @@ package network.services.gamestats;
  */
 public interface GameStatsSessionListener {
     
+    void notifyPlayerKilled(String victim, String killer);
+    
+    void notifyPlayerEscaped(String name);
+
 }
