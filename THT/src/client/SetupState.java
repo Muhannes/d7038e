@@ -45,7 +45,7 @@ public class SetupState extends BaseAppState implements EventListener{
 
     @Override
     protected void cleanup(Application app) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO: cleanup for setup state
     }
 
     @Override

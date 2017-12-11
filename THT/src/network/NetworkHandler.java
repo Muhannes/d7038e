@@ -74,7 +74,7 @@ public class NetworkHandler {
             server.getServices().addService(new HostedChatService());
             server.getServices().addService(new HostedLobbyService());
             server.getServices().addService(new HostedPingService());
-            //server.getServices().addService(new HostedGameSetupService());
+            server.getServices().addService(new HostedGameSetupService());
             
             // Important to call this afer the server has been created!!!
             initSerializables();
