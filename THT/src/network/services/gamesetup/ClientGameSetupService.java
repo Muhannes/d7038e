@@ -37,6 +37,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
+        System.out.println("Init ClientGameSetup");
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");

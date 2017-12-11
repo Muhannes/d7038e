@@ -75,6 +75,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
     @Override
     public void ready() {
+        System.out.println("Pressed ready! (clientlobbyservice) ");
         getDelegate().ready();
     }
 
@@ -104,7 +105,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void playerJoinedLobby(String name) {
-            System.out.println(name + " is named received.");
+            System.out.println(name + " join message received.");
             for (ClientLobbyListener listener : listeners) {
                 listener.playerJoinedLobby(name);
             }
@@ -119,6 +120,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void playerReady(String name, boolean ready) {
+            System.out.println("Player : " + name + " is ready.");
             for (ClientLobbyListener listener : listeners) {
                 listener.playerReady(name, ready);
             }
@@ -126,14 +128,10 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
         @Override
         public void allReady() {
+            System.out.println("Everyone is ready!");
             for (ClientLobbyListener listener : listeners) {
                 listener.allReady();
             }
         }
-        
-        
     }
-    
-    
-    
 }

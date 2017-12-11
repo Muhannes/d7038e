@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.HostedChatService;
+import network.services.gamesetup.HostedGameSetupService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.HostedLoginService;
 import network.services.ping.HostedPingService;
@@ -73,6 +74,7 @@ public class NetworkHandler {
             server.getServices().addService(new HostedChatService());
             server.getServices().addService(new HostedLobbyService());
             server.getServices().addService(new HostedPingService());
+            //server.getServices().addService(new HostedGameSetupService());
             
             // Important to call this afer the server has been created!!!
             initSerializables();

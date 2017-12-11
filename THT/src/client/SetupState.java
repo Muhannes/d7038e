@@ -9,7 +9,9 @@ import api.models.Player;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.material.Material;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.terrain.geomipmap.TerrainQuad;
 import de.lessvoid.nifty.Nifty;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
@@ -30,7 +32,7 @@ public class SetupState extends BaseAppState implements EventListener{
     private ClientGameSetupService cgss;
     
     private int globalId;
-    
+        
     public SetupState(ClientGameSetupService cgss, int id){
         this.cgss = cgss;
         this.globalId = id;
@@ -77,10 +79,11 @@ public class SetupState extends BaseAppState implements EventListener{
             app.getRootNode();
             
             //Notify ready
+            System.out.println("In notifyEvent, load up everything on screen.");
             
         } else if (T == StartGameEvent.class){
             this.setEnabled(false);
             app.getStateManager().getState(GameState.class).setEnabled(true);            
         }
-    }
+    }    
 }

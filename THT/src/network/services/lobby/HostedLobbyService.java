@@ -39,6 +39,8 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     private int channel;
     // Channel we send on, is it a port though?
     
+    private int everyoneIsReady = 0;
+    
     public HostedLobbyService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
     }
@@ -156,14 +158,20 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public void ready(){
-            boolean allReady = lobbyRoom.setPlayerReady(connection.getId());
+            System.out.println("Player is ready (HostedLobbyService)!");
+            boolean playerIsReady = lobbyRoom.setPlayerReady(connection.getId());
+            //everyoneIsReady ++; //One more is ready
+            
             List<HostedConnection> players = lobbyRoom.getPlayers();
-            for (HostedConnection player : players) {
-                // Send out to each player in room that this one has joined it.
-                getDelegate(player).
-                        playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
-            }
-            if (allReady) {
+            
+            //for (HostedConnection player : players) {
+                // Send out to each player in room that this one is ready.
+            getDelegate(players.get(0)).playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
+            //}
+            System.out.println("How many are ready ? " + everyoneIsReady + " / " + lobbyRoom.getPlayers().size());
+            //if (playerIsReady && !((everyoneIsReady) < lobbyRoom.getPlayers().size())) {
+            if(playerIsReady){
+                System.out.println("Players are ready on server-side");
                 // TODO: Start game.
                 Map<Integer, String> playerInfo = new HashMap<>();
                 List<Integer> ids = lobbyRoom.getPlayerIDs();
@@ -173,9 +181,10 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                     int id =ids.get(i);
                     playerInfo.put(id, name);
                 }
-                EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
+//                EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
                 for (HostedConnection player : players) {
-                    // Send out to each player in room that this one has joined it.
+                    System.out.println("How many times do the cow say moo ?");
+                    // Send out to each player in room that this one is ready.
                     getDelegate(player).allReady();
                 }
             }
