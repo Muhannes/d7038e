@@ -9,6 +9,8 @@ import api.models.Player;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.asset.AssetManager;
+import com.jme3.input.FlyByCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -16,6 +18,8 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import de.lessvoid.nifty.Nifty;
 import network.services.gamesetup.ClientGameSetupService;
@@ -37,6 +41,12 @@ public class SetupState extends BaseAppState implements EventListener{
     private ClientGameSetupService cgss;
     
     private int globalId;
+    
+    private Node root;
+    
+    private Node worldRoot = new Node("World"); //Bind the scene to this node.
+    
+    private AssetManager asset;
         
     public SetupState(ClientGameSetupService cgss, int id){
         this.cgss = cgss;
@@ -46,16 +56,18 @@ public class SetupState extends BaseAppState implements EventListener{
     @Override
     protected void initialize(Application app) {
         this.app = (SimpleApplication) app;    
-        
+        this.asset = app.getAssetManager();
     }
 
     @Override
     protected void cleanup(Application app) {
         //TODO: cleanup for setup state
+        root.detachAllChildren();
     }
 
     @Override
     protected void onEnable() {
+        this.root = app.getRootNode();
         EventBus.subscribe(this);
         cgss.join(globalId);
         
@@ -73,7 +85,6 @@ public class SetupState extends BaseAppState implements EventListener{
         app.getViewPort().addProcessor(niftyDisplay);
             
         System.out.println("Building World!");
-        //flyCam.setMoveSpeed(50);
         buildStaticWorld();
         System.out.println("Built World!");
         
@@ -89,6 +100,10 @@ public class SetupState extends BaseAppState implements EventListener{
         if(T == PlayerInitEvent.class){
             //INIT WORLD
             app.getRootNode();
+            FlyByCamera flyCam = app.getFlyByCamera();
+            flyCam.setMoveSpeed(50);
+            flyCam.setEnabled(true);
+            
             
             //Notify ready
             System.out.println("In notifyEvent, load up everything on screen.");
@@ -101,16 +116,10 @@ public class SetupState extends BaseAppState implements EventListener{
     
     
     public void buildStaticWorld(){
-        Box b = new Box(1,1,1);
-        Geometry geom = new Geometry("Box", b);
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        geom.setMaterial(mat);
-        app.getRootNode().attachChild(geom);
         
-        //cam.setLocation(new Vector3f(0, 10, -10));
-        //cam.lookAtDirection(new Vector3f(0, -1.5f, -1).normalizeLocal(), Vector3f.UNIT_Y);
- 
+        root.attachChild(worldRoot);
+        Spatial scene = asset.loadModel("Scenes/world.j3o");
+        worldRoot.attachChild(scene);
     }
     
 }

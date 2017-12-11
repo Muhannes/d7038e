@@ -16,6 +16,7 @@ import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ChatSessionListener;
@@ -210,8 +211,14 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         // TODO: change to setupState
         LOGGER.fine("allReady method in GameLobbyScreen");
         app.getStateManager().detach(this);
-        app.getStateManager().getState(SetupState.class).setEnabled(true);
-    }
+        app.enqueue(new Callable(){
+           @Override
+           public Object call() throws Exception {
+                app.getStateManager().getState(SetupState.class).setEnabled(true);   
+               return true;
+           } 
+        });                
+     }
     
     public void gameIsReady(){
         
