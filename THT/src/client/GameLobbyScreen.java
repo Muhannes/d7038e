@@ -97,7 +97,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     
     @Override
     public void onStartScreen() {
-        System.out.println("On start screen in GameLobbyScreen!");
+        LOGGER.fine("On start screen in GameLobbyScreen!");
         for(String name : players){
             playerJoinedLobby(name);
         }
@@ -105,7 +105,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
 
     @Override
     public void onEndScreen() {
-        System.out.println("On end screen!");
+        LOGGER.fine("On end screen!");
     }
 
     public void startGame(String nextScreen){
@@ -144,11 +144,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
      * Server will delegate it to all receiptiants.
      */
     public void sendToServer(){
-        System.out.println("Sending to server");
+        LOGGER.fine("Sending message to server");
         TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
         String chatInput = field.getRealText();
         if(chatInput != null){
-            System.out.println("New Input : " + chatInput);
             ccs.sendMessage(chatInput);
         }
         field.setText("");
