@@ -151,6 +151,7 @@ public class LobbyState extends AbstractAppState implements
     @Override
     public void onRefresh() {
         rooms = clientLobbyService.getAllRooms();
+        gui.clearLobbyRoomList();
         rooms.forEach((name, id) -> gui.addLobbyRoom(name));
     }
 
