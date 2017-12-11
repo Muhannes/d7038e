@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.text.Text;
 import network.services.chat.ChatSessionListener;
+import network.services.chat.ChatSpace;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
@@ -45,7 +46,9 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private ArrayList<String> players;
     LobbyState lobbyScreen;
     private ClientChatService ccs;
-    private ClientLobbyService cls;    
+    private ClientLobbyService cls;
+
+    private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
     GameLobbyScreen(LobbyState lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
         this.lobbyScreen = lobbyScreen;
@@ -136,9 +139,10 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     /**
      * A new message arrived.
      * @param message 
+     * @param chat
      */
     @Override
-    public void newMessage(String message) {
+    public void newMessage(String message, int chat) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
         field.addItem(message);
     }
@@ -153,7 +157,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         String chatInput = field.getRealText();
         if(chatInput != null){
             System.out.println("New Input : " + chatInput);
-            ccs.sendMessage(chatInput);
+            ccs.sendMessage(chatInput, GLOBAL_CHAT); // TOD0: Change destination of message
         }
         field.setText("");
     }
@@ -161,21 +165,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     /**
      * new player joined the room
      * @param name 
+     * @param chat
      */
     @Override
-    public void playerJoinedChat(String name) {
+    public void playerJoinedChat(String name, int chat) {
         //Display new player in chat.
-        newMessage(name + " has joined the chat!");
+        newMessage(name + " has joined the chat!", chat);
     }
 
     /**
      * player left the room
      * @param name 
+     * @param chat
      */
     @Override
-    public void playerLeftChat(String name) {
+    public void playerLeftChat(String name, int chat) {
         //Player left from room.
-        newMessage(name + " Left the chat!");
+        newMessage(name + " Left the chat!", chat);
     }
 
     @Override
@@ -187,14 +193,14 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.addItem(name); 
-        playerJoinedChat(name);
+        playerJoinedChat(name, GLOBAL_CHAT);
     }
 
     @Override
     public void playerLeftLobby(String name) {        
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
-        playerLeftChat(name); //Notice that player is still in chatt, just says left.
+        playerLeftChat(name, GLOBAL_CHAT); //Notice that player is still in chatt, just says left.
     }
 
     @Override
