@@ -73,6 +73,7 @@ public class LobbyState extends AbstractAppState implements
     public void cleanup(){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
         app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
     }
     
     /**
