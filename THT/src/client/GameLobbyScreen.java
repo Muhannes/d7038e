@@ -43,11 +43,11 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     private Screen screen;
     private String gameName;
     private ArrayList<String> players;
-    LobbyScreen lobbyScreen;
+    LobbyState lobbyScreen;
     private ClientChatService ccs;
     private ClientLobbyService cls;    
     
-    GameLobbyScreen(LobbyScreen lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
+    GameLobbyScreen(LobbyState lobbyScreen, ClientChatService ccs, ClientLobbyService cls, String gameName) {
         this.lobbyScreen = lobbyScreen;
         this.ccs = ccs;
         ccs.addChatSessionListener(this);

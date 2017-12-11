@@ -88,8 +88,8 @@ public class LobbyRoom{
      * @return 
      */
     public synchronized boolean setPlayerReady(int playerID){
-        playersReady.put(playerID, Boolean.TRUE); 
-        return playersReady.containsValue(false);
+        playersReady.put(playerID, Boolean.TRUE);
+        return !playersReady.containsValue(false);
     }
     
     public synchronized List<HostedConnection> getPlayers(){

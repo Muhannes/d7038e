@@ -37,9 +37,8 @@ public class ClientApplication extends SimpleApplication{
         
         clientNetworkManager.connectToServer();
         
-        //TODO Create GUI
-        
-        LobbyScreen lobbyScreen = new LobbyScreen(clientNetworkManager.getClientChatService(), clientNetworkManager.getClientLobbyService());
+        LobbyState lobbyScreen = new LobbyState(clientNetworkManager.getClientChatService(), 
+                clientNetworkManager.getClientLobbyService());
         LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
         SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), 1);
         setupState.setEnabled(false);
@@ -49,7 +48,7 @@ public class ClientApplication extends SimpleApplication{
         flyCam.setEnabled(false);
         setDisplayStatView(false);
         
-        setLostFocusBehavior(lostFocusBehavior.Disabled);
+        setLostFocusBehavior(LostFocusBehavior.Disabled);
     }
     
     @Override

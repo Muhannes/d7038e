@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
-import network.services.chat.ChatSession;
-import network.services.chat.HostedChatService;
 import network.util.ConnectionAttribute;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
@@ -35,7 +33,7 @@ import utils.eventbus.EventListener;
  */
 public class HostedGameSetupService extends AbstractHostedConnectionService implements EventListener {
     
-    private static final Logger LOGGER = Logger.getLogger(HostedChatService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedGameSetupService.class);
     
     private RmiHostedService rmiHostedService;
     private int channel;
@@ -47,7 +45,11 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private boolean initialized = false;
     
     public HostedGameSetupService(){
-        this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
+        this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
+    }
+    
+    public HostedGameSetupService(int channel){
+        this.channel = channel;
     }
 
     @Override
@@ -55,13 +57,13 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         setAutoHost(false);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
-            throw new RuntimeException("ChatHostedService requires an RMI service.");
+            throw new RuntimeException("HostedSetupService requires an RMI service.");
         }    
     }
     
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
-        LOGGER.log(Level.INFO, "Chat service started. Client id: {0}", connection.getId());
+        LOGGER.log(Level.INFO, "Game setup service started. Client id: {0}", connection.getId());
         // Create an object that the client can reach
         GameSetupSession session = new GameSetupSessionImpl(connection);
         // Now we expose this object such that the client can get hold of it

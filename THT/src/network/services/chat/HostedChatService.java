@@ -12,7 +12,6 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

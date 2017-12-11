@@ -75,6 +75,10 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
         listeners.add(loginSessionListener);
     }
     
+    public void removeLoginSessionListener(LoginSessionListener loginSessionListener){
+        listeners.remove(loginSessionListener);
+    }
+    
     private class LoginCallback implements LoginSessionListener{
         
         @Override
