@@ -155,9 +155,21 @@ public class SetupState extends BaseAppState implements EventListener{
         worldRoot.attachChild(scene);
         
         // Loading floor child to world node
-        Spatial floor = worldRoot.getChild("floor");
-        bulletAppState.getPhysicsSpace().add(floor.getControl(RigidBodyControl.class));
+        Spatial floor1 = worldRoot.getChild("floor1");
+        bulletAppState.getPhysicsSpace().add(floor1.getControl(RigidBodyControl.class));
         
+        Spatial floor2 = worldRoot.getChild("floor2");
+        bulletAppState.getPhysicsSpace().add(floor2.getControl(RigidBodyControl.class));
+        
+        Spatial floor3 = worldRoot.getChild("floor3");
+        bulletAppState.getPhysicsSpace().add(floor3.getControl(RigidBodyControl.class));
+        /*
+        Spatial wall1 = worldRoot.getChild("wall1");
+        bulletAppState.getPhysicsSpace().add(wall1.getControl(RigidBodyControl.class));
+        
+        Spatial wall2 = worldRoot.getChild("wall2");
+        bulletAppState.getPhysicsSpace().add(wall2.getControl(RigidBodyControl.class));
+        */
         //Loading player to world node
         player = worldRoot.getChild("player");
         BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
@@ -170,7 +182,6 @@ public class SetupState extends BaseAppState implements EventListener{
         player.addControl(playerControl);
 
         bulletAppState.getPhysicsSpace().add(playerControl);
-        
         
         input.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         input.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
