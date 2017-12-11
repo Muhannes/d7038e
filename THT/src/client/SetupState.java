@@ -11,9 +11,12 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.terrain.geomipmap.TerrainQuad;
 import de.lessvoid.nifty.Nifty;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
@@ -34,7 +37,7 @@ public class SetupState extends BaseAppState implements EventListener{
     private ClientGameSetupService cgss;
     
     private int globalId;
-    
+        
     public SetupState(ClientGameSetupService cgss, int id){
         this.cgss = cgss;
         this.globalId = id;
@@ -48,7 +51,7 @@ public class SetupState extends BaseAppState implements EventListener{
 
     @Override
     protected void cleanup(Application app) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO: cleanup for setup state
     }
 
     @Override
@@ -64,13 +67,16 @@ public class SetupState extends BaseAppState implements EventListener{
         Nifty nifty = niftyDisplay.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/gameState.xml", "game"); //Should be 2 screens, human and monster. 
-        
+        nifty.fromXml("Interface/gameState.xml", "frame"); //Should be 2 screens, human and monster. 
+        System.out.println("Setup is enabled");
         // attach the Nifty display to the gui view port as a processor
         app.getViewPort().addProcessor(niftyDisplay);
-        
-        
+            
+        System.out.println("Building World!");
+        //flyCam.setMoveSpeed(50);
         buildStaticWorld();
+        System.out.println("Built World!");
+        
     }
 
     @Override
@@ -85,6 +91,7 @@ public class SetupState extends BaseAppState implements EventListener{
             app.getRootNode();
             
             //Notify ready
+            System.out.println("In notifyEvent, load up everything on screen.");
             
         } else if (T == StartGameEvent.class){
             this.setEnabled(false);
@@ -100,5 +107,10 @@ public class SetupState extends BaseAppState implements EventListener{
         mat.setColor("Color", ColorRGBA.Blue);
         geom.setMaterial(mat);
         app.getRootNode().attachChild(geom);
+        
+        //cam.setLocation(new Vector3f(0, 10, -10));
+        //cam.lookAtDirection(new Vector3f(0, -1.5f, -1).normalizeLocal(), Vector3f.UNIT_Y);
+ 
     }
+    
 }

@@ -20,7 +20,7 @@ import utils.eventbus.EventBus;
  */
 public class ClientGameSetupService extends AbstractClientService implements GameSetupSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientChatService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientGameSetupService.class);
     
     private GameSetupSession delegate;
     // Handle to a server side object
@@ -37,6 +37,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
+        System.out.println("Init ClientGameSetup");
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
@@ -70,6 +71,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
         @Override
         public void initPlayer(Player p) {
+            System.out.println("InitPlayer Received!");
             EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
         }
 

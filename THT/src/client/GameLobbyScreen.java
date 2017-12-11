@@ -11,20 +11,13 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.controls.Chat;
-import de.lessvoid.nifty.controls.Label;
 import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
-import de.lessvoid.nifty.controls.label.LabelControl;
-import de.lessvoid.nifty.elements.Element;
-import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.text.Text;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
@@ -120,17 +113,20 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     }
     
     public void returnToLobby(){
-        System.out.println("Returning to lobby!");
         cls.leave();
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
     }
     
     public void quitGame(){
-        System.out.println("Quitting game");
         cls.leave();
         app.getStateManager().detach(this);
         app.stop();
+    }
+    
+    public void pressingReady(){        
+        cls.ready();
+        //Send message to chat that a player is ready
     }
 
     /**
@@ -187,7 +183,6 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void playerJoinedLobby(String name) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
         field.addItem(name); 
-        playerJoinedChat(name);
     }
 
     @Override
@@ -196,25 +191,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         field.removeItem(name);
         playerLeftChat(name); //Notice that player is still in chatt, just says left.
     }
-
+    
     @Override
     public void playerReady(String name, boolean ready) {
         //TODO: display readyness
+        newMessage(name + " is ready!");
     }
     
     @Override
     public void allReady() {
         // TODO: change to setupState
-
+        LOGGER.fine("allReady method in GameLobbyScreen");
         app.getStateManager().detach(this);
         app.getStateManager().getState(SetupState.class).setEnabled(true);
-
     }
     
     public void gameIsReady(){
         
     }
 
-    
-    
 }
