@@ -61,8 +61,8 @@ public class SetupState extends BaseAppState implements EventListener{
         Nifty nifty = niftyDisplay.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/gameState.xml", "game"); //Should be 2 screens, human and monster. 
-        
+        nifty.fromXml("Interface/gameState.xml", "frame"); //Should be 2 screens, human and monster. 
+        System.out.println("Setup is enabled");
         // attach the Nifty display to the gui view port as a processor
         app.getViewPort().addProcessor(niftyDisplay);
     }
