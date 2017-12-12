@@ -10,11 +10,6 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.controls.ListBox;
-import de.lessvoid.nifty.controls.TextField;
-import de.lessvoid.nifty.screen.Screen;
-import de.lessvoid.nifty.screen.ScreenController;
 import gui.gamelobby.GameLobbyGUI;
 import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
@@ -32,16 +27,13 @@ import network.services.lobby.ClientLobbyService;
  * @author ted
  */
 public class GameLobbyScreen extends AbstractAppState implements 
-        //ScreenController, 
         ChatSessionListener, 
         ClientLobbyListener,
         GameLobbyGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
-    private Nifty nifty;
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
-    private Screen screen;
     private String gameName;
     private ArrayList<String> players;
     LobbyState lobbyScreen;
@@ -75,13 +67,6 @@ public class GameLobbyScreen extends AbstractAppState implements
         
         gui.addGameLobbyGUIListener(this);
         
-        /** Create a new NiftyGUI object */
-        //nifty = niftyDisplay.getNifty();
-
-        /** Read your XML and initialize your custom ScreenController */
-        //nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
-        
-        // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
     }
 
@@ -103,41 +88,6 @@ public class GameLobbyScreen extends AbstractAppState implements
     public String getName(){
         return this.gameName;
     }
-/*    
-    @Override
-    public void bind(Nifty nifty, Screen screen) {
-        //TODO: 
-    }
-    
-    @Override
-    public void onStartScreen() {
-        LOGGER.fine("On start screen in GameLobbyScreen!");
-        for(String name : players){
-            playerJoinedLobby(name);
-        }
-    }
-
-    @Override
-    public void onEndScreen() {
-        LOGGER.fine("On end screen!");
-    }
- */   
-    /*public void returnToLobby(){
-        cls.leave();
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(lobbyScreen);
-    }*/
-    
-    /*public void quitGame(){
-        cls.leave();
-        app.getStateManager().detach(this);
-        app.stop();
-    }*/
-    
-    /*public void pressingReady(){        
-        cls.ready();
-        //Send message to chat that a player is ready
-    }*/
 
     /**
      * A new message arrived.
@@ -147,24 +97,8 @@ public class GameLobbyScreen extends AbstractAppState implements
     @Override
     public void newMessage(String message, int chat) {
         gui.addChatMessage(message);
-        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
-        //field.addItem(message);
     }
 
-    /**
-     * Send chat message to server.
-     * Server will delegate it to all receiptiants.
-     */
-/*    public void sendToServer(){
-        LOGGER.fine("Sending message to server");
-        TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
-        String chatInput = field.getRealText();
-        if(chatInput != null){
-            ccs.sendMessage(chatInput, GLOBAL_CHAT); // TOD0: Change destination of message
-        }
-        field.setText("");
-    }
-*/    
     /**
      * new player joined the room
      * @param name 
@@ -195,15 +129,11 @@ public class GameLobbyScreen extends AbstractAppState implements
     @Override
     public void playerJoinedLobby(String name) {
         gui.addPlayer(name);
-        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        //field.addItem(name);
     }
 
     @Override
     public void playerLeftLobby(String name) { 
         gui.removePlayer(name);
-        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        //field.removeItem(name);
     }
     
     @Override
@@ -221,7 +151,7 @@ public class GameLobbyScreen extends AbstractAppState implements
            @Override
            public Object call() throws Exception {
                 app.getStateManager().getState(SetupState.class).setEnabled(true);   
-               return true;
+                return true;
            } 
         });                
     }
