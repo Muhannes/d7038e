@@ -125,7 +125,7 @@ public class SetupState extends BaseAppState implements EventListener{
             
         //Bullet physics for players, walls, objects
         bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);        
+        bulletAppState.setDebugEnabled(false);        
         buildStaticWorld(); //When the world is built, send it to gameState
         
     }
