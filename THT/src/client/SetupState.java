@@ -20,15 +20,18 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.scene.shape.Box;
+import com.jme3.texture.Texture;
 import de.lessvoid.nifty.Nifty;
 import network.services.gamesetup.ClientGameSetupService;
-import network.services.gamesetup.GameSetupSessionListener;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.gamesetup.StartGameEvent;
 import utils.eventbus.Event;
@@ -58,6 +61,8 @@ public class SetupState extends BaseAppState implements EventListener{
     private CharacterControl playerControl;
     
     private CapsuleCollisionShape playerShape;
+    
+    private BulletAppState bulletAppState;
     
     private InputManager input;
     
@@ -100,22 +105,27 @@ public class SetupState extends BaseAppState implements EventListener{
         EventBus.subscribe(this);
         cgss.join(globalId);
         
+        /* Not required here, only setup!
+        
         NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
                 
-        /** Create a new NiftyGUI object */
+        // Create a new NiftyGUI object 
         Nifty nifty = niftyDisplay.getNifty();
 
-        /** Read your XML and initialize your custom ScreenController */
+        // Read your XML and initialize your custom ScreenController 
         nifty.fromXml("Interface/gameState.xml", "frame"); //Should be 2 screens, human and monster. 
-        System.out.println("Setup is enabled");
         // attach the Nifty display to the gui view port as a processor
         app.getViewPort().addProcessor(niftyDisplay);
+        */
+                
+        System.out.println("Setup is enabled");
             
-        System.out.println("Building World!");
-        buildStaticWorld();
-        System.out.println("Built World!");
+        //Bullet physics for players, walls, objects
+        bulletAppState = new BulletAppState();
+        bulletAppState.setDebugEnabled(false);        
+        buildStaticWorld(); //When the world is built, send it to gameState
         
     }
 
@@ -128,9 +138,8 @@ public class SetupState extends BaseAppState implements EventListener{
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if(T == PlayerInitEvent.class){
             //INIT WORLD
-            flyCam.setMoveSpeed(20);
-            flyCam.setEnabled(false);
             
+            flyCam.setEnabled(false);
             
             //Notify ready
             System.out.println("In notifyEvent, load up everything on screen.");
@@ -142,56 +151,109 @@ public class SetupState extends BaseAppState implements EventListener{
     }
     
     
-    public void buildStaticWorld(){
+    public void buildStaticWorld(){        
         
         //Init bulletAppState maybe somewhere else
-        BulletAppState bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);
-        
         app.getStateManager().attach(bulletAppState);
+        
+        buildStructures(); //Only this should remain in setup. Move rest to gameState.
+        createPlayers();
+        
+        //Key boundings for players
+        input.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        input.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
+        input.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
+        input.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        input.addMapping("Trap", new KeyTrigger(KeyInput.KEY_F));        
+        input.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+        
+        input.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Jump", "Trap");
+        chaseCamera = new ChaseCamera(camera, player, input);
+    }
+    
+    public void buildStructures(){
         
         root.attachChild(worldRoot);
         Spatial scene = asset.loadModel("Scenes/world.j3o");
         worldRoot.attachChild(scene);
         
-        // Loading floor child to world node
+        Material ground_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        ground_mat.setColor("Color", ColorRGBA.Gray);     
+        
+        Material walls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        walls_mat.setColor("Color", ColorRGBA.DarkGray);     
+
+        Material innerWalls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        innerWalls_mat.setColor("Color", ColorRGBA.Brown);     
+        
+        
         Spatial floor1 = worldRoot.getChild("floor1");
+        floor1.setMaterial(ground_mat);
         bulletAppState.getPhysicsSpace().add(floor1.getControl(RigidBodyControl.class));
         
         Spatial floor2 = worldRoot.getChild("floor2");
-        bulletAppState.getPhysicsSpace().add(floor2.getControl(RigidBodyControl.class));
+        floor2.setMaterial(ground_mat);
+        bulletAppState.getPhysicsSpace().add(floor2.getControl(RigidBodyControl.class));       
         
         Spatial floor3 = worldRoot.getChild("floor3");
+        floor3.setMaterial(ground_mat);
         bulletAppState.getPhysicsSpace().add(floor3.getControl(RigidBodyControl.class));
-        /*
+        
         Spatial wall1 = worldRoot.getChild("wall1");
+        wall1.setMaterial(walls_mat);
         bulletAppState.getPhysicsSpace().add(wall1.getControl(RigidBodyControl.class));
         
         Spatial wall2 = worldRoot.getChild("wall2");
+        wall2.setMaterial(walls_mat);
         bulletAppState.getPhysicsSpace().add(wall2.getControl(RigidBodyControl.class));
-        */
-        //Loading player to world node
-        player = worldRoot.getChild("player");
+        
+        Spatial wall3 = worldRoot.getChild("wall3");
+        wall3.setMaterial(walls_mat);
+        bulletAppState.getPhysicsSpace().add(wall3.getControl(RigidBodyControl.class));
+        
+        Spatial wall4 = worldRoot.getChild("wall4");
+        wall4.setMaterial(walls_mat);
+        bulletAppState.getPhysicsSpace().add(wall4.getControl(RigidBodyControl.class));
+        
+        Spatial innerWall1 = worldRoot.getChild("innerWall1");
+        innerWall1.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall1.getControl(RigidBodyControl.class));
+        
+        Spatial innerWall2 = worldRoot.getChild("innerWall2");
+        innerWall2.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall2.getControl(RigidBodyControl.class));
+        
+        Spatial innerWall3 = worldRoot.getChild("innerWall3");
+        innerWall3.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall3.getControl(RigidBodyControl.class));
+        
+        
+    }
+    
+    public void createPlayers(){
+        
+        //Create monster
+        Texture demonSkin = asset.loadTexture("Models/demon/demon_tex.png");
+        Material demonMat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        demonMat.setTexture("ColorMap", demonSkin);
+        Spatial demon = worldRoot.getChild("demon");     
+        demon.setMaterial(demonMat);
+        bulletAppState.getPhysicsSpace().add(demon.getControl(RigidBodyControl.class));
+
+        createHumans();           
+    }
+    
+    public void createHumans(){
+        //Create a player blob
+        player = worldRoot.getChild("player1");
         BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         float radius = boundingBox.getXExtent();
-        float height = boundingBox.getYExtent();
-        
-        playerShape = new CapsuleCollisionShape(radius, height);
-                
+        float height = boundingBox.getYExtent();        
+        playerShape = new CapsuleCollisionShape(radius, height);                
         playerControl = new CharacterControl(playerShape, 1.0f);
         player.addControl(playerControl);
-
-        bulletAppState.getPhysicsSpace().add(playerControl);
+        bulletAppState.getPhysicsSpace().add(playerControl);        
         
-        input.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        input.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
-        input.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
-        input.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        input.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        
-        input.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Jump");
-        
-        chaseCamera = new ChaseCamera(camera, player, input);
     }
     
     private final ActionListener actionListener = new ActionListener(){
@@ -211,14 +273,29 @@ public class SetupState extends BaseAppState implements EventListener{
             }
             else if (name.equals("Jump")){
                 playerControl.jump();
-            } else {
+            } else if (name.equals("Trap") && keyPressed){
+                Vector3f location = player.getLocalTranslation();
+                //Send message about the new trap at a location of the player.
+                putTrap(location); //Should be removed when server does the same thing.
+            }else {
                 
             }
         }
     };
     
+    public void putTrap(Vector3f trapLocation){
+        Box box = new Box(1,1,1);
+        Geometry geom = new Geometry("Trap", box);
+        geom.setLocalTranslation(trapLocation);
+        Material box_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        box_mat.setColor("Color", ColorRGBA.Red);
+        geom.setMaterial(box_mat);        
+        worldRoot.attachChild(geom);
+    }
+        
     @Override
     public void update(float tpf){
+        
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
         
@@ -236,10 +313,9 @@ public class SetupState extends BaseAppState implements EventListener{
         if(backward) walkingDirection.addLocal(camDir.negate());
         
         if(player != null){
-            walkingDirection.multLocal(10f).multLocal(tpf);
+            walkingDirection.multLocal(40f).multLocal(tpf);
             playerControl.setWalkDirection(walkingDirection);
         }
-        
     }
     
 }
