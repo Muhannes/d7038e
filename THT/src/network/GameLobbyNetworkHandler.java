@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.HostedChatService;
-import network.services.gamelobbyservice.HostedGameLobbyService;
+import network.services.gamelobbyservice.ClientGameLobbyService;
 import network.services.gamesetup.HostedGameSetupService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.HostedLoginService;
@@ -24,28 +24,28 @@ import network.util.NetConfig;
 
 /**
  *
- * @author hannes
+ * @author ted
  */
-public class NetworkHandler {
+public class GameLobbyNetworkHandler {
     
-    private static final Logger LOGGER = Logger.getLogger(NetworkHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GameLobbyNetworkHandler.class.getName());
     
     private Server server;
-    private final int port = NetConfig.SERVER_PORT;
+    private final int port = NetConfig.GAME_SERVER_PORT;
     
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){
-        NetworkHandler nh = new NetworkHandler();
+        GameLobbyNetworkHandler glnh = new GameLobbyNetworkHandler();
         while (true){
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(NetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GameLobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    public NetworkHandler(){
+    public GameLobbyNetworkHandler(){
         initServer();
     }
     
@@ -71,12 +71,6 @@ public class NetworkHandler {
             server = Network.createServer(port);
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
-            server.getServices().addService(new HostedLoginService());
-            server.getServices().addService(new HostedChatService());
-            server.getServices().addService(new HostedLobbyService());
-            server.getServices().addService(new HostedPingService());
-            server.getServices().addService(new HostedGameSetupService());
-            server.getServices().addService(new HostedGameLobbyService());
             
             // Important to call this afer the server has been created!!!
             initSerializables();

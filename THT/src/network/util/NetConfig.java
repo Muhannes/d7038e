@@ -12,4 +12,5 @@ package network.util;
 public class NetConfig {
     public static String SERVER_NAME = "localhost";
     public static int SERVER_PORT = 7999;
+    public static int GAME_SERVER_PORT = 8000;
 }

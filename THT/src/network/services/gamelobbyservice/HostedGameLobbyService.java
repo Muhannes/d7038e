@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.service.gamelobbyservice;
+package network.services.gamelobbyservice;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -15,11 +15,6 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import network.services.chat.ChatSession;
-import network.services.chat.ChatSessionImpl;
-import network.services.chat.ChatSessionListener;
-import network.services.chat.ChatSpace;
-import network.services.chat.HostedChatService;
 import network.services.gamesetup.SetupGameEvent;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;

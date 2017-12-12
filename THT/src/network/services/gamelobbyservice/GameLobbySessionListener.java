@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.service.gamelobbyservice;
+package network.services.gamelobbyservice;
+
+import java.util.Map;
 
 /**
  *
  * @author hannes
  */
-public interface GameLobbySession {
-    boolean join(int key, int port);
+public interface GameLobbySessionListener {
+    
+     void startSetup(Map<Integer, String> playerInfo);
 }
