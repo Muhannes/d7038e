@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.service.gamelobbyservice;
+package network.services.gamelobbyservice;
 
+import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.Map;
 import network.services.chat.ChatSession;
-import network.services.chat.ChatSessionListener;
 
 /**
  *
@@ -27,6 +27,11 @@ public class ClientGameLobbyService extends AbstractClientService{
     
     private int channel;
     // Channel we send on, is it a port though?
+    
+    
+    public ClientGameLobbyService(){
+        this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
+    }
     
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
