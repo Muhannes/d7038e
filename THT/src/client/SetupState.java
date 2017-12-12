@@ -12,6 +12,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
@@ -124,7 +125,7 @@ public class SetupState extends BaseAppState implements EventListener{
             
         //Bullet physics for players, walls, objects
         bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(false);        
+        bulletAppState.setDebugEnabled(true);        
         buildStaticWorld(); //When the world is built, send it to gameState
         
     }
@@ -215,18 +216,28 @@ public class SetupState extends BaseAppState implements EventListener{
         wall4.setMaterial(walls_mat);
         bulletAppState.getPhysicsSpace().add(wall4.getControl(RigidBodyControl.class));
         
+        //Inner walls
+        
         Spatial innerWall1 = worldRoot.getChild("innerWall1");
         innerWall1.setMaterial(innerWalls_mat);
+        CollisionShape tmp1 = innerWall1.getControl(RigidBodyControl.class).getCollisionShape();
+        tmp1.setScale(new Vector3f(25,25,1));
+        innerWall1.getControl(RigidBodyControl.class).setCollisionShape(tmp1);
         bulletAppState.getPhysicsSpace().add(innerWall1.getControl(RigidBodyControl.class));
         
         Spatial innerWall2 = worldRoot.getChild("innerWall2");
         innerWall2.setMaterial(innerWalls_mat);
+        CollisionShape tmp2 = innerWall2.getControl(RigidBodyControl.class).getCollisionShape();
+        tmp2.setScale(new Vector3f(25,25,1));
+        innerWall2.getControl(RigidBodyControl.class).setCollisionShape(tmp2);
         bulletAppState.getPhysicsSpace().add(innerWall2.getControl(RigidBodyControl.class));
         
         Spatial innerWall3 = worldRoot.getChild("innerWall3");
         innerWall3.setMaterial(innerWalls_mat);
+        CollisionShape tmp3 = innerWall3.getControl(RigidBodyControl.class).getCollisionShape();
+        tmp3.setScale(new Vector3f(25,25,1));
+        innerWall3.getControl(RigidBodyControl.class).setCollisionShape(tmp3);
         bulletAppState.getPhysicsSpace().add(innerWall3.getControl(RigidBodyControl.class));
-        
         
     }
     
@@ -298,7 +309,7 @@ public class SetupState extends BaseAppState implements EventListener{
         
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
-        
+
         camDir.y = 0;
         camLeft.y = 0;
         
