@@ -15,6 +15,8 @@ import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import gui.gamelobby.GameLobbyGUI;
+import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -29,7 +31,11 @@ import network.services.lobby.ClientLobbyService;
  *
  * @author ted
  */
-public class GameLobbyScreen extends AbstractAppState implements ScreenController, ChatSessionListener, ClientLobbyListener{
+public class GameLobbyScreen extends AbstractAppState implements 
+        //ScreenController, 
+        ChatSessionListener, 
+        ClientLobbyListener,
+        GameLobbyGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
     private Nifty nifty;
@@ -41,6 +47,8 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     LobbyState lobbyScreen;
     private ClientChatService ccs;
     private ClientLobbyService cls;
+    
+    private GameLobbyGUI gui;
 
     private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
@@ -58,22 +66,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         LOGGER.log(Level.INFO, "Initializing LoginScreen");
         super.initialize(stateManager, app);        
         this.app = app;
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
         app.getAudioRenderer(), app.getGuiViewPort());
         
+        gui = new GameLobbyGUI(niftyDisplay);
+        
+        gui.addGameLobbyGUIListener(this);
+        
         /** Create a new NiftyGUI object */
-        nifty = niftyDisplay.getNifty();
+        //nifty = niftyDisplay.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
+        //nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
         
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
-                      
-        //nifty.setDebugOptionPanelColors(true);
-                
     }
 
     @Override
@@ -94,7 +103,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public String getName(){
         return this.gameName;
     }
-    
+/*    
     @Override
     public void bind(Nifty nifty, Screen screen) {
         //TODO: 
@@ -112,27 +121,23 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
     public void onEndScreen() {
         LOGGER.fine("On end screen!");
     }
-
-    public void startGame(String nextScreen){
-        nifty.gotoScreen(nextScreen);
-    }
-    
-    public void returnToLobby(){
+ */   
+    /*public void returnToLobby(){
         cls.leave();
         app.getStateManager().detach(this);
         app.getStateManager().attach(lobbyScreen);
-    }
+    }*/
     
-    public void quitGame(){
+    /*public void quitGame(){
         cls.leave();
         app.getStateManager().detach(this);
         app.stop();
-    }
+    }*/
     
-    public void pressingReady(){        
+    /*public void pressingReady(){        
         cls.ready();
         //Send message to chat that a player is ready
-    }
+    }*/
 
     /**
      * A new message arrived.
@@ -141,15 +146,16 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
      */
     @Override
     public void newMessage(String message, int chat) {
-        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
-        field.addItem(message);
+        gui.addChatMessage(message);
+        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
+        //field.addItem(message);
     }
 
     /**
      * Send chat message to server.
      * Server will delegate it to all receiptiants.
      */
-    public void sendToServer(){
+/*    public void sendToServer(){
         LOGGER.fine("Sending message to server");
         TextField field = nifty.getScreen("gamelobby").findNiftyControl("textfieldInput", TextField.class);
         String chatInput = field.getRealText();
@@ -158,7 +164,7 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
         }
         field.setText("");
     }
-    
+*/    
     /**
      * new player joined the room
      * @param name 
@@ -188,14 +194,16 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
 
     @Override
     public void playerJoinedLobby(String name) {
-        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        field.addItem(name);
+        gui.addPlayer(name);
+        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        //field.addItem(name);
     }
 
     @Override
-    public void playerLeftLobby(String name) {        
-        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
-        field.removeItem(name);
+    public void playerLeftLobby(String name) { 
+        gui.removePlayer(name);
+        //ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBoxPlayers", ListBox.class);
+        //field.removeItem(name);
     }
     
     @Override
@@ -216,10 +224,30 @@ public class GameLobbyScreen extends AbstractAppState implements ScreenControlle
                return true;
            } 
         });                
-     }
-    
-    public void gameIsReady(){
-        
+    }
+
+    @Override
+    public void onReady() {
+        cls.ready();
+    }
+
+    @Override
+    public void onReturnToLobby() {
+        cls.leave();
+        app.getStateManager().detach(this);
+        app.getStateManager().attach(lobbyScreen);    
+    }
+
+    @Override
+    public void onQuitGame() {
+        cls.leave();
+        app.getStateManager().detach(this);
+        app.stop();
+    }
+
+    @Override
+    public void onSendMessage(String message) {
+      ccs.sendMessage(message, GLOBAL_CHAT); 
     }
 
 }
