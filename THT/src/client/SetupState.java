@@ -5,6 +5,8 @@
  */
 package client;
 
+import api.models.EntityType;
+import api.models.Player;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
@@ -32,6 +34,9 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 import de.lessvoid.nifty.Nifty;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.gamesetup.StartGameEvent;
@@ -50,6 +55,12 @@ public class SetupState extends BaseAppState implements EventListener{
     private ClientGameSetupService cgss;
     
     private int globalId;
+    
+    private List<Player> players;
+    
+    private PlayerInitEvent playerEvent;
+    
+    private List<Vector3f> position;
     
     private Node root;
     
@@ -139,6 +150,22 @@ public class SetupState extends BaseAppState implements EventListener{
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if(T == PlayerInitEvent.class){
             //INIT WORLD
+            playerEvent = (PlayerInitEvent) event;
+            players = playerEvent.players;
+            
+            Random random = new Random();
+            int monster = random.nextInt(10);
+
+            position = new ArrayList<>();
+            for(int p = 0; p < players.size(); p++){
+                if(p == monster){
+                    position.add(new Vector3f(-10f, -10f, -10f));
+                    players.get(p).setType(EntityType.Monster);
+                } else {
+                    players.get(p).setType(EntityType.Human);
+                    position.add(new Vector3f(player.getLocalTranslation().x + (p*5), player.getLocalTranslation().y + (p*5), player.getLocalTranslation().z + (p*5)));                    
+                }
+            }
             
             flyCam.setEnabled(false);
             
@@ -259,16 +286,22 @@ public class SetupState extends BaseAppState implements EventListener{
     }
     
     public void createHumans(){
-        //Create a player blob
-        player = worldRoot.getChild("player1");
-        BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
-        float radius = boundingBox.getXExtent();
-        float height = boundingBox.getYExtent();        
-        playerShape = new CapsuleCollisionShape(radius, height);                
-        playerControl = new CharacterControl(playerShape, 1.0f);
-        player.addControl(playerControl);
-        bulletAppState.getPhysicsSpace().add(playerControl);        
         
+        for(int i = 0; i < players.size(); i++){
+
+            Player human = players.get(i);
+                           
+            player = worldRoot.getChild("player1");
+            player.setName(Integer.toString(human.getID()));
+            player.setLocalTranslation(position.get(i));
+            BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
+            float radius = boundingBox.getXExtent();
+            float height = boundingBox.getYExtent();
+            playerShape = new CapsuleCollisionShape(radius, height);                
+            playerControl = new CharacterControl(playerShape, 1.0f);
+        
+            if(human.getID() == globalId) bulletAppState.getPhysicsSpace().add(playerControl);                                                        
+        }        
     }
     
     private final ActionListener actionListener = new ActionListener(){
