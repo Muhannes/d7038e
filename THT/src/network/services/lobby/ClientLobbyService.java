@@ -133,10 +133,10 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         }
 
         @Override
-        public void allReady() {
+        public void allReady(String ip, int port) {
             LOGGER.fine("Everyone is ready!");
             for (ClientLobbyListener listener : listeners) {
-                listener.allReady();
+                listener.allReady(ip, port);
             }
         }
     }

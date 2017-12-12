@@ -25,6 +25,6 @@ public interface ClientLobbyListener {
     void playerReady(String name, boolean ready);
     
     @Asynchronous
-    void allReady();
+    void allReady(String ip, int port);
     
 }

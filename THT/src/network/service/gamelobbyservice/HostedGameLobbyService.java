@@ -21,6 +21,7 @@ import network.services.chat.ChatSessionListener;
 import network.services.chat.ChatSpace;
 import network.services.chat.HostedChatService;
 import network.services.gamesetup.SetupGameEvent;
+import network.services.lobby.ClientLobbyListener;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -32,7 +33,7 @@ import utils.eventbus.EventListener;
 public class HostedGameLobbyService extends AbstractHostedConnectionService implements EventListener{
     
     private static final Logger LOGGER = Logger.getLogger(HostedGameLobbyService.class);
-    private final List<GameLobbySessionListener> gameServers = new ArrayList<>();
+    private final List<GameServer> gameServers = new ArrayList<>();
     
     private RmiHostedService rmiHostedService;
     private int channel;
@@ -77,7 +78,11 @@ public class HostedGameLobbyService extends AbstractHostedConnectionService impl
         if (T == SetupGameEvent.class) {
             SetupGameEvent setupGameEvent = (SetupGameEvent) event;
             if (!gameServers.isEmpty()) {
-                gameServers.remove(0).startSetup(setupGameEvent.getPlayers());
+                GameServer gameServer = gameServers.remove(0);
+                gameServer.gameCallback.startSetup(setupGameEvent.getPlayers());
+                for (ClientLobbyListener callback : setupGameEvent.getCallbacks()) {
+                    callback.allReady(gameServer.ipAddress, gameServer.port);
+                }
             } else {
                 LOGGER.severe("No GameServer Available!");
             }
@@ -97,7 +102,7 @@ public class HostedGameLobbyService extends AbstractHostedConnectionService impl
         @Override
         public boolean join(int key, int port) {
             String ip = connection.getAddress().split(":")[0];
-            gameServers.add(getCallback(connection));
+            gameServers.add(new GameServer(ip, port, getCallback(connection)));
             return true;
         }
         

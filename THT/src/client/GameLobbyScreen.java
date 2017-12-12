@@ -205,9 +205,9 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     }
     
     @Override
-    public void allReady() {
-        // TODO: change to setupState
+    public void allReady(String ip, int port) {
         LOGGER.fine("allReady method in GameLobbyScreen");
+        // TODO : Connect to GameServer with (ip:port)!
         GameLobbyScreen gls = this;
         app.enqueue(new Runnable() {
             @Override

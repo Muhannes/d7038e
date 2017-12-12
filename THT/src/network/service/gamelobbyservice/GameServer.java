@@ -12,10 +12,12 @@ package network.service.gamelobbyservice;
 class GameServer {
     public String ipAddress;
     public int port;
+    public GameLobbySessionListener gameCallback;
 
-    public GameServer(String ipAddress, int port) {
+    public GameServer(String ipAddress, int port, GameLobbySessionListener gameCallback) {
         this.ipAddress = ipAddress;
         this.port = port;
+        this.gameCallback = gameCallback;
     }
     
     

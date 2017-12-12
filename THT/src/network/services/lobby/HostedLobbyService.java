@@ -185,11 +185,13 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                     int id =ids.get(i);
                     playerInfo.put(id, name);
                 }
-                EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
+                List<ClientLobbyListener> callbacks = new ArrayList<>();
                 for (HostedConnection player : players) {
                     // Send out to each player in room that all are ready.
-                    getDelegate(player).allReady();
+                    callbacks.add(getDelegate(player));
                 }
+                EventBus.publish(new SetupGameEvent(playerInfo, callbacks), SetupGameEvent.class);
+                
             }
         }
 

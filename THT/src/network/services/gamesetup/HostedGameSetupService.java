@@ -152,6 +152,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 }
                 if (readyPlayers.size() == players.size()) {
                     EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+                    // TODO: Send start to clients.
                 }
             }
             
