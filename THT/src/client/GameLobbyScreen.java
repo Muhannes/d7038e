@@ -63,11 +63,6 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
             app.getAudioRenderer(), app.getGuiViewPort()
         );
         
-        /** Create a new NiftyGUI object */
-        nifty = niftyDisplay.getNifty();
-
-        /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
         
                       
         //nifty.setDebugOptionPanelColors(true);
@@ -147,6 +142,7 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
     public void newMessage(String message, int chat) {
         ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
         field.addItem(message);
+        
     }
 
     /**
@@ -228,6 +224,13 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
 
     @Override
     protected void onEnable() {
+        
+        /** Create a new NiftyGUI object */
+        nifty = niftyDisplay.getNifty();
+
+        /** Read your XML and initialize your custom ScreenController */
+        nifty.fromXml("Interface/gamelobby.xml", "gamelobby", this);
+        
         // attach the Nifty display to the gui view port as a processor
         app.getGuiViewPort().addProcessor(niftyDisplay);
         ccs.addChatSessionListener(this);
@@ -239,6 +242,10 @@ public class GameLobbyScreen extends BaseAppState implements ScreenController, C
 
     @Override
     protected void onDisable() {
+        players.clear();
+        
+        ListBox field = nifty.getScreen("gamelobby").findNiftyControl("myListBox", ListBox.class);
+        field.clear();
         ccs.removeChatSessionListener(this);
         cls.removeClientLobbyListener(this);
         app.getViewPort().removeProcessor(niftyDisplay);

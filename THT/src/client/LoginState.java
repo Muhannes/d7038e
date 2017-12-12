@@ -30,15 +30,13 @@ public class LoginState extends BaseAppState implements
     private NiftyJmeDisplay niftyDisplay;
     private Application app;
     
-    private LobbyState lobbyScreen;
     private ClientLoginService clientLoginService;
     
     private String username;
     
     LoginGUI gui;
     
-    public LoginState(ClientLoginService clientLoginService, LobbyState lobbyScreen){   
-        this.lobbyScreen = lobbyScreen;
+    public LoginState(ClientLoginService clientLoginService){   
         this.clientLoginService = clientLoginService;
     }
     
@@ -62,13 +60,14 @@ public class LoginState extends BaseAppState implements
     @Override
     public void notifyLogin(boolean loggedIn) {
         if(loggedIn){
-            lobbyScreen.setUsername(username);
+            LobbyState lobbyState = app.getStateManager().getState(LobbyState.class);
+            lobbyState.setUsername(username);
             LoginState ls = this;
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
                     ls.setEnabled(false);
-                    app.getStateManager().getState(LobbyState.class).setEnabled(true);
+                    lobbyState.setEnabled(true);
                 }
             });
         }
