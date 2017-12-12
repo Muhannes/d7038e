@@ -54,6 +54,11 @@ public class GameLobbyGUI implements ScreenController{
         //Nothing
     }
     
+    public void clearChat(){
+        ListBox field = screen.findNiftyControl("myListBox", ListBox.class);
+        field.clear();
+    }
+    
     public void addChatMessage(String message){
         ListBox field = screen.findNiftyControl("myListBox", ListBox.class);
         field.addItem(message);
@@ -90,5 +95,9 @@ public class GameLobbyGUI implements ScreenController{
     
     public void addGameLobbyGUIListener(GameLobbyGUIListener gameLobbyGUIListener){
         listeners.add(gameLobbyGUIListener);
+    }
+    
+    public void removeGameLobbyGUIListener(GameLobbyGUIListener gameLobbyGUIListener){
+        listeners.remove(gameLobbyGUIListener);
     }
 }

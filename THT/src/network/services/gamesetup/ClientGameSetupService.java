@@ -11,6 +11,7 @@ import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
+import java.util.List;
 import network.services.chat.ClientChatService;
 import utils.eventbus.EventBus;
 
@@ -70,7 +71,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     private class GameSetupSessionListenerImpl implements GameSetupSessionListener {
 
         @Override
-        public void initPlayer(Player p) {
+        public void initPlayer(List<Player> p) {
             LOGGER.fine("InitPlayer Received!");
             EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
         }

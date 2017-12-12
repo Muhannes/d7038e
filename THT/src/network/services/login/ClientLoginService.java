@@ -85,6 +85,7 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
         public void notifyLogin(boolean loggedIn) {
             LOGGER.log(Level.INFO, "Login result: {0}", loggedIn);
             listeners.forEach(l -> l.notifyLogin(loggedIn));
+            System.out.println("Notify done");
         }
 
         @Override
