@@ -6,6 +6,7 @@
 package network.services.gamesetup;
 
 import api.models.Player;
+import java.util.List;
 import utils.eventbus.Event;
 
 /**
@@ -13,10 +14,10 @@ import utils.eventbus.Event;
  * @author hannes
  */
 public class PlayerInitEvent extends Event{
-    Player player;
+    public List<Player> players;
 
-    public PlayerInitEvent(Player player) {
-        this.player = player;
+    public PlayerInitEvent(List<Player> players) {
+        this.players = players;
     }
     
 }

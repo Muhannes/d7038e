@@ -7,6 +7,7 @@ package network.services.gamesetup;
 
 import api.models.Player;
 import com.jme3.network.service.rmi.Asynchronous;
+import java.util.List;
 
 /**
  *
@@ -14,7 +15,7 @@ import com.jme3.network.service.rmi.Asynchronous;
  */
 public interface GameSetupSessionListener {
     @Asynchronous
-    void initPlayer(Player p);
+    void initPlayer(List<Player> players);
     
     @Asynchronous
     void startGame();

@@ -131,7 +131,7 @@ public class SetupState extends BaseAppState implements EventListener{
 
     @Override
     protected void onDisable() {
-
+        // TODO: destroy stuff not needed anymore( if there is anything?)
     }
 
     @Override
@@ -143,10 +143,14 @@ public class SetupState extends BaseAppState implements EventListener{
             
             //Notify ready
             System.out.println("In notifyEvent, load up everything on screen.");
+            cgss.ready();
             
         } else if (T == StartGameEvent.class){
-            this.setEnabled(false);
-            app.getStateManager().getState(GameState.class).setEnabled(true);            
+            SetupState ss = this;
+            app.enqueue(() -> {
+                ss.setEnabled(false);
+                app.getStateManager().getState(GameState.class).setEnabled(true);
+            });         
         }
     }
     

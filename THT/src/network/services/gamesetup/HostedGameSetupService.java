@@ -137,7 +137,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 // TODO: Add security to make sure no one takes another ones id!
                 Player p = getPlayerByID(globalID);
                 rmiHostedService.getRmiRegistry(connection).
-                        getRemoteObject(GameSetupSessionListener.class).initPlayer(p);
+                        getRemoteObject(GameSetupSessionListener.class).initPlayer(players);
                 joined = true;
             } else {
                 LOGGER.fine("Join failed, was not initialized(or already joined)!");
