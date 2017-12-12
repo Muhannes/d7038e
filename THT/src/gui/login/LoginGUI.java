@@ -8,8 +8,14 @@ package gui.login;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.input.NiftyInputEvent;
+import de.lessvoid.nifty.input.NiftyInputMapping;
+import de.lessvoid.nifty.input.keyboard.KeyboardInputEvent;
+import de.lessvoid.nifty.screen.KeyInputHandler;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import gui.event.EnterEvent;
+import gui.event.KeyBoardMapping;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +23,7 @@ import java.util.List;
  *
  * @author truls
  */
-public class LoginGUI implements ScreenController{
+public class LoginGUI implements ScreenController, KeyInputHandler{
     
     private List<LoginGUIListener> listeners = new ArrayList<>();
     
@@ -46,6 +52,7 @@ public class LoginGUI implements ScreenController{
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.screen = screen;
+        this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
     }
 
     @Override
@@ -66,5 +73,13 @@ public class LoginGUI implements ScreenController{
 
     public void quitGame(){
         listeners.forEach(l -> l.onQuitGame());
+    }
+
+    @Override
+    public boolean keyEvent(NiftyInputEvent nie) {
+        if(nie instanceof EnterEvent){
+            startGame();
+        }
+        return true;
     }
 }
