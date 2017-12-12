@@ -19,6 +19,7 @@ import java.util.Map;
 import com.sun.istack.internal.logging.Logger;
 import network.services.gamesetup.SetupGameEvent;
 import network.services.login.LoginEvent;
+import network.services.login.LoginSessionListener;
 import network.util.ConnectionAttribute;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
@@ -72,6 +73,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
         rmi.share((byte)channel, lobbyManager, LobbyManager.class);
+        rmi.getRemoteObject(LoginSessionListener.class).notifyLogin(true);
     }
     
     private ClientLobbyListener getDelegate(HostedConnection connection){
@@ -94,6 +96,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if (T == LoginEvent.class) {
+            System.out.println("Starting to host lobby for new  client");
             startHostingOnConnection(((LoginEvent)event).conn);
         }
     }
@@ -216,10 +219,13 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public Map<String, Integer> getAllRooms() {
+            System.out.println("Fetching all rooms.");
             Map<String, Integer> rooms = new HashMap<>();
             for (LobbyRoom room : lobbyHolder.getRooms()) {
                 rooms.put(room.getName(), room.getID());
             }
+            
+            System.out.println("Done Fetching all rooms, returning");
             return rooms;
         }
         

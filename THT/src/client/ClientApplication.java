@@ -36,15 +36,27 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager = new ClientNetworkManager();
         
         clientNetworkManager.connectToServer();
+        // Create and attach all states. TODO: move to function for cleaner code.
         
-        LobbyState lobbyScreen = new LobbyState(clientNetworkManager.getClientChatService(), 
+        LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService());
+        loginScreen.setEnabled(false);
+        stateManager.attach(loginScreen);
+        
+        LobbyState lobbyState = new LobbyState(clientNetworkManager.getClientLobbyService());
+        lobbyState.setEnabled(false);
+        stateManager.attach(lobbyState);
+        
+        GameLobbyScreen gameLobbyScreen = new GameLobbyScreen(clientNetworkManager.getClientChatService(),
                 clientNetworkManager.getClientLobbyService());
-        LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService(), lobbyScreen);
+        gameLobbyScreen.setEnabled(false);
+        stateManager.attach(gameLobbyScreen);
+        
         SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), 1);
         setupState.setEnabled(false);
         stateManager.attach(setupState);
-        stateManager.attach(loginScreen);
         
+        // Start app at login Screen
+        loginScreen.setEnabled(true);
         flyCam.setEnabled(false);
         setDisplayStatView(false);
         

@@ -38,6 +38,10 @@ public class LoginGUI implements ScreenController{
     public void addLoginScreeenListener(LoginGUIListener loginGUIListener){
         listeners.add(loginGUIListener);
     }
+    
+    public void removeLoginScreeenListener(LoginGUIListener loginGUIListener){
+        listeners.remove(loginGUIListener);
+    }
 
     @Override
     public void bind(Nifty nifty, Screen screen) {

@@ -80,6 +80,10 @@ public class LobbyGUI implements ScreenController{
         listeners.add(lobbyGUIListener);
     }
     
+    public void removeLobbyGUIListener(LobbyGUIListener lobbyGUIListener){
+        listeners.remove(lobbyGUIListener);
+    }
+    
     /**
      * Invoked when NewGame-button is pressed
      */

@@ -6,16 +6,15 @@
 package client;
 
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.lobby.LobbyGUI;
 import gui.lobby.LobbyGUIListener;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
 
@@ -23,7 +22,7 @@ import network.services.lobby.ClientLobbyService;
  *
  * @author ted
  */
-public class LobbyState extends AbstractAppState implements 
+public class LobbyState extends BaseAppState implements 
         LobbyGUIListener,
         ClientLobbyListener{
 
@@ -34,46 +33,32 @@ public class LobbyState extends AbstractAppState implements
     
     private final ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
-
-    private ClientChatService clientChatService;
     
     private LobbyGUI gui;
     
     private String username = null;
 
-    public LobbyState(ClientChatService ccs, ClientLobbyService cls){
-        this.clientChatService = ccs;
+    public LobbyState(ClientLobbyService cls){
         this.clientLobbyService = cls;
     }        
     
     @Override
-    public void initialize(AppStateManager stateManager, Application app){
-        LOGGER.log(Level.FINE, "Initializing LoginScreen");
-        super.initialize(stateManager, app);   
+    public void initialize(Application app){
+        LOGGER.log(Level.FINE, "Initializing LoginScreen"); 
         
-        clientLobbyService.addClientLobbyListener(this);
         this.app = app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
         
-        gui = new LobbyGUI(niftyDisplay);
-        gui.addLobbyGUIListener(this);
         
-        app.getGuiViewPort().addProcessor(niftyDisplay);
-        
-        // Fetching available lobbyRooms
-        rooms = clientLobbyService.getAllRooms();
-        
-        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
     }    
 
     @Override
-    public void cleanup(){
+    public void cleanup(Application app){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
     }
     
     /**
@@ -81,10 +66,15 @@ public class LobbyState extends AbstractAppState implements
      * @param gls 
      */
     public void joinGame(GameLobbyScreen gls){
-        clientLobbyService.addClientLobbyListener(gls);
         LOGGER.log(Level.FINE, "Joining game {0}", gls.getName());
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(gls);
+        LobbyState ls = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                ls.setEnabled(false);
+                gls.setEnabled(true);
+            }
+        });
     }
 
     /**
@@ -141,7 +131,9 @@ public class LobbyState extends AbstractAppState implements
     public void onJoinLobby(String lobbyName) {
         List<String> playerNames = clientLobbyService.join(rooms.get(lobbyName));
         if (playerNames != null) {
-            GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, lobbyName);
+            
+            GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
+            gls.setName(lobbyName);
             LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
             playerNames.forEach(name -> gls.addPlayers(name));
             joinGame(gls);
@@ -160,8 +152,9 @@ public class LobbyState extends AbstractAppState implements
         if(!lobbyName.isEmpty()){
             boolean created = clientLobbyService.createLobby(lobbyName);
             if (created) {
-                GameLobbyScreen gls = new GameLobbyScreen(this, clientChatService, clientLobbyService, lobbyName);
+                GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
                 gls.addPlayers("me"); //TODO: use real name for me
+                gls.setName(lobbyName);
                 joinGame(gls);
             } else {
                 LOGGER.log(Level.INFO, "Server did not approve new name.");
@@ -174,6 +167,28 @@ public class LobbyState extends AbstractAppState implements
     
     public void setUsername(String username){
         this.username = username;
+    }
+
+    @Override
+    protected void onEnable() {
+        // Create GUI
+        gui = new LobbyGUI(niftyDisplay);
+        gui.addLobbyGUIListener(this);
+        clientLobbyService.addClientLobbyListener(this);
+
+        app.getGuiViewPort().addProcessor(niftyDisplay);
+
+        // Fetching available lobbyRooms
+        rooms = clientLobbyService.getAllRooms();
+        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
+    }
+
+    @Override
+    protected void onDisable() {
+        app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
+        gui.removeLobbyGUIListener(this);
+        clientLobbyService.removeClientLobbyListener(this);
     }
   
 }
