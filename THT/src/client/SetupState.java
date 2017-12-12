@@ -168,7 +168,6 @@ public class SetupState extends BaseAppState implements EventListener{
         input.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
         input.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Jump", "Trap");
-        
         chaseCamera = new ChaseCamera(camera, player, input);
     }
     
@@ -183,6 +182,9 @@ public class SetupState extends BaseAppState implements EventListener{
         
         Material walls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
         walls_mat.setColor("Color", ColorRGBA.DarkGray);     
+
+        Material innerWalls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        innerWalls_mat.setColor("Color", ColorRGBA.Brown);     
         
         
         Spatial floor1 = worldRoot.getChild("floor1");
@@ -213,6 +215,19 @@ public class SetupState extends BaseAppState implements EventListener{
         wall4.setMaterial(walls_mat);
         bulletAppState.getPhysicsSpace().add(wall4.getControl(RigidBodyControl.class));
         
+        Spatial innerWall1 = worldRoot.getChild("innerWall1");
+        innerWall1.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall1.getControl(RigidBodyControl.class));
+        
+        Spatial innerWall2 = worldRoot.getChild("innerWall2");
+        innerWall2.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall2.getControl(RigidBodyControl.class));
+        
+        Spatial innerWall3 = worldRoot.getChild("innerWall3");
+        innerWall3.setMaterial(innerWalls_mat);
+        bulletAppState.getPhysicsSpace().add(innerWall3.getControl(RigidBodyControl.class));
+        
+        
     }
     
     public void createPlayers(){
@@ -230,7 +245,7 @@ public class SetupState extends BaseAppState implements EventListener{
     
     public void createHumans(){
         //Create a player blob
-        player = worldRoot.getChild("player");
+        player = worldRoot.getChild("player1");
         BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();        
