@@ -281,7 +281,7 @@ public class SetupState extends BaseAppState implements
         
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
-        
+/*        
         walkingDirection.set(0,0,0);
         
         if(left) walkingDirection.addLocal(camLeft);
@@ -292,24 +292,21 @@ public class SetupState extends BaseAppState implements
         if(avatar != null){ 
             walkingDirection.multLocal(40f).multLocal(tpf);
             playerEntity.getController().setWalkDirection(walkingDirection);
-        }
+        } */
     }
 
     @Override
     public void initPlayer(List<Player> listOfPlayers) {
-        System.out.println("NEW PLAYER INIT EVENT!\nglobalID : " + globalId);
         players = listOfPlayers;
 
         flyCam.setEnabled(true);
 
         //Notify ready
-        System.out.println("In notifyEvent, load up everything on screen.");
         cgss.ready();
     }
 
     @Override
     public void startGame() {
-        System.out.println("START GAME EVENT");
         SetupState ss = this;
         app.enqueue(() -> {
             ss.setEnabled(false);
