@@ -92,7 +92,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     /**
      * Invoked when NewGame-button is pressed
      */
-    public void newGame(){
+    public void createLobby(){
         TextField field = screen.findNiftyControl("textfieldGamename", TextField.class);
         String gamename = field.getRealText();
         listeners.forEach(l -> l.onCreateLobby(gamename));
@@ -115,7 +115,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     @Override
     public boolean keyEvent(NiftyInputEvent nie) {
         if(nie instanceof EnterEvent){
-            newGame();
+            createLobby();
             return true;
         }
         return false;

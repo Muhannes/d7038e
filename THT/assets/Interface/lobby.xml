@@ -2,7 +2,7 @@
 <nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
     <useControls filename="nifty-default-controls.xml"/>
     <useStyles filename="nifty-default-styles.xml"/>
-    <screen id="lobby" controller="gui.lobby.LobbyGUI" visibleToMouse="true">
+    <screen id="lobby" controller="gui.lobby.LobbyGUI" visibleToMouse="true" defaultFocusElement="textfieldGamename">
         <layer id="background" childLayout="center">
             <image id="" filename="Interface/scaryMenu.jpg"/>
         </layer>
@@ -24,7 +24,7 @@
                     </panel>
                     <panel id="panel_mid_right" childLayout="center" align="right">
                         <control name="button" id="NewGame" visiableToMouse="true" label="Create">
-                            <interact onClick="newGame()"/>
+                            <interact onClick="createLobby()"/>
                             <effect>
                                 <onHover name="textSize" maxSize="15%"/>
                             </effect>
