@@ -9,8 +9,6 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.input.NiftyInputEvent;
-import de.lessvoid.nifty.input.NiftyInputMapping;
-import de.lessvoid.nifty.input.keyboard.KeyboardInputEvent;
 import de.lessvoid.nifty.screen.KeyInputHandler;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
@@ -79,7 +77,8 @@ public class LoginGUI implements ScreenController, KeyInputHandler{
     public boolean keyEvent(NiftyInputEvent nie) {
         if(nie instanceof EnterEvent){
             startGame();
+            return true;
         }
-        return true;
+        return false;
     }
 }

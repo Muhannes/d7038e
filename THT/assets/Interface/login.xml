@@ -27,12 +27,18 @@
       <panel id="panel_bottom" height="25%" width="100%" align="center" childLayout="horizontal" >
         <panel id="panel_bottom_left" height="100%" width="50%" valign="center" childLayout="center">
           <control name="button" label="Start" id="StartButton" align="center" valign="center" visibleToMouse="true">
-              <interact onClick="startGame()"/>              
+              <interact onClick="startGame()"/>
+              <effect>
+                  <onHover name="textSize" maxSize="15%"/>
+              </effect>              
           </control>
         </panel>
         <panel id="panel_bottom_right" height="100%" width="50%" valign="center" childLayout="center">
           <control name="button" label="Quit" id="QuitButton" align="center" valign="center" visibleToMouse="True">
               <interact onClick="quitGame()"/>
+              <effect>
+                  <onHover name="textSize" maxSize="15%"/>
+              </effect>
           </control>
         </panel>
       </panel>
