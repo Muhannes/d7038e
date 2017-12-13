@@ -18,7 +18,8 @@ public class KeyBoardMapping implements NiftyInputMapping{
     @Override
     public NiftyInputEvent convert(KeyboardInputEvent kie) {
         if(kie.isKeyDown()){
-            return new EnterEvent();
+            if(kie.getKey() == KeyboardInputEvent.KEY_RETURN) 
+                return new EnterEvent();
         }
         return null;
     }
