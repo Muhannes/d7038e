@@ -35,7 +35,7 @@ public class LoginGUI implements ScreenController, KeyInputHandler{
         nifty = display.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/login.xml", "start", this); 
+        nifty.fromXml("Interface/login/login.xml", "start", this); 
         
     }
     

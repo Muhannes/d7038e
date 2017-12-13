@@ -39,7 +39,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
         Nifty nifty = display.getNifty();
 
         /** Read your XML and initialize your custom ScreenController */
-        nifty.fromXml("Interface/lobby.xml", "lobby", this);
+        nifty.fromXml("Interface/lobby/lobby.xml", "lobby", this);
     }
     
     @Override

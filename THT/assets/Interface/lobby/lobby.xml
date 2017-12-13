@@ -4,7 +4,7 @@
     <useStyles filename="nifty-default-styles.xml"/>
     <screen id="lobby" controller="gui.lobby.LobbyGUI" visibleToMouse="true" defaultFocusElement="textfieldGamename">
         <layer id="background" childLayout="center">
-            <image id="" filename="Interface/scaryMenu.jpg"/>
+            <image id="" filename="Interface/lobby/scaryMenu.jpg"/>
         </layer>
         <layer id="foreground" childLayout="vertical">
             <panel id="panel_filler" childLayout="vertical" height="10%"/>

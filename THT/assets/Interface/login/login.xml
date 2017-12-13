@@ -4,18 +4,18 @@
   <useControls filename="nifty-default-controls.xml" />
   <screen id="start" controller="gui.login.LoginGUI" visibleToMouse="true" defaultFocusElement="textfieldUsername">
     <layer id="background" childLayout="center">
-      <image filename="Interface/Wallpaper-Horror-045.jpg"></image>
+      <image filename="Interface/login/Wallpaper-Horror-045.jpg"></image>
     </layer>
     <layer id="foreground" childLayout="vertical">
       <panel id="panel_gametitle" height="25%" width="100%" align="center" childLayout="center">
-        <image filename="Interface/gametitle.png" width="100%" height="100%">
+        <image filename="Interface/login/gametitle.png" width="100%" height="100%">
           <effect>
             <onStartScreen name="fade" length="2500"/>
           </effect>
         </image>
       </panel>
       <panel id="panel_gameintrotext" height="25%" width="100%" align="center" childLayout="center">
-           <image filename="Interface/gameintrotext.png" width="100%" height="100%">
+           <image filename="Interface/login/gameintrotext.png" width="100%" height="100%">
               <effect>
                 <onStartScreen name="fade" length="2500"/>
               </effect>

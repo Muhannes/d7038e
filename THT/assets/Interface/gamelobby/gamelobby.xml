@@ -5,7 +5,7 @@
   
   <screen id="gamelobby" controller="gui.gamelobby.GameLobbyGUI" visibleToMouse="true" defaultFocusElement="textfieldInput">
       <layer id="background" childLayout="center">
-        <image id="" filename="Interface/room.jpg"/>
+        <image id="" filename="Interface/gamelobby/room.jpg"/>
       </layer>
       <layer id="foreground" childLayout="vertical">
             <panel childLayout="center" height="10%"></panel> 
