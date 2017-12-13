@@ -6,6 +6,7 @@
 package network;
 
 import api.models.LobbyRoom;
+import api.models.Player;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import com.jme3.network.serializing.Serializer;
@@ -89,6 +90,7 @@ public class NetworkHandler {
     
     private static void initSerializables(){
         Serializer.registerClass(LobbyRoom.class);
+        Serializer.registerClass(Player.class);
     }
     
 }

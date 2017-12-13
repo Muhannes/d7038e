@@ -11,6 +11,7 @@ import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
+import java.util.ArrayList;
 import java.util.List;
 import network.services.chat.ClientChatService;
 import utils.eventbus.EventBus;
@@ -22,6 +23,8 @@ import utils.eventbus.EventBus;
 public class ClientGameSetupService extends AbstractClientService implements GameSetupSession{
 
     private static final Logger LOGGER = Logger.getLogger(ClientGameSetupService.class);
+    
+    private List<GameSetupSessionListener> listeners = new ArrayList<>();
     
     private GameSetupSession delegate;
     // Handle to a server side object
@@ -65,7 +68,16 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     public void ready() {
+        System.out.println("IAM RETAUDRD");
         getDelegate().ready();
+    }
+    
+    public void addGameSetupSessionListener(GameSetupSessionListener listener){
+        listeners.add(listener);
+    }
+    
+    public void removeGameSetupSessionListener(GameSetupSessionListener listener){
+        listeners.remove(listener);
     }
     
     private class GameSetupSessionListenerImpl implements GameSetupSessionListener {
@@ -73,12 +85,14 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
         @Override
         public void initPlayer(List<Player> p) {
             LOGGER.fine("InitPlayer Received!");
-            EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
+            //EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
+            listeners.forEach(l -> l.initPlayer(p));
         }
 
         @Override
         public void startGame() {
-            EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+            //EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+            listeners.forEach(l -> l.startGame());
         }
         
     }

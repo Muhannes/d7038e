@@ -50,8 +50,8 @@ public class ClientApplication extends SimpleApplication{
                 clientNetworkManager.getClientLobbyService());
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
-        
-        SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), 1);
+        System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
+        SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), clientNetworkManager.getGlobalId());
         setupState.setEnabled(false);
         stateManager.attach(setupState);
         

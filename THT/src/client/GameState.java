@@ -27,8 +27,7 @@ public class GameState extends BaseAppState {
         this.app = app;
         
         /** Connect to game server via SetupState **/    
-        
-        
+       
         
         //LOAD THE FUCKING MAP
     }
@@ -40,8 +39,14 @@ public class GameState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        //Binds all the actions 
-        System.out.println("GameState Enabled!");
+        System.out.println("I'M IN GAMESTATE NOW");
+        nifty = niftyDisplay.getNifty();
+
+        /** Read your XML and initialize your custom ScreenController */
+        nifty.fromXml("Interface/gamelobby.xml", "frame");
+        
+        // attach the Nifty display to the gui view port as a processor
+        app.getGuiViewPort().addProcessor(niftyDisplay);
         
     }
 

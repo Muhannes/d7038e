@@ -7,11 +7,13 @@ package api.models;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.network.serializing.Serializable;
 
 /**
  *
  * @author hannes
  */
+@Serializable
 public class Player {
     private EntityType type;
     private Vector3f position;
@@ -25,7 +27,7 @@ public class Player {
         this.id = id;
     }
     
-    
+    public Player(){}
     
     public void setType(EntityType type){
         this.type = type;
@@ -37,6 +39,10 @@ public class Player {
     
     public int getID(){
         return id;
+    }
+    
+    public Vector3f getPosition(){
+        return position;
     }
     
     

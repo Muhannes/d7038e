@@ -5,6 +5,7 @@
  */
 package client;
 
+import api.models.Entity;
 import api.models.EntityType;
 import api.models.Player;
 import com.jme3.app.Application;
@@ -33,11 +34,13 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
+import control.Human;
 import de.lessvoid.nifty.Nifty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import network.services.gamesetup.ClientGameSetupService;
+import network.services.gamesetup.GameSetupSessionListener;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.gamesetup.StartGameEvent;
 import utils.eventbus.Event;
@@ -48,7 +51,9 @@ import utils.eventbus.EventListener;
  *
  * @author ted
  */
-public class SetupState extends BaseAppState implements EventListener{
+public class SetupState extends BaseAppState implements 
+        //EventListener, 
+        GameSetupSessionListener{
 
     private SimpleApplication app;
     
@@ -60,7 +65,7 @@ public class SetupState extends BaseAppState implements EventListener{
     
     private PlayerInitEvent playerEvent;
     
-    private List<Vector3f> position;
+    private Entity playerEntity;
     
     private Node root;
     
@@ -68,9 +73,7 @@ public class SetupState extends BaseAppState implements EventListener{
     
     private AssetManager asset;
     
-    private Spatial player;
-    
-    private CharacterControl playerControl;
+    private Spatial avatar;
     
     private CapsuleCollisionShape playerShape;
     
@@ -88,10 +91,13 @@ public class SetupState extends BaseAppState implements EventListener{
     
     private boolean left = false, right = false, forward = false, backward = false;
     
+    private Human human = new Human();
+    
     
     public SetupState(ClientGameSetupService cgss, int id){
         this.cgss = cgss;
         this.globalId = id;
+        
     }
     
     @Override
@@ -113,25 +119,10 @@ public class SetupState extends BaseAppState implements EventListener{
         this.camera = app.getCamera();
         
         flyCam = app.getFlyByCamera();
+        cgss.addGameSetupSessionListener(this);
         
-        EventBus.subscribe(this);
-        cgss.join(globalId);
-        
-        /* Not required here, only setup!
-        
-        NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
-                
-        // Create a new NiftyGUI object 
-        Nifty nifty = niftyDisplay.getNifty();
-
-        // Read your XML and initialize your custom ScreenController 
-        nifty.fromXml("Interface/gameState.xml", "frame"); //Should be 2 screens, human and monster. 
-        // attach the Nifty display to the gui view port as a processor
-        app.getViewPort().addProcessor(niftyDisplay);
-        */
-                
+        //EventBus.subscribe(this);
+        cgss.join(globalId);        
         System.out.println("Setup is enabled");
             
         //Bullet physics for players, walls, objects
@@ -139,41 +130,33 @@ public class SetupState extends BaseAppState implements EventListener{
         bulletAppState.setDebugEnabled(false);        
         buildStaticWorld(); //When the world is built, send it to gameState
         
+        //SEND TO SERVER THAT GAME CAN START
+        
     }
 
     @Override
     protected void onDisable() {
         // TODO: destroy stuff not needed anymore( if there is anything?)
+        cgss.removeGameSetupSessionListener(this);
     }
 
-    @Override
+/*    @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if(T == PlayerInitEvent.class){
             //INIT WORLD
+            System.out.println("NEW PLAYER INIT EVENT!\nglobalID : " + globalId);
             playerEvent = (PlayerInitEvent) event;
             players = playerEvent.players;
             
-            Random random = new Random();
-            int monster = random.nextInt(10);
-
-            position = new ArrayList<>();
-            for(int p = 0; p < players.size(); p++){
-                if(p == monster){
-                    position.add(new Vector3f(-10f, -10f, -10f));
-                    players.get(p).setType(EntityType.Monster);
-                } else {
-                    players.get(p).setType(EntityType.Human);
-                    position.add(new Vector3f(player.getLocalTranslation().x + (p*5), player.getLocalTranslation().y + (p*5), player.getLocalTranslation().z + (p*5)));                    
-                }
-            }
             
-            flyCam.setEnabled(false);
+            flyCam.setEnabled(true);
             
             //Notify ready
             System.out.println("In notifyEvent, load up everything on screen.");
             cgss.ready();
             
         } else if (T == StartGameEvent.class){
+            System.out.println("START GAME EVENT");
             SetupState ss = this;
             app.enqueue(() -> {
                 ss.setEnabled(false);
@@ -181,26 +164,16 @@ public class SetupState extends BaseAppState implements EventListener{
             });         
         }
     }
-    
+*/    
     
     public void buildStaticWorld(){        
         
         //Init bulletAppState maybe somewhere else
         app.getStateManager().attach(bulletAppState);
         
-        buildStructures(); //Only this should remain in setup. Move rest to gameState.
+        buildStructures();
         createPlayers();
         
-        //Key boundings for players
-        input.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        input.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
-        input.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
-        input.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        input.addMapping("Trap", new KeyTrigger(KeyInput.KEY_F));        
-        input.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        
-        input.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Jump", "Trap");
-        chaseCamera = new ChaseCamera(camera, player, input);
     }
     
     public void buildStructures(){
@@ -273,74 +246,30 @@ public class SetupState extends BaseAppState implements EventListener{
     }
     
     public void createPlayers(){
-        
-        //Create monster
-        Texture demonSkin = asset.loadTexture("Models/demon/demon_tex.png");
-        Material demonMat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-        demonMat.setTexture("ColorMap", demonSkin);
-        Spatial demon = worldRoot.getChild("demon");     
-        demon.setMaterial(demonMat);
-        bulletAppState.getPhysicsSpace().add(demon.getControl(RigidBodyControl.class));
+        System.out.println("How many players do we have ? answer : " + players.size());
+        for(Player player : players){
+            Entity entity = new Entity(asset, player.getPosition(), player.getID());
+            root.attachChild(entity.getGeometry()); 
+            bulletAppState.getPhysicsSpace().add(entity.getController());   
 
-        createHumans();           
-    }
-    
-    public void createHumans(){
-        
-        for(int i = 0; i < players.size(); i++){
-
-            Player human = players.get(i);
-                           
-            player = worldRoot.getChild("player1");
-            player.setName(Integer.toString(human.getID()));
-            player.setLocalTranslation(position.get(i));
-            BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
-            float radius = boundingBox.getXExtent();
-            float height = boundingBox.getYExtent();
-            playerShape = new CapsuleCollisionShape(radius, height);                
-            playerControl = new CharacterControl(playerShape, 1.0f);
-        
-            if(human.getID() == globalId) bulletAppState.getPhysicsSpace().add(playerControl);                                                        
-        }        
-    }
-    
-    private final ActionListener actionListener = new ActionListener(){
-        @Override
-        public void onAction(String name, boolean keyPressed, float tpf){
-            if(name.equals("Left")){
-                left = keyPressed;
-            }
-            else if(name.equals("Right")){
-                right = keyPressed;
-            }
-            else if(name.equals("Forward")){
-                forward = keyPressed;
-            }
-            else if(name.equals("Backward")){
-                backward = keyPressed;
-            }
-            else if (name.equals("Jump")){
-                playerControl.jump();
-            } else if (name.equals("Trap") && keyPressed){
-                Vector3f location = player.getLocalTranslation();
-                //Send message about the new trap at a location of the player.
-                putTrap(location); //Should be removed when server does the same thing.
-            }else {
+            //RECEIVED MY OWN ENTITY FROM SERVER 
+            
+/*            if(this.globalId == entity.getId()){
+                playerEntity = entity;
+                playerEntity.setColor(ColorRGBA.Red);
                 
-            }
-        }
-    };
-    
-    public void putTrap(Vector3f trapLocation){
-        Box box = new Box(1,1,1);
-        Geometry geom = new Geometry("Trap", box);
-        geom.setLocalTranslation(trapLocation);
-        Material box_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-        box_mat.setColor("Color", ColorRGBA.Red);
-        geom.setMaterial(box_mat);        
-        worldRoot.attachChild(geom);
-    }
+                avatar = root.getChild("player" + entity.getId());  
+                System.out.println("Avatar : " + avatar.getName());
+                avatar.addControl(entity.getController());    
+                chaseCamera = new ChaseCamera(camera, avatar, input);
+                
+                human.setEntity(playerEntity);
+                human.initKeys(input);
+            } */
+        } 
         
+    }
+     
     @Override
     public void update(float tpf){
         
@@ -360,10 +289,32 @@ public class SetupState extends BaseAppState implements EventListener{
         if(forward) walkingDirection.addLocal(camDir);
         if(backward) walkingDirection.addLocal(camDir.negate());
         
-        if(player != null){
+        if(avatar != null){ 
             walkingDirection.multLocal(40f).multLocal(tpf);
-            playerControl.setWalkDirection(walkingDirection);
+            playerEntity.getController().setWalkDirection(walkingDirection);
         }
+    }
+
+    @Override
+    public void initPlayer(List<Player> players) {
+        System.out.println("NEW PLAYER INIT EVENT!\nglobalID : " + globalId);
+        players = playerEvent.players;
+
+        flyCam.setEnabled(true);
+
+        //Notify ready
+        System.out.println("In notifyEvent, load up everything on screen.");
+        cgss.ready();
+    }
+
+    @Override
+    public void startGame() {
+        System.out.println("START GAME EVENT");
+        SetupState ss = this;
+        app.enqueue(() -> {
+            ss.setEnabled(false);
+            app.getStateManager().getState(GameState.class).setEnabled(true);
+        });         
     }
     
 }

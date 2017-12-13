@@ -88,5 +88,9 @@ public class ClientNetworkManager implements
     public ClientGameSetupService getClientGameSetupService(){
         return client.getServices().getService(ClientGameSetupService.class);
     }
+    
+    public int getGlobalId(){
+        return 0;//client.getId();
+    }
 }
 
