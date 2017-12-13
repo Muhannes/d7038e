@@ -9,8 +9,12 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.input.NiftyInputEvent;
+import de.lessvoid.nifty.screen.KeyInputHandler;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import gui.event.EnterEvent;
+import gui.event.KeyBoardMapping;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +22,7 @@ import java.util.List;
  *
  * @author truls
  */
-public class GameLobbyGUI implements ScreenController{
+public class GameLobbyGUI implements ScreenController, KeyInputHandler{
     
     private List<GameLobbyGUIListener> listeners;
     
@@ -42,6 +46,7 @@ public class GameLobbyGUI implements ScreenController{
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.screen = screen;
+        this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
     }
 
     @Override
@@ -99,5 +104,14 @@ public class GameLobbyGUI implements ScreenController{
     
     public void removeGameLobbyGUIListener(GameLobbyGUIListener gameLobbyGUIListener){
         listeners.remove(gameLobbyGUIListener);
+    }
+
+    @Override
+    public boolean keyEvent(NiftyInputEvent nie) {
+        if(nie instanceof EnterEvent){
+            sendMessage();
+            return true;
+        }
+        return false;
     }
 }

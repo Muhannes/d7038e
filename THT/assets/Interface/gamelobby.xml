@@ -3,7 +3,7 @@
   <useStyles filename="nifty-default-styles.xml" />
   <useControls filename="nifty-default-controls.xml" />
   
-  <screen id="gamelobby" controller="gui.gamelobby.GameLobbyGUI" visibleToMouse="true">
+  <screen id="gamelobby" controller="gui.gamelobby.GameLobbyGUI" visibleToMouse="true" defaultFocusElement="textfieldInput">
       <layer id="background" childLayout="center">
         <image id="" filename="Interface/room.jpg"/>
       </layer>
