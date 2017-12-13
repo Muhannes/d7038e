@@ -296,9 +296,9 @@ public class SetupState extends BaseAppState implements
     }
 
     @Override
-    public void initPlayer(List<Player> players) {
+    public void initPlayer(List<Player> listOfPlayers) {
         System.out.println("NEW PLAYER INIT EVENT!\nglobalID : " + globalId);
-        players = playerEvent.players;
+        players = listOfPlayers;
 
         flyCam.setEnabled(true);
 
