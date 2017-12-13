@@ -12,6 +12,9 @@
                 <panel childLayout="center" align="right" padding="10px,0px">
                 <control name="button" id="Refresh" visibleToMouse="true" align="right" label="Refresh">
                     <interact onClick="refresh()"/>
+                    <effect>
+                        <onHover name="textSize" maxSize="15%"/>
+                    </effect>
                 </control> 
                 </panel> 
                 <control id="myListBox" name="listBox" selection="Single" vertical="on" displayItems="10"/>
@@ -22,6 +25,9 @@
                     <panel id="panel_mid_right" childLayout="center" align="right">
                         <control name="button" id="NewGame" visiableToMouse="true" label="Create">
                             <interact onClick="newGame()"/>
+                            <effect>
+                                <onHover name="textSize" maxSize="15%"/>
+                            </effect>
                         </control> 
                     </panel>
                 </panel>
@@ -29,6 +35,9 @@
             <panel id="panel_quit_button" childLayout="horizontal" align="right" padding="10px">
                 <control name="button" id="Quit" visibleToMouse="true" align="right" label="Quit">
                     <interact onClick="quitGame()"/>
+                    <effect>
+                        <onHover name="textSize" maxSize="15%"/>
+                    </effect>
                 </control>    
             </panel>
         </layer>
