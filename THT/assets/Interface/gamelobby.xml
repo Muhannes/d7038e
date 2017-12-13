@@ -12,6 +12,9 @@
             <panel childLayout="vertical" width="75%" align="center">
                 <control name="button" id="PlayerReady" align="right" visiableToMouse="true" label="Ready">
                      <interact onClick="ready()"/>
+                     <effect>
+                        <onHover name="textSize" maxSize="15%"/>
+                    </effect>
                 </control>
                 <!-- CHAT WINDOW -->
                 <panel childLayout="horizontal">
@@ -22,8 +25,11 @@
                 <!-- CHAT INPUT FIELD -->
                 <panel childLayout="horizontal"> 
                     <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" maxLength="45"/>
-                    <control name="button" id="SendMessage" visibleToMouse="true" label="Send Message">
+                    <control name="button" id="SendMessage" visibleToMouse="true" label="Send">
                         <interact onClick="sendMessage()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
                     </control>            
                 </panel> 
                 <panel childLayout="center"></panel> 
@@ -34,6 +40,9 @@
                 <panel childLayout="center" width="25%">
                     <control name="button" id="return" visibleToMouse="true" label="Return">
                         <interact onClick="returnToLobby()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
                     </control>
                 </panel>
                 <panel childLayout="center" width="25%"></panel>
@@ -41,6 +50,9 @@
                 <panel childLayout="center" width="25%">
                     <control name="button" id="Quit" visibleToMouse="true" label="Quit">
                         <interact onClick="quitGame()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
                     </control>   
                 </panel> 
             </panel>
