@@ -11,8 +11,12 @@ import de.lessvoid.nifty.NiftyEventSubscriber;
 import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.ListBoxSelectionChangedEvent;
 import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.input.NiftyInputEvent;
+import de.lessvoid.nifty.screen.KeyInputHandler;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import gui.event.EnterEvent;
+import gui.event.KeyBoardMapping;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +24,7 @@ import java.util.List;
  *
  * @author truls
  */
-public class LobbyGUI implements ScreenController{
+public class LobbyGUI implements ScreenController, KeyInputHandler{
     
     private List<LobbyGUIListener> listeners;
     private NiftyJmeDisplay display;
@@ -41,6 +45,7 @@ public class LobbyGUI implements ScreenController{
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.screen = screen;
+        this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
         listBox = screen.findNiftyControl("myListBox", ListBox.class);
     }
 
@@ -105,6 +110,15 @@ public class LobbyGUI implements ScreenController{
      */
     public void refresh(){
         listeners.forEach(l -> l.onRefresh());
+    }
+    
+    @Override
+    public boolean keyEvent(NiftyInputEvent nie) {
+        if(nie instanceof EnterEvent){
+            newGame();
+            return true;
+        }
+        return false;
     }
     
 }
