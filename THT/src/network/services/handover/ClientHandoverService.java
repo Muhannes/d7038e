@@ -3,23 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.gamelobbyservice;
+package network.services.handover;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.Map;
-import network.services.chat.ChatSession;
+import network.services.gamesetup.SetupGameEvent;
+import network.util.NetConfig;
+import utils.eventbus.EventBus;
 
 /**
  *
  * @author hannes
  */
-public class ClientGameLobbyService extends AbstractClientService{
+public class ClientHandoverService extends AbstractClientService{
 
     
-    private ChatSession delegate;
+    private HandoverSession delegate;
     // Handle to a server side object
     
     private RmiClientService rmiService;
@@ -29,7 +31,7 @@ public class ClientGameLobbyService extends AbstractClientService{
     // Channel we send on, is it a port though?
     
     
-    public ClientGameLobbyService(){
+    public ClientHandoverService(){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
     }
     
@@ -37,29 +39,38 @@ public class ClientGameLobbyService extends AbstractClientService{
     protected void onInitialize(ClientServiceManager serviceManager) {
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
-            throw new RuntimeException("ChatClientService requires RMI service");
+            throw new RuntimeException("HandoverClientService requires RMI service");
         }
-        GameLobbySessionListener callback = new GameLobbySessionListenerImpl();
+        HandoverSessionListener callback = new GameLobbySessionListenerImpl();
         // Share the callback with the server
-        rmiService.share((byte)channel, callback, GameLobbySessionListener.class);
+        rmiService.share((byte)channel, callback, HandoverSessionListener.class);
+        
+        
     }
     
-    private ChatSession getDelegate(){
+    public void joinLobby(){
+        getDelegate().join(-1, NetConfig.GAME_SERVER_PORT);
+    }
+    
+    private HandoverSession getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(ChatSession.class);
+            delegate = rmiService.getRemoteObject(HandoverSession.class);
             if( delegate == null ) {
-                throw new RuntimeException("No chat session found");
+                throw new RuntimeException("No Handover session found");
             } 
         }
         return delegate;
     }
     
     
-    private class GameLobbySessionListenerImpl implements GameLobbySessionListener {
+    private class GameLobbySessionListenerImpl implements HandoverSessionListener {
 
         @Override
         public void startSetup(Map<Integer, String> playerInfo) {
             // todo : setup, bla blabla
+            System.out.println("StartSetup");
+            EventBus.publish(new SetupGameEvent(playerInfo, null), SetupGameEvent.class);
+            getClient().close();
         }
         
     }

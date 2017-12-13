@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.gamelobbyservice;
+package network.services.handover;
 
 /**
  *
@@ -12,9 +12,9 @@ package network.services.gamelobbyservice;
 class GameServer {
     public String ipAddress;
     public int port;
-    public GameLobbySessionListener gameCallback;
+    public HandoverSessionListener gameCallback;
 
-    public GameServer(String ipAddress, int port, GameLobbySessionListener gameCallback) {
+    public GameServer(String ipAddress, int port, HandoverSessionListener gameCallback) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.gameCallback = gameCallback;

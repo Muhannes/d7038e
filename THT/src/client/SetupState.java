@@ -32,9 +32,11 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 import de.lessvoid.nifty.Nifty;
+import java.util.logging.Level;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.gamesetup.StartGameEvent;
+import network.services.login.HostedLoginService;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -78,8 +80,7 @@ public class SetupState extends BaseAppState implements EventListener{
     private boolean left = false, right = false, forward = false, backward = false;
     
     
-    public SetupState(ClientGameSetupService cgss, int id){
-        this.cgss = cgss;
+    public SetupState(int id){
         this.globalId = id;
     }
     
@@ -96,6 +97,7 @@ public class SetupState extends BaseAppState implements EventListener{
 
     @Override
     protected void onEnable() {
+        this.cgss = ((ClientApplication)app).getGameSetupService();
         this.root = app.getRootNode();
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
@@ -104,6 +106,12 @@ public class SetupState extends BaseAppState implements EventListener{
         flyCam = app.getFlyByCamera();
         
         EventBus.subscribe(this);
+        // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         cgss.join(globalId);
         
         /* Not required here, only setup!

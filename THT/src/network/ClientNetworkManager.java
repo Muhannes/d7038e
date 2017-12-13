@@ -30,21 +30,23 @@ public class ClientNetworkManager implements
     private static final Logger LOGGER = Logger.getLogger(ClientNetworkManager.class.getName());
     
     private Client client;
+    private Client gameClient;
     
-    public ClientNetworkManager(){}
+    public ClientNetworkManager(){
+        NetConfig.initSerializables();
+    }
     
     public void connectToServer(){
         try{
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
-                    new Object[]{NetConfig.SERVER_NAME, NetConfig.SERVER_PORT});
-            client = Network.connectToServer(NetConfig.SERVER_NAME, NetConfig.SERVER_PORT);
+                    new Object[]{NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT});
+            client = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT);
             client.getServices().addService(new RpcClientService());
             client.getServices().addService(new RmiClientService());
             client.getServices().addService(new ClientLoginService());
             client.getServices().addService(new ClientChatService());
             client.getServices().addService(new ClientLobbyService());
             client.getServices().addService(new ClientPingService());
-            client.getServices().addService(new ClientGameSetupService());
             System.out.println("services fetched");
             
             // Not neded since server will send message to client with all serializables.
@@ -57,9 +59,31 @@ public class ClientNetworkManager implements
         }
     }
     
+    public void connectToGameServer(String ip, int port){
+        try{
+            LOGGER.log(Level.INFO, "Trying to connect to game server at {0}:{1}", 
+                    new Object[]{ip, port});
+            // TODO: Change to use ip instead!
+            gameClient = Network.connectToServer(ip, port);
+            gameClient.getServices().addService(new RpcClientService());
+            gameClient.getServices().addService(new RmiClientService());
+            gameClient.getServices().addService(new ClientGameSetupService());
+            System.out.println("services fetched");
+            
+            
+            gameClient.start();
+            System.out.println("client Started");
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+    
     public synchronized void cleanUp(){
         if (client != null && client.isStarted()) {
             client.close();
+        }
+        if (gameClient != null && gameClient.isStarted()) {
+            gameClient.close();
         }
     }
 
@@ -86,7 +110,7 @@ public class ClientNetworkManager implements
     }
     
     public ClientGameSetupService getClientGameSetupService(){
-        return client.getServices().getService(ClientGameSetupService.class);
+        return gameClient.getServices().getService(ClientGameSetupService.class);
     }
 }
 

@@ -112,7 +112,7 @@ public class LobbyState extends BaseAppState implements
     }
     
     @Override
-    public void allReady() {
+    public void allReady(String ip, int port) {
         // DO nothing
     }
     

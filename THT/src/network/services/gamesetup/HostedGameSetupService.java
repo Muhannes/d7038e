@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
+import network.services.lobby.ClientLobbyListener;
 import network.services.login.HostedLoginService;
 import network.util.ConnectionAttribute;
 import utils.eventbus.Event;
@@ -113,6 +114,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             SetupGameEvent setupGameEvent = (SetupGameEvent) event;
             
             setupGame(setupGameEvent.getPlayers());
+            
             initialized = true;
             LOGGER.fine("Game Setup Service is initialized");
         }

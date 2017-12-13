@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.gamelobbyservice;
+package network.services.handover;
 
 /**
  *
  * @author hannes
  */
-public interface GameLobbySession {
+public interface HandoverSession {
     boolean join(int key, int port);
 }

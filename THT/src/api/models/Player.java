@@ -7,16 +7,22 @@ package api.models;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.network.serializing.Serializable;
 
 /**
  *
  * @author hannes
  */
+@Serializable
 public class Player {
     private EntityType type;
     private Vector3f position;
     private Quaternion rotation;
     private int id;
+    
+    public Player(){
+        
+    }
 
     public Player(EntityType type, Vector3f position, Quaternion rotation, int id) {
         this.type = type;
