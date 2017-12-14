@@ -68,13 +68,13 @@ public class GameState extends BaseAppState {
 
     @Override
     protected void cleanup(Application app) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(root != null){
+            root.detachAllChildren();
+        }
     }
 
     @Override
-    protected void onEnable() {
-        System.out.println("I'M IN GAMESTATE NOW");
-        
+    protected void onEnable() {        
         this.root = app.getRootNode();
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
