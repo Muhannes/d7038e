@@ -66,9 +66,10 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
                     Thread.sleep(50);
                     getDelegate();
                     
-                } catch (InterruptedException ex) {
-                    java.util.logging.Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (RuntimeException ex) {
                     throw new RuntimeException("No GameSetup session found");
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(ClientGameSetupService.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } 

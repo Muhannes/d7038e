@@ -137,24 +137,26 @@ public class SetupState extends BaseAppState implements
     public void buildStructures(){
         System.out.println("Building up map.");
         root.attachChild(worldRoot);
-        Spatial scene = asset.loadModel("Scenes/world.j3o");
+        //Spatial scene = asset.loadModel("Scenes/world.j3o");
+        Spatial scene = asset.loadModel("Scenes/creepyhouse.j3o");
+        
         worldRoot.attachChild(scene);
         
         Material ground_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
         ground_mat.setColor("Color", ColorRGBA.Gray);     
-        
+        /*
         Material walls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
         walls_mat.setColor("Color", ColorRGBA.DarkGray);     
 
         Material innerWalls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
         innerWalls_mat.setColor("Color", ColorRGBA.Brown);     
-
+        */
         Node floors = new Node();
         floors = (Node) worldRoot.getChild("floor");
         
         for(int i = 0; i < floors.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
-            floors.getChild(i).setMaterial(ground_mat);
+//            floors.getChild(i).setMaterial(ground_mat);
 //            floors.getChild(i).addControl(rigidBodyControl);            
 //            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
         }
@@ -164,20 +166,21 @@ public class SetupState extends BaseAppState implements
         
         for(int i = 0; i < walls.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
-            walls.getChild(i).setMaterial(walls_mat);
+//            walls.getChild(i).setMaterial(walls_mat);
 //            walls.getChild(i).addControl(rigidBodyControl);
 //            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
         }
 
+        /*
         Node innerWalls = new Node();
         innerWalls = (Node) worldRoot.getChild("innerWalls");
 
         for(int i = 0; i < innerWalls.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
-            innerWalls.getChild(i).setMaterial(innerWalls_mat);
+//            innerWalls.getChild(i).setMaterial(innerWalls_mat);
 //            innerWalls.getChild(i).addControl(rigidBodyControl);            
 //            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
-        }
+        } */
     }
     
     public void createPlayers(){
@@ -187,7 +190,7 @@ public class SetupState extends BaseAppState implements
         for(Player player : players){
             Entity entity = new Entity(asset, player.getPosition(), player.getID());
             playerNode.attachChild(entity.getGeometry()); 
-            bulletAppState.getPhysicsSpace().add(entity.getController());   
+//            bulletAppState.getPhysicsSpace().add(entity.getController());   
         }         
     }
      
