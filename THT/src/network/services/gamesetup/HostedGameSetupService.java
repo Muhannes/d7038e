@@ -39,11 +39,13 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private RmiHostedService rmiHostedService;
     private int channel;
     private static final Random RANDOM = new Random();
+    private GameSetupSessionImpl session;
     
     private final Map<Integer, String> expectedPlayers = new HashMap<>();
     private final List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
     private final List<GameSetupSessionImpl> sessions = new ArrayList<>();
+    
     private boolean initialized = false;
     
     private final List<Vector3f> positions = new ArrayList<>();
@@ -58,7 +60,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        //setAutoHost(false);
+        setAutoHost(false);
         EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
@@ -76,8 +78,10 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
         }
         // Create an object that the client can reach
-        GameSetupSessionImpl session = new GameSetupSessionImpl(connection, getDelegate(connection));
+        session = new GameSetupSessionImpl(connection, getDelegate(connection));
         sessions.add(session);
+        System.out.println("Session list : " + sessions.size());
+        
         // Now we expose this object such that the client can get hold of it
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, session, GameSetupSession.class);
@@ -124,12 +128,24 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     }
     
     private GameSetupSessionListener getDelegate(HostedConnection connection){
-         return rmiHostedService.getRmiRegistry(connection).
-                        getRemoteObject(GameSetupSessionListener.class);    
+        //GameSetupSessionListener l = rmiHostedService.getRmiRegistry(connection).
+        //                getRemoteObject(GameSetupSessionListener.class);    
+        //System.out.println("Listener : " + l );
+        //return l;
+        RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
+        GameSetupSessionListener callback = 
+                rmiRegistry.getRemoteObject(GameSetupSessionListener.class);
+        if( callback == null){ 
+            throw new RuntimeException("Unable to locate client callback for GameSetupSessionListener");
+        }
+        return callback;
     }
     
     private void postAllReady(){
+        System.out.println("postAllReady before");
         sessions.forEach(s -> s.delegate.startGame());
+        System.out.println("postAllReady after");
+        
     }
     
     private class GameSetupSessionImpl implements GameSetupSession {
@@ -142,6 +158,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         private GameSetupSessionImpl(HostedConnection connection, GameSetupSessionListener delegate){
             this.connection = connection;
             this.delegate = delegate;
+            System.out.println("Delegate : " + delegate);
         }
         
         @Override
@@ -170,6 +187,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 }
                 if (readyPlayers.size() == players.size()) {
                     System.out.println("SENDING OUT NEW START GAME EVENT");
+                    System.out.println("received : " + delegate);
                     postAllReady();
                 }
                 

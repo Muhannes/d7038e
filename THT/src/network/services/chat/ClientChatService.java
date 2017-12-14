@@ -68,8 +68,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
-        }
-        
+        }        
         // Share the callback with the server
         rmiService.share((byte)channel, callback, ChatSessionListener.class);
     }

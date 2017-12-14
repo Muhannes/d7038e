@@ -26,6 +26,8 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     
     private List<GameSetupSessionListener> listeners = new ArrayList<>();
     
+    private GameSetupSessionListenerImpl callback;
+    
     private GameSetupSession delegate;
     // Handle to a server side object
     
@@ -46,7 +48,9 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
         }
-        GameSetupSessionListener callback = new GameSetupSessionListenerImpl();
+        
+        callback = new GameSetupSessionListenerImpl();
+        System.out.println("Callback : " + callback);
         // Share the callback with the server
         rmiService.share((byte)channel, callback, GameSetupSessionListener.class);
     }
@@ -54,6 +58,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     private GameSetupSession getDelegate(){
         if(delegate == null){
             delegate = rmiService.getRemoteObject(GameSetupSession.class);
+            System.out.println("Delegate : " + delegate);
             if( delegate == null ) {
                 throw new RuntimeException("No GameSetup session found");
             } 
@@ -68,7 +73,6 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     public void ready() {
-        System.out.println("IAM RETAUDRD");
         getDelegate().ready();
     }
     
@@ -91,8 +95,11 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
         @Override
         public void startGame() {
+            System.out.println("Sending out startGame! before");
             //EventBus.publish(new StartGameEvent(), StartGameEvent.class);
             listeners.forEach(l -> l.startGame());
+            System.out.println("Sending out startGame! after");
+            
         }
         
     }

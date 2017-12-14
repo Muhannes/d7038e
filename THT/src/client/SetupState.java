@@ -130,8 +130,6 @@ public class SetupState extends BaseAppState implements
         bulletAppState.setDebugEnabled(false);        
         buildStaticWorld(); //When the world is built, send it to gameState
         
-        //SEND TO SERVER THAT GAME CAN START
-        
     }
 
     @Override
@@ -272,6 +270,7 @@ public class SetupState extends BaseAppState implements
      
     @Override
     public void update(float tpf){
+/*        
         
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
@@ -281,7 +280,6 @@ public class SetupState extends BaseAppState implements
         
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
-/*        
         walkingDirection.set(0,0,0);
         
         if(left) walkingDirection.addLocal(camLeft);
@@ -307,6 +305,7 @@ public class SetupState extends BaseAppState implements
 
     @Override
     public void startGame() {
+        System.out.println("Start gamestate from setupstate!");
         SetupState ss = this;
         app.enqueue(() -> {
             ss.setEnabled(false);
