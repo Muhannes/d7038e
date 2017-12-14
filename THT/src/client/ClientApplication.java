@@ -52,7 +52,7 @@ public class ClientApplication extends SimpleApplication{
         stateManager.attach(gameLobbyScreen);
         System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
         
-        SetupState setupState = new SetupState(clientNetworkManager.getGlobalId());
+        SetupState setupState = new SetupState();
         setupState.setEnabled(false);
         stateManager.attach(setupState);
         

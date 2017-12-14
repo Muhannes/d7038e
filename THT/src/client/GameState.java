@@ -89,6 +89,7 @@ public class GameState extends BaseAppState {
         for(int i = 0; i < playerNode.getChildren().size(); i++){
             System.out.println(playerNode.getChild(i).getName());
             if(("player" + id).equals(playerNode.getChild(i).getName())){
+                System.out.println("I'm playerNode id: " + "player"+id);
                 chaseCamera = new ChaseCamera(camera, root.getChild("player" + id), input);
             }
 
