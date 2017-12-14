@@ -73,10 +73,6 @@ public class SetupState extends BaseAppState implements
     
     private AssetManager asset;
     
-    private Spatial avatar;
-    
-    private CapsuleCollisionShape playerShape;
-    
     private BulletAppState bulletAppState;
     
     private InputManager input;
@@ -86,10 +82,6 @@ public class SetupState extends BaseAppState implements
     private ChaseCamera chaseCamera;
     
     private Camera camera;
-    
-    private final Vector3f walkingDirection = Vector3f.ZERO;
-    
-    private boolean left = false, right = false, forward = false, backward = false;
     
     private Human human = new Human();
     
@@ -137,32 +129,6 @@ public class SetupState extends BaseAppState implements
         // TODO: destroy stuff not needed anymore( if there is anything?)
         cgss.removeGameSetupSessionListener(this);
     }
-
-/*    @Override
-    public void notifyEvent(Event event, Class<? extends Event> T) {
-        if(T == PlayerInitEvent.class){
-            //INIT WORLD
-            System.out.println("NEW PLAYER INIT EVENT!\nglobalID : " + globalId);
-            playerEvent = (PlayerInitEvent) event;
-            players = playerEvent.players;
-            
-            
-            flyCam.setEnabled(true);
-            
-            //Notify ready
-            System.out.println("In notifyEvent, load up everything on screen.");
-            cgss.ready();
-            
-        } else if (T == StartGameEvent.class){
-            System.out.println("START GAME EVENT");
-            SetupState ss = this;
-            app.enqueue(() -> {
-                ss.setEnabled(false);
-                app.getStateManager().getState(GameState.class).setEnabled(true);
-            });         
-        }
-    }
-*/    
     
     public void buildStaticWorld(){        
         
@@ -188,59 +154,36 @@ public class SetupState extends BaseAppState implements
 
         Material innerWalls_mat = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
         innerWalls_mat.setColor("Color", ColorRGBA.Brown);     
+
+        Node floors = new Node();
+        floors = (Node) worldRoot.getChild("floor");
         
+        for(int i = 0; i < floors.getChildren().size(); i++){
+            RigidBodyControl rigidBodyControl = new RigidBodyControl();
+            floors.getChild(i).setMaterial(ground_mat);
+            floors.getChild(i).addControl(rigidBodyControl);            
+            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+        }
+
+        Node walls = new Node();
+        walls = (Node) worldRoot.getChild("walls");        
         
-        Spatial floor1 = worldRoot.getChild("floor1");
-        floor1.setMaterial(ground_mat);
-        bulletAppState.getPhysicsSpace().add(floor1.getControl(RigidBodyControl.class));
-        
-        Spatial floor2 = worldRoot.getChild("floor2");
-        floor2.setMaterial(ground_mat);
-        bulletAppState.getPhysicsSpace().add(floor2.getControl(RigidBodyControl.class));       
-        
-        Spatial floor3 = worldRoot.getChild("floor3");
-        floor3.setMaterial(ground_mat);
-        bulletAppState.getPhysicsSpace().add(floor3.getControl(RigidBodyControl.class));
-        
-        Spatial wall1 = worldRoot.getChild("wall1");
-        wall1.setMaterial(walls_mat);
-        bulletAppState.getPhysicsSpace().add(wall1.getControl(RigidBodyControl.class));
-        
-        Spatial wall2 = worldRoot.getChild("wall2");
-        wall2.setMaterial(walls_mat);
-        bulletAppState.getPhysicsSpace().add(wall2.getControl(RigidBodyControl.class));
-        
-        Spatial wall3 = worldRoot.getChild("wall3");
-        wall3.setMaterial(walls_mat);
-        bulletAppState.getPhysicsSpace().add(wall3.getControl(RigidBodyControl.class));
-        
-        Spatial wall4 = worldRoot.getChild("wall4");
-        wall4.setMaterial(walls_mat);
-        bulletAppState.getPhysicsSpace().add(wall4.getControl(RigidBodyControl.class));
-        
-        //Inner walls
-        
-        Spatial innerWall1 = worldRoot.getChild("innerWall1");
-        innerWall1.setMaterial(innerWalls_mat);
-        CollisionShape tmp1 = innerWall1.getControl(RigidBodyControl.class).getCollisionShape();
-        tmp1.setScale(new Vector3f(25,25,1));
-        innerWall1.getControl(RigidBodyControl.class).setCollisionShape(tmp1);
-        bulletAppState.getPhysicsSpace().add(innerWall1.getControl(RigidBodyControl.class));
-        
-        Spatial innerWall2 = worldRoot.getChild("innerWall2");
-        innerWall2.setMaterial(innerWalls_mat);
-        CollisionShape tmp2 = innerWall2.getControl(RigidBodyControl.class).getCollisionShape();
-        tmp2.setScale(new Vector3f(25,25,1));
-        innerWall2.getControl(RigidBodyControl.class).setCollisionShape(tmp2);
-        bulletAppState.getPhysicsSpace().add(innerWall2.getControl(RigidBodyControl.class));
-        
-        Spatial innerWall3 = worldRoot.getChild("innerWall3");
-        innerWall3.setMaterial(innerWalls_mat);
-        CollisionShape tmp3 = innerWall3.getControl(RigidBodyControl.class).getCollisionShape();
-        tmp3.setScale(new Vector3f(25,25,1));
-        innerWall3.getControl(RigidBodyControl.class).setCollisionShape(tmp3);
-        bulletAppState.getPhysicsSpace().add(innerWall3.getControl(RigidBodyControl.class));
-        
+        for(int i = 0; i < walls.getChildren().size(); i++){
+            RigidBodyControl rigidBodyControl = new RigidBodyControl();
+            walls.getChild(i).setMaterial(walls_mat);
+            walls.getChild(i).addControl(rigidBodyControl);
+            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+        }
+
+        Node innerWalls = new Node();
+        innerWalls = (Node) worldRoot.getChild("innerWalls");
+
+        for(int i = 0; i < innerWalls.getChildren().size(); i++){
+            RigidBodyControl rigidBodyControl = new RigidBodyControl();
+            innerWalls.getChild(i).setMaterial(innerWalls_mat);
+            innerWalls.getChild(i).addControl(rigidBodyControl);            
+            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+        }
     }
     
     public void createPlayers(){
@@ -249,48 +192,12 @@ public class SetupState extends BaseAppState implements
             Entity entity = new Entity(asset, player.getPosition(), player.getID());
             root.attachChild(entity.getGeometry()); 
             bulletAppState.getPhysicsSpace().add(entity.getController());   
-
-            //RECEIVED MY OWN ENTITY FROM SERVER 
-            
-/*            if(this.globalId == entity.getId()){
-                playerEntity = entity;
-                playerEntity.setColor(ColorRGBA.Red);
-                
-                avatar = root.getChild("player" + entity.getId());  
-                System.out.println("Avatar : " + avatar.getName());
-                avatar.addControl(entity.getController());    
-                chaseCamera = new ChaseCamera(camera, avatar, input);
-                
-                human.setEntity(playerEntity);
-                human.initKeys(input);
-            } */
-        } 
-        
+        }         
     }
      
     @Override
     public void update(float tpf){
-/*        
-        
-        Vector3f camDir = camera.getDirection().clone();
-        Vector3f camLeft = camera.getLeft().clone();
 
-        camDir.y = 0;
-        camLeft.y = 0;
-        
-        camDir.normalizeLocal();
-        camLeft.normalizeLocal();
-        walkingDirection.set(0,0,0);
-        
-        if(left) walkingDirection.addLocal(camLeft);
-        if(right) walkingDirection.addLocal(camLeft.negate());
-        if(forward) walkingDirection.addLocal(camDir);
-        if(backward) walkingDirection.addLocal(camDir.negate());
-        
-        if(avatar != null){ 
-            walkingDirection.multLocal(40f).multLocal(tpf);
-            playerEntity.getController().setWalkDirection(walkingDirection);
-        } */
     }
 
     @Override
