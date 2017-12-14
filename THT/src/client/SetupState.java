@@ -181,10 +181,12 @@ public class SetupState extends BaseAppState implements
     }
     
     public void createPlayers(){
+        Node playerNode = new Node("players");
+        root.attachChild(playerNode);
         System.out.println("How many players do we have ? answer : " + players.size());
         for(Player player : players){
             Entity entity = new Entity(asset, player.getPosition(), player.getID());
-            root.attachChild(entity.getGeometry()); 
+            playerNode.attachChild(entity.getGeometry()); 
             bulletAppState.getPhysicsSpace().add(entity.getController());   
         }         
     }

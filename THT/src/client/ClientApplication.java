@@ -51,9 +51,14 @@ public class ClientApplication extends SimpleApplication{
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
         System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
+        
         SetupState setupState = new SetupState(clientNetworkManager.getGlobalId());
         setupState.setEnabled(false);
         stateManager.attach(setupState);
+        
+        GameState gameState = new GameState(clientNetworkManager.getGlobalId());
+        gameState.setEnabled(false);
+        stateManager.attach(gameState);
         
         // Start app at login Screen
         loginScreen.setEnabled(true);
