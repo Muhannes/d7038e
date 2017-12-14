@@ -38,6 +38,7 @@ import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.login.HostedLoginService;
+import network.util.NetConfig;
 
 /**
  *
@@ -108,11 +109,7 @@ public class SetupState extends BaseAppState implements
         cgss.addGameSetupSessionListener(this);
         
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(350);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        //NetConfig.networkDelay(150);
         cgss.join(globalId);
             
         //Bullet physics for players, walls, objects
