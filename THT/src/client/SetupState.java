@@ -29,23 +29,15 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
-import com.jme3.texture.Texture;
 import control.Human;
-import de.lessvoid.nifty.Nifty;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.logging.Level;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
 import network.services.gamesetup.PlayerInitEvent;
-import network.services.gamesetup.StartGameEvent;
-import utils.eventbus.Event;
-import utils.eventbus.EventBus;
-import utils.eventbus.EventListener;
+import network.services.login.HostedLoginService;
 
 /**
  *
@@ -86,8 +78,7 @@ public class SetupState extends BaseAppState implements
     private Human human = new Human();
     
     
-    public SetupState(ClientGameSetupService cgss, int id){
-        this.cgss = cgss;
+    public SetupState(int id){
         this.globalId = id;
         
     }
@@ -100,11 +91,14 @@ public class SetupState extends BaseAppState implements
     @Override
     protected void cleanup(Application app) {
         //TODO: cleanup for setup state
-        root.detachAllChildren();
+        if(root != null){
+            root.detachAllChildren();
+        }
     }
 
     @Override
     protected void onEnable() {
+        this.cgss = ((ClientApplication)app).getGameSetupService();
         this.root = app.getRootNode();
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
@@ -113,9 +107,13 @@ public class SetupState extends BaseAppState implements
         flyCam = app.getFlyByCamera();
         cgss.addGameSetupSessionListener(this);
         
-        //EventBus.subscribe(this);
-        cgss.join(globalId);        
-        System.out.println("Setup is enabled");
+        // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        cgss.join(globalId);
             
         //Bullet physics for players, walls, objects
         bulletAppState = new BulletAppState();

@@ -19,6 +19,10 @@ public class Player {
     private Vector3f position;
     private Quaternion rotation;
     private int id;
+    
+    public Player(){
+        
+    }
 
     public Player(EntityType type, Vector3f position, Quaternion rotation, int id) {
         this.type = type;
@@ -26,9 +30,7 @@ public class Player {
         this.rotation = rotation;
         this.id = id;
     }
-    
-    public Player(){}
-    
+        
     public void setType(EntityType type){
         this.type = type;
     }

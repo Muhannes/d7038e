@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
+import network.services.lobby.ClientLobbyListener;
 import network.services.login.HostedLoginService;
 import network.util.ConnectionAttribute;
+import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -72,11 +74,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Game setup service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        NetConfig.networkDelay(150);
         // Create an object that the client can reach
         session = new GameSetupSessionImpl(connection, getDelegate(connection));
         sessions.add(session);
@@ -122,6 +120,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             SetupGameEvent setupGameEvent = (SetupGameEvent) event;
             
             setupGame(setupGameEvent.getPlayers());
+            
             initialized = true;
             LOGGER.fine("Game Setup Service is initialized");
         }
@@ -158,7 +157,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         private GameSetupSessionImpl(HostedConnection connection, GameSetupSessionListener delegate){
             this.connection = connection;
             this.delegate = delegate;
-            System.out.println("Delegate : " + delegate);
+            System.out.println("GameSetupSessionImpl (Delegate) : " + delegate);
         }
         
         @Override
@@ -186,8 +185,10 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                     readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
                 }
                 if (readyPlayers.size() == players.size()) {
-                    System.out.println("SENDING OUT NEW START GAME EVENT");
-                    System.out.println("received : " + delegate);
+               
+                    EventBus.publish(new StartGameEvent(), StartGameEvent.class);
+
+                    //Send start to clients.
                     postAllReady();
                 }
                 

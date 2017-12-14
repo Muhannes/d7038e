@@ -58,7 +58,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     private GameSetupSession getDelegate(){
         if(delegate == null){
             delegate = rmiService.getRemoteObject(GameSetupSession.class);
-            System.out.println("Delegate : " + delegate);
+            System.out.println("GameSetupSession (Delegate) : " + delegate);
             if( delegate == null ) {
                 throw new RuntimeException("No GameSetup session found");
             } 

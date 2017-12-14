@@ -6,8 +6,6 @@
 package client;
 
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.login.LoginGUI;
@@ -42,8 +40,6 @@ public class LoginState extends BaseAppState implements
     
     @Override
     public void initialize(Application app){  
-        
-        
         this.app = app;
         
         niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(

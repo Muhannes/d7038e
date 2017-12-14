@@ -10,6 +10,7 @@ import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
+import network.services.gamesetup.ClientGameSetupService;
 
 /**
  *
@@ -34,7 +35,6 @@ public class ClientApplication extends SimpleApplication{
         Logger.getLogger("NiftyInputEventHandlingLog").setLevel(Level.SEVERE);
         
         clientNetworkManager = new ClientNetworkManager();
-        
         clientNetworkManager.connectToServer();
         // Create and attach all states. TODO: move to function for cleaner code.
         
@@ -51,7 +51,7 @@ public class ClientApplication extends SimpleApplication{
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
         System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
-        SetupState setupState = new SetupState(clientNetworkManager.getClientGameSetupService(), clientNetworkManager.getGlobalId());
+        SetupState setupState = new SetupState(clientNetworkManager.getGlobalId());
         setupState.setEnabled(false);
         stateManager.attach(setupState);
         
@@ -61,6 +61,7 @@ public class ClientApplication extends SimpleApplication{
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
+
     }
     
     @Override
@@ -70,6 +71,14 @@ public class ClientApplication extends SimpleApplication{
         
         super.destroy();
         // Clean up the rest
+    }
+    
+    public void connectToGameServer(String ip, int port){
+        clientNetworkManager.connectToGameServer(ip, port);
+    }
+    
+    public ClientGameSetupService getGameSetupService(){
+        return clientNetworkManager.getClientGameSetupService();
     }
     
     public static void main(String[] args){

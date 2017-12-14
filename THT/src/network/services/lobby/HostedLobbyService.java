@@ -112,7 +112,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public List<String> join(int roomid) {
-            LOGGER.fine("Player joining (HostedLobbyService)!");
+            LOGGER.info("Player joining (HostedLobbyService)!");
             if (lobbyRoom == null) {
                 LobbyRoom lr = lobbyHolder.getLobbyRoom(roomid);
                 if (lr != null) {
@@ -142,7 +142,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public void leave() {
-            LOGGER.fine("Player leaving (HostedLobbyService)!");
+            LOGGER.info("Player leaving (HostedLobbyService)!");
             if (lobbyRoom != null) {
                 lobbyRoom.removePlayer(connection);
                 List<HostedConnection> players = lobbyRoom.getPlayers();
@@ -165,7 +165,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public void ready(){
-            LOGGER.fine("Player is ready (HostedLobbyService)!");
+            LOGGER.info("Player is ready (HostedLobbyService)!");
             boolean allReady = lobbyRoom.setPlayerReady(connection.getId());
             
             List<HostedConnection> players = lobbyRoom.getPlayers();
@@ -175,7 +175,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                 getDelegate(player).playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
             }
             if(allReady){
-                LOGGER.fine("All players are ready");
+                LOGGER.info("All players are ready");
                 // TODO: Start game.
                 Map<Integer, String> playerInfo = new HashMap<>();
                 List<Integer> ids = lobbyRoom.getPlayerIDs();
@@ -185,11 +185,15 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                     int id =ids.get(i);
                     playerInfo.put(id, name);
                 }
-                EventBus.publish(new SetupGameEvent(playerInfo), SetupGameEvent.class);
+                List<ClientLobbyListener> callbacks = new ArrayList<>();
+                LOGGER.info("players in room: " + players.size());
                 for (HostedConnection player : players) {
                     // Send out to each player in room that all are ready.
-                    getDelegate(player).allReady();
+                    callbacks.add(getDelegate(player));
+                    LOGGER.info("Adding player callback: " + player.getId());
                 }
+                EventBus.publish(new SetupGameEvent(playerInfo, callbacks), SetupGameEvent.class);
+                
             }
         }
 
