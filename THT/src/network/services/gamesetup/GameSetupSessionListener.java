@@ -14,6 +14,7 @@ import java.util.List;
  * @author hannes
  */
 public interface GameSetupSessionListener {
+    
     @Asynchronous
     void initPlayer(List<Player> players);
     

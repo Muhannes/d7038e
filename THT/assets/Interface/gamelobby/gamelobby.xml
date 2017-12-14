@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
+  <useStyles filename="nifty-default-styles.xml" />
+  <useControls filename="nifty-default-controls.xml" />
+  
+  <screen id="gamelobby" controller="gui.gamelobby.GameLobbyGUI" visibleToMouse="true" defaultFocusElement="textfieldInput">
+      <layer id="background" childLayout="center">
+        <image id="" filename="Interface/gamelobby/room.jpg"/>
+      </layer>
+      <layer id="foreground" childLayout="vertical">
+            <panel childLayout="center" height="10%"></panel> 
+            <panel childLayout="vertical" width="75%" align="center">
+                <control name="button" id="PlayerReady" align="right" visiableToMouse="true" label="Ready">
+                     <interact onClick="ready()"/>
+                     <effect>
+                        <onHover name="textSize" maxSize="15%"/>
+                    </effect>
+                </control>
+                <!-- CHAT WINDOW -->
+                <panel childLayout="horizontal">
+                    <control name="listBox" id="myListBox" selection="Disabled" width="70%" displayItems="10"/>
+                    <control name="listBox" id="myListBoxPlayers" selection="Disabled" width="30%" displayItems="10"/>
+                </panel>
+
+                <!-- CHAT INPUT FIELD -->
+                <panel childLayout="horizontal"> 
+                    <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" maxLength="45"/>
+                    <control name="button" id="SendMessage" visibleToMouse="true" label="Send">
+                        <interact onClick="sendMessage()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
+                    </control>            
+                </panel> 
+                <panel childLayout="center"></panel> 
+            </panel>
+            
+            <!-- QUIT BUTTON -->
+            <panel childLayout="horizontal" width="100%" height="10%" padding="10px">
+                <panel childLayout="center" width="25%">
+                    <control name="button" id="return" visibleToMouse="true" label="Return">
+                        <interact onClick="returnToLobby()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
+                    </control>
+                </panel>
+                <panel childLayout="center" width="25%"></panel>
+                <panel childLayout="center" width="25%"></panel>
+                <panel childLayout="center" width="25%">
+                    <control name="button" id="Quit" visibleToMouse="true" label="Quit">
+                        <interact onClick="quitGame()"/>
+                        <effect>
+                            <onHover name="textSize" maxSize="15%"/>
+                        </effect>
+                    </control>   
+                </panel> 
+            </panel>
+    </layer>
+  </screen>
+</nifty>

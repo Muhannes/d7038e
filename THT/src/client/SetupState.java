@@ -92,7 +92,9 @@ public class SetupState extends BaseAppState implements EventListener{
     @Override
     protected void cleanup(Application app) {
         //TODO: cleanup for setup state
-        root.detachAllChildren();
+        if(root != null){
+            root.detachAllChildren();
+        }
     }
 
     @Override
