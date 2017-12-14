@@ -62,7 +62,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-//        setAutoHost(false);
         EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
@@ -75,16 +74,13 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "Game setup service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
         NetConfig.networkDelay(50);
-
+        session = new GameSetupSessionImpl(connection);
+        sessions.add(session);
+        System.out.println("Session list : " + sessions.size());
         // Now we expose this object such that the client can get hold of it
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, session, GameSetupSession.class);
-  
-        
         // Create an object that the client can reach
-        session = new GameSetupSessionImpl(connection, getDelegate(connection));
-        sessions.add(session);
-        System.out.println("Session list : " + sessions.size());
         
     }
 
@@ -103,6 +99,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         for (Integer id : expectedPlayers.keySet()) {
             players.add(new Player(EntityType.Human, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), id));
         }
+        LOGGER.info("AMount of players in game: " + players.size());
         int monsterID = RANDOM.nextInt(players.size());
         players.get(monsterID).setType(EntityType.Monster);
         
@@ -119,10 +116,10 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
-        if (T == SetupGameEvent.class) {
-            SetupGameEvent setupGameEvent = (SetupGameEvent) event;
+        if (T == PlayerInfoEvent.class) {
+            PlayerInfoEvent playerInfoEvent = (PlayerInfoEvent) event;
             
-            setupGame(setupGameEvent.getPlayers());
+            setupGame(playerInfoEvent.playerInfo);
             
             initialized = true;
             LOGGER.fine("Game Setup Service is initialized");
@@ -130,10 +127,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     }
     
     private GameSetupSessionListener getDelegate(HostedConnection connection){
-        //GameSetupSessionListener l = rmiHostedService.getRmiRegistry(connection).
-        //                getRemoteObject(GameSetupSessionListener.class);    
-        //System.out.println("Listener : " + l );
-        //return l;
         RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
         GameSetupSessionListener callback = 
                 rmiRegistry.getRemoteObject(GameSetupSessionListener.class);
@@ -145,7 +138,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     private void postAllReady(){
         System.out.println("postAllReady before");
-        sessions.forEach(s -> s.delegate.startGame());
+        sessions.forEach(s -> getDelegate(s.connection).startGame());
         System.out.println("postAllReady after");
         
     }
@@ -153,14 +146,11 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private class GameSetupSessionImpl implements GameSetupSession {
 
         private final HostedConnection connection;
-        private final GameSetupSessionListener delegate;
         private int globalID = -1;
         private boolean joined = false;
         
-        private GameSetupSessionImpl(HostedConnection connection, GameSetupSessionListener delegate){
+        private GameSetupSessionImpl(HostedConnection connection){
             this.connection = connection;
-            this.delegate = delegate;
-            System.out.println("GameSetupSessionImpl (Delegate) : " + delegate);
         }
         
         @Override
@@ -171,7 +161,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 this.globalID = globalID;
                 connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
                 // TODO: Add security to make sure no one takes another ones id!
-                Player p = getPlayerByID(globalID);
                 rmiHostedService.getRmiRegistry(connection).
                         getRemoteObject(GameSetupSessionListener.class).initPlayer(players);
                 joined = true;

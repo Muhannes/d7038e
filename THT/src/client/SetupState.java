@@ -134,12 +134,11 @@ public class SetupState extends BaseAppState implements
         app.getStateManager().attach(bulletAppState);
         
         buildStructures();
-        createPlayers();
         
     }
     
     public void buildStructures(){
-        
+        System.out.println("Building up map.");
         root.attachChild(worldRoot);
         Spatial scene = asset.loadModel("Scenes/world.j3o");
         worldRoot.attachChild(scene);
@@ -159,8 +158,8 @@ public class SetupState extends BaseAppState implements
         for(int i = 0; i < floors.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
             floors.getChild(i).setMaterial(ground_mat);
-            floors.getChild(i).addControl(rigidBodyControl);            
-            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+//            floors.getChild(i).addControl(rigidBodyControl);            
+//            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
         }
 
         Node walls = new Node();
@@ -169,8 +168,8 @@ public class SetupState extends BaseAppState implements
         for(int i = 0; i < walls.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
             walls.getChild(i).setMaterial(walls_mat);
-            walls.getChild(i).addControl(rigidBodyControl);
-            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+//            walls.getChild(i).addControl(rigidBodyControl);
+//            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
         }
 
         Node innerWalls = new Node();
@@ -179,8 +178,8 @@ public class SetupState extends BaseAppState implements
         for(int i = 0; i < innerWalls.getChildren().size(); i++){
             RigidBodyControl rigidBodyControl = new RigidBodyControl();
             innerWalls.getChild(i).setMaterial(innerWalls_mat);
-            innerWalls.getChild(i).addControl(rigidBodyControl);            
-            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+//            innerWalls.getChild(i).addControl(rigidBodyControl);            
+//            bulletAppState.getPhysicsSpace().add(rigidBodyControl);
         }
     }
     
@@ -203,6 +202,7 @@ public class SetupState extends BaseAppState implements
         System.out.println("(initPlayer SetupState)");
         players = listOfPlayers;
 
+        createPlayers();
         flyCam.setEnabled(true);
 
         //Notify ready
