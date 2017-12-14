@@ -52,7 +52,7 @@ public class LobbyNetworkHandler {
         initSerializables();
         initPlayerServer();
         initHandoverServer();
-        startServers();
+        //startServers();
     }
     
     @SuppressWarnings("CallToPrintStackTrace")
@@ -93,10 +93,6 @@ public class LobbyNetworkHandler {
             handoverServer.getServices().addService(new RmiHostedService());
             handoverServer.getServices().addService(new HostedHandoverService());
             
-            // Important to call this afer the playerServer has been created!!!
-            //initHandoverSerializables();
-            
-            //handoverServer.start();
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,8 +100,8 @@ public class LobbyNetworkHandler {
         }
     }
     
-    private void startServers(){
-        playerServer.start();
+    public void startServers(){
         handoverServer.start();
+        playerServer.start();
     }
 }

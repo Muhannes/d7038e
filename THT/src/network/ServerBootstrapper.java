@@ -7,6 +7,7 @@ package network;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.util.NetConfig;
 
 /**
  *
@@ -15,8 +16,12 @@ import java.util.logging.Logger;
 public class ServerBootstrapper {
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){
-        //LobbyNetworkHandler lobbyNH = new LobbyNetworkHandler();
+        LobbyNetworkHandler lobbyNH = new LobbyNetworkHandler();
         GameNetworkHandler gameNH = new GameNetworkHandler();
+        lobbyNH.startServers();
+        gameNH.startServer();
+        NetConfig.networkDelay(30);
+        gameNH.connectToLobbyServer();
         while (true){
             try {
                 Thread.sleep(1000);

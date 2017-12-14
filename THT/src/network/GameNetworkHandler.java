@@ -38,12 +38,6 @@ public class GameNetworkHandler {
         Logger.getLogger("").setLevel(Level.INFO);
         initSerializables();
         initGameServer();
-        connectToLobbyServer();
-        server.start();
-        lobbyClient.start();
-        // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        NetConfig.networkDelay(150);
-        getClientHandoverService().joinLobby();
     }
     
     @SuppressWarnings("CallToPrintStackTrace")
@@ -56,10 +50,6 @@ public class GameNetworkHandler {
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedGameSetupService());
-            
-            // Important to call this afer the server has been created!!!
-            
-            //server.start();
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,6 +68,10 @@ public class GameNetworkHandler {
             lobbyClient.getServices().addService(new ClientHandoverService());
             System.out.println("services fetched");
             
+            lobbyClient.start();
+            // Need to sleep before trying to access shared object.
+            NetConfig.networkDelay(150);
+            getClientHandoverService().joinLobby();
         }catch(IOException ex){
             ex.printStackTrace();
         }
@@ -91,6 +85,10 @@ public class GameNetworkHandler {
     
    public ClientHandoverService getClientHandoverService(){
        return lobbyClient.getServices().getService(ClientHandoverService.class);
+   }
+   
+   public void startServer(){
+       server.start();
    }
     
 }
