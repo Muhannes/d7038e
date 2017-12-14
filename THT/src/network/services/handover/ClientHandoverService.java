@@ -71,7 +71,7 @@ public class ClientHandoverService extends AbstractClientService {
         public void startSetup(Map<Integer, String> playerInfo) {
             // todo : setup, bla blabla
             System.out.println("StartSetup");
-            EventBus.publish(new PlayerInfoEvent(playerInfo), SetupGameEvent.class);
+            EventBus.publish(new PlayerInfoEvent(playerInfo), PlayerInfoEvent.class);
             new Thread(new Runnable() { // Is this needed to be run in different thread? weird error if not when tried earlier
                 @Override
                 public void run() {
