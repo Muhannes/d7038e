@@ -200,12 +200,14 @@ public class SetupState extends BaseAppState implements
 
     @Override
     public void initPlayer(List<Player> listOfPlayers) {
+        System.out.println("(initPlayer SetupState)");
         players = listOfPlayers;
 
         flyCam.setEnabled(true);
 
         //Notify ready
         cgss.ready();
+        System.out.println("End of (initPlayer SetupState)");
     }
 
     @Override

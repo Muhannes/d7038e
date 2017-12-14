@@ -146,6 +146,7 @@ public class GameLobbyScreen extends BaseAppState implements
         app.enqueue(new Runnable() {
             @Override
             public void run() {
+                System.out.println("New runnable for enabling setupstate");
                 gls.setEnabled(false);
                 app.getStateManager().getState(SetupState.class).setEnabled(true);
             }

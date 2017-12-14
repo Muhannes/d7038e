@@ -62,7 +62,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        setAutoHost(false);
+//        setAutoHost(false);
         EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
@@ -74,15 +74,18 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Game setup service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        NetConfig.networkDelay(150);
+        NetConfig.networkDelay(50);
+
+        // Now we expose this object such that the client can get hold of it
+        RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
+        rmi.share((byte)channel, session, GameSetupSession.class);
+  
+        
         // Create an object that the client can reach
         session = new GameSetupSessionImpl(connection, getDelegate(connection));
         sessions.add(session);
         System.out.println("Session list : " + sessions.size());
         
-        // Now we expose this object such that the client can get hold of it
-        RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
-        rmi.share((byte)channel, session, GameSetupSession.class);
     }
 
     @Override
@@ -162,7 +165,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
         @Override
         public void join(int globalID) {
-            System.out.println("Calling ready() in HGSS\n globalID = " + globalID);
+            System.out.println("Calling join() in HGSS\n globalID = " + globalID);
             if (initialized && !joined) {
                 LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;

@@ -37,10 +37,8 @@ public class EventBus {
     } 
     
     private synchronized void publishEvent(Event event, Class<? extends Event> T){
-        System.out.println("in method publishEvent");
         for (EventListener listener : listeners) {
             executor.submit(() -> {
-                System.out.println("Sending out new event to listeners");
                 listener.notifyEvent(event, T);
             });
         }
@@ -51,7 +49,6 @@ public class EventBus {
     }
     
     public static void publish(Event event, Class<? extends Event> T){
-        System.out.println("PUBLISH NEW EVENT!");
         getEventBus().publishEvent(event, T);
     }
     

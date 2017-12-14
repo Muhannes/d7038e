@@ -68,6 +68,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     public void join(int globalID) {
+        System.out.println("Joing with globalId : " + globalID + " at ClientGameSetupService");
         getDelegate().join(globalID);
     }
 
