@@ -26,7 +26,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     
     private List<GameSetupSessionListener> listeners = new ArrayList<>();
     
-    private GameSetupSessionListenerImpl callback;
+    private GameSetupSessionListener callback;
     
     private GameSetupSession delegate;
     // Handle to a server side object
@@ -88,7 +88,7 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
         @Override
         public void initPlayer(List<Player> p) {
-            LOGGER.fine("InitPlayer Received!");
+            LOGGER.fine("InitPlayer Received! size is: " + p.size());
             //EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
             listeners.forEach(l -> l.initPlayer(p));
         }

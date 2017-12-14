@@ -51,7 +51,7 @@ public class EventBus {
     }
     
     public static void publish(Event event, Class<? extends Event> T){
-        System.out.println("PUBLISH NEW EVENT!");
+        System.out.println("PUBLISH NEW EVENT! type: " + T);
         getEventBus().publishEvent(event, T);
     }
     

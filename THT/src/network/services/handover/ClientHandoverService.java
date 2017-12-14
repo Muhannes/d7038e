@@ -5,6 +5,7 @@
  */
 package network.services.handover;
 
+import network.services.gamesetup.PlayerInfoEvent;
 import com.jme3.network.Client;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -19,7 +20,7 @@ import utils.eventbus.EventBus;
  *
  * @author hannes
  */
-public class ClientHandoverService extends AbstractClientService{
+public class ClientHandoverService extends AbstractClientService {
 
     
     private HandoverSession delegate;
@@ -70,7 +71,7 @@ public class ClientHandoverService extends AbstractClientService{
         public void startSetup(Map<Integer, String> playerInfo) {
             // todo : setup, bla blabla
             System.out.println("StartSetup");
-            EventBus.publish(new SetupGameEvent(playerInfo, null), SetupGameEvent.class);
+            EventBus.publish(new PlayerInfoEvent(playerInfo), SetupGameEvent.class);
             new Thread(new Runnable() { // Is this needed to be run in different thread? weird error if not when tried earlier
                 @Override
                 public void run() {

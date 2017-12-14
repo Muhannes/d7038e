@@ -134,7 +134,6 @@ public class SetupState extends BaseAppState implements
         app.getStateManager().attach(bulletAppState);
         
         buildStructures();
-        createPlayers();
         
     }
     
@@ -202,6 +201,7 @@ public class SetupState extends BaseAppState implements
     public void initPlayer(List<Player> listOfPlayers) {
         players = listOfPlayers;
 
+        createPlayers();
         flyCam.setEnabled(true);
 
         //Notify ready
