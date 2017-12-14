@@ -5,6 +5,7 @@
  */
 package network.services.handover;
 
+import com.jme3.network.service.rmi.Asynchronous;
 import java.util.Map;
 
 /**
@@ -13,5 +14,6 @@ import java.util.Map;
  */
 public interface HandoverSessionListener {
     
-     void startSetup(Map<Integer, String> playerInfo);
+    @Asynchronous
+    void startSetup(Map<Integer, String> playerInfo);
 }

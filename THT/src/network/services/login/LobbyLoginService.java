@@ -17,13 +17,13 @@ import network.util.NetConfig;
 
 /**
  *
- * @author truls
+ * @author hannes
  */
-public class ClientLoginService extends AbstractClientService implements LoginSession{
+public class LobbyLoginService extends AbstractClientService{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientLoginService.class);
+    private static final Logger LOGGER = Logger.getLogger(LobbyLoginService.class);
     
-    private static Account myAccount;
+    private static final List<Account> accounts = new ArrayList<>();
     
     private LoginCallback callback;
     // Used to get notifications from the server
@@ -40,11 +40,11 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
     private int channel;
     // Channel we send on, is it a port though?
             
-    public ClientLoginService(){
+    public LobbyLoginService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
     }
     
-    public ClientLoginService(int channel){
+    public LobbyLoginService(int channel){
         this.channel = channel;
     }
     
@@ -52,7 +52,7 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
     protected void onInitialize(ClientServiceManager serviceManager) {
         rmiService = getService(RmiClientService.class);
         if(rmiService == null){
-            throw new RuntimeException("ClientLoginService requires RmiService");
+            throw new RuntimeException("LobbyLoginService requires RmiService");
         }
         callback = new LoginCallback();
         // Share the callback with the server
@@ -60,24 +60,18 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
     }
     
     private LoginSession getDelegate(){
-        if(delegate == null){
+        if (delegate == null){
             delegate = NetConfig.getDelegate(rmiService, LoginSession.class);
         }
         return delegate;
     }
     
-    public static Account getAccount(){
-        return myAccount;
+    public void listenForLogins(){
+        getDelegate().listenForLogins();
     }
     
-    @Override
-    public void login(String name) {
-        getDelegate().login(name);
-    }
-    
-    @Override
-    public void listenForLogins() {
-        // Nothing, clients should never listen for logins...
+    public static List<Account> getAccounts(){
+        return accounts;
     }
     
     public void addLoginSessionListener(LoginSessionListener loginSessionListener){
@@ -92,20 +86,19 @@ public class ClientLoginService extends AbstractClientService implements LoginSe
         
         @Override
         public void notifyLogin(boolean loggedIn, String key, int id, String name) {
-            LOGGER.log(Level.INFO, "Login result: {0}", loggedIn);
             if (loggedIn) {
-                myAccount = new Account(name, id, key);
+                LOGGER.info("New Account added: " + name);
+                System.out.println("new account");
+                accounts.add(new Account(name, id, key));
             }
-            listeners.forEach(l -> l.notifyLogin(loggedIn, key, id, name));
         }
 
         @Override
         public void notifyLobbyServerInfo(String hostname, int port) {
-            LOGGER.log(Level.INFO, "Lobby server info received. Hostname: {0}, port: {1}",
-                    new Object[]{hostname, port});
-            listeners.forEach(l -> l.notifyLobbyServerInfo(hostname, port));
+            // DO nothing!
         }
     
     }
     
 }
+

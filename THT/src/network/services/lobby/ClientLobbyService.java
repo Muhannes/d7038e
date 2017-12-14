@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.sun.istack.internal.logging.Logger;
+import network.services.login.Account;
+import network.services.login.ClientLoginService;
+import network.util.NetConfig;
 
 /**
  *
@@ -51,10 +54,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     
     private LobbyManager getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(LobbyManager.class);
-            if( delegate == null ) {
-                throw new RuntimeException("No LobbyManager found");
-            } 
+            delegate = NetConfig.getDelegate(rmiService, LobbyManager.class);
         }
         return delegate;
     }
@@ -94,11 +94,18 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     public Map<String, Integer> getAllRooms() {
         return getDelegate().getAllRooms();
     }
+    
+    @Override
+    public void authenticate(int id, String key) {
+        getDelegate().authenticate(id, key);
+    }
+    
 
     @Override
     public void removeClientLobbyListener(ClientLobbyListener clientLobbyListener) {
         listeners.remove(clientLobbyListener);
     }
+
     
     private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners
 

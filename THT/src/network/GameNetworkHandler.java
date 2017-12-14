@@ -69,8 +69,6 @@ public class GameNetworkHandler {
             System.out.println("services fetched");
             
             lobbyClient.start();
-            // Need to sleep before trying to access shared object.
-            NetConfig.networkDelay(150);
             getClientHandoverService().joinLobby();
         }catch(IOException ex){
             ex.printStackTrace();

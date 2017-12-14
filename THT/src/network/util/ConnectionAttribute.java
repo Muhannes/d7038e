@@ -11,8 +11,9 @@ package network.util;
  */
 public class ConnectionAttribute {
     
-    public static final String NAME = "name";
-    public static final String GLOBAL_ID = "globalID";
+    //public static final String NAME = "name";
+    //public static final String GLOBAL_ID = "globalID";
+    public static final String ACCOUNT = "account";
     
     
 }

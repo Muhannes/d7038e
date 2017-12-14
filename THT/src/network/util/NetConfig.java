@@ -8,7 +8,12 @@ package network.util;
 import api.models.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.serializing.Serializer;
+import com.jme3.network.service.rmi.RmiClientService;
+import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.logging.Level;
+import network.services.chat.ChatSessionListener;
+import network.services.login.LoginSession;
+import utils.eventbus.Event;
 
 /**
  *
@@ -22,6 +27,9 @@ public class NetConfig {
     public static String GAME_SERVER_NAME = "localhost";
     public static int GAME_SERVER_PORT = 8001;
     
+    public static String LOGIN_SERVER_NAME = "localhost";
+    public static int LOGIN_SERVER_PORT = 8002;
+    
     public static void initSerializables(){
         Serializer.registerClass(LobbyRoom.class);
         Serializer.registerClass(Player.class);
@@ -34,4 +42,33 @@ public class NetConfig {
             java.util.logging.Logger.getLogger("").log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static <T> T getDelegate(RmiClientService rmi, Class<T> type ){
+        T delegate = rmi.getRemoteObject(type);
+        int counter = 0;
+        while (delegate == null){
+            networkDelay(50);
+            delegate = rmi.getRemoteObject(type); 
+            if (counter > 10) {
+                throw new RuntimeException("Unable to locate delegate");
+            }
+            counter++;
+        }
+        return delegate;
+    }
+    
+    public static <T> T getCallback(RmiRegistry rmi, Class<T> type ){
+        T callback = rmi.getRemoteObject(type);
+        int counter = 0;
+        while (callback == null){
+            networkDelay(50);
+            callback = rmi.getRemoteObject(type); 
+            if (counter > 10) {
+                throw new RuntimeException("Unable to locate callback");
+            }
+            counter++;
+        }
+        return callback;
+    }
+    
 }

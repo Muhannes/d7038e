@@ -32,7 +32,7 @@ public class GameLobbyScreen extends BaseAppState implements
 
     private static final Logger LOGGER = Logger.getLogger(GameLobbyScreen.class.getName());
     private NiftyJmeDisplay niftyDisplay;
-    private Application app;
+    private ClientApplication app;
     private String gameName;
     private ArrayList<String> players;
     LobbyState lobbyScreen;
@@ -43,19 +43,17 @@ public class GameLobbyScreen extends BaseAppState implements
 
     private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
-    GameLobbyScreen(ClientChatService ccs, ClientLobbyService cls) {
+    GameLobbyScreen() {
         this.lobbyScreen = lobbyScreen;
-        this.ccs = ccs;
         this.gameName = "No name";        
         this.players = new ArrayList<>();
-        this.cls = cls;        
     }
     
     @Override
     public void initialize(Application app){
         LOGGER.log(Level.INFO, "Initializing LoginScreen");
         //super.initialize(stateManager, app);        
-        this.app = app;
+        this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
@@ -184,7 +182,8 @@ public class GameLobbyScreen extends BaseAppState implements
 
     @Override
     protected void onEnable() {
-        
+        ccs = app.getClientChatService();
+        cls = app.getClientLobbyService();
         gui = new GameLobbyGUI(niftyDisplay);
         
         gui.addGameLobbyGUIListener(this);

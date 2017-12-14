@@ -13,6 +13,7 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.List;
 import network.services.chat.ClientChatService;
+import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
 /**
@@ -50,17 +51,14 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     
     private GameSetupSession getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(GameSetupSession.class);
-            if( delegate == null ) {
-                throw new RuntimeException("No GameSetup session found");
-            } 
+            delegate = NetConfig.getDelegate(rmiService, GameSetupSession.class);
         }
         return delegate;
     }
 
     @Override
-    public void join(int globalID) {
-        getDelegate().join(globalID);
+    public void join(int globalID, String key, String name) {
+        getDelegate().join(globalID, key, name);
     }
 
     @Override

@@ -36,6 +36,8 @@ import java.util.logging.Level;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.PlayerInitEvent;
 import network.services.gamesetup.StartGameEvent;
+import network.services.login.Account;
+import network.services.login.ClientLoginService;
 import network.services.login.HostedLoginService;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
@@ -114,7 +116,8 @@ public class SetupState extends BaseAppState implements EventListener{
         } catch (InterruptedException ex) {
             java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        cgss.join(globalId);
+        Account acc = ClientLoginService.getAccount();
+        cgss.join(acc.id, acc.key, acc.name);
         
         /* Not required here, only setup!
         

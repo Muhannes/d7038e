@@ -13,7 +13,7 @@ import com.jme3.network.service.rmi.Asynchronous;
  */
 public interface GameSetupSession {
     @Asynchronous
-    void join(int globalID);
+    void join(int globalID, String key, String name);
     
     @Asynchronous
     void ready();

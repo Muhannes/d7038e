@@ -66,11 +66,7 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
     
     private HandoverSessionListener getCallback(HostedConnection connection){
         RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        HandoverSessionListener callback = rmiRegistry.getRemoteObject(HandoverSessionListener.class);
-        if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for Handover service");
-        }
-        return callback;
+        return NetConfig.getCallback(rmiRegistry, HandoverSessionListener.class);
     }
 
     @Override

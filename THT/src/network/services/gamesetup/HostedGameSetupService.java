@@ -128,15 +128,14 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         }
         
         @Override
-        public void join(int globalID) {
+        public void join(int globalID, String key, String name) {
             if (initialized && !joined) {
                 LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;
-                connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
                 // TODO: Add security to make sure no one takes another ones id!
                 Player p = getPlayerByID(globalID);
-                rmiHostedService.getRmiRegistry(connection).
-                        getRemoteObject(GameSetupSessionListener.class).initPlayer(players);
+                NetConfig.getCallback(rmiHostedService.
+                        getRmiRegistry(connection), GameSetupSessionListener.class).initPlayer(players);
                 joined = true;
             } else {
                 LOGGER.fine("Join failed, was not initialized(or already joined)!");
@@ -147,7 +146,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         public void ready() {
             if (globalID != -1) { // it has joined.
                 if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
-                    readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
+                    readyPlayers.add(globalID);
                 }
                 if (readyPlayers.size() == players.size()) {
                     EventBus.publish(new StartGameEvent(), StartGameEvent.class);

@@ -15,6 +15,7 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.logging.Level;
 import network.services.login.LoginEvent;
 import network.util.ConnectionAttribute;
+import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -23,7 +24,7 @@ import utils.eventbus.EventListener;
  *
  * @author truls
  */
-public class HostedChatService extends AbstractHostedConnectionService implements EventListener{
+public class HostedChatService extends AbstractHostedConnectionService{
     
     private static final Logger LOGGER = Logger.getLogger(HostedChatService.class);
     
@@ -40,7 +41,6 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
         setAutoHost(false);
-        EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("ChatHostedService requires an RMI service.");
@@ -50,7 +50,7 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Chat service started. Client id: {0}", connection.getId());
-        
+        NetConfig.networkDelay(100);
         // Retrieve the client side callback
         ChatSessionListener callback = getCallback(connection);
         
@@ -74,23 +74,10 @@ public class HostedChatService extends AbstractHostedConnectionService implement
     public void stopHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
         ChatSpace.removeFromAll((ChatSessionImpl)connection.getAttribute(CHAT));
-    }
-
-    @Override
-    public void notifyEvent(Event event, Class<? extends Event> T) {
-        if (T == LoginEvent.class) {
-            LOGGER.log(Level.INFO, "Starting to host chat service for client:  {0}", 
-                    new Object[]{((LoginEvent)event).conn.getId()});
-            startHostingOnConnection(((LoginEvent)event).conn);
-        }
-    }  
+    } 
     
     private ChatSessionListener getCallback(HostedConnection connection){
         RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        ChatSessionListener callback = rmiRegistry.getRemoteObject(ChatSessionListener.class);
-        if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for ChatSessionListener");
-        }
-        return callback;
+        return NetConfig.getCallback(rmiRegistry, ChatSessionListener.class);
     }
 }

@@ -18,18 +18,17 @@ import java.util.HashMap;
 import java.util.Map;
 import com.sun.istack.internal.logging.Logger;
 import network.services.gamesetup.SetupGameEvent;
-import network.services.login.LoginEvent;
-import network.services.login.LoginSessionListener;
+import network.services.login.Account;
+import network.services.login.LobbyLoginService;
 import network.util.ConnectionAttribute;
-import utils.eventbus.Event;
+import network.util.NetConfig;
 import utils.eventbus.EventBus;
-import utils.eventbus.EventListener;
 
 /**
  *
  * @author truls
  */
-public class HostedLobbyService extends AbstractHostedConnectionService implements EventListener{
+public class HostedLobbyService extends AbstractHostedConnectionService{
     
     private static final Logger LOGGER = Logger.getLogger(HostedLobbyService.class);
     
@@ -37,6 +36,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     
     private LobbyHolder lobbyHolder;
     private final List<HostedConnection> nonLobbyPlayers = new ArrayList<>();
+    
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -54,9 +54,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
     
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        setAutoHost(false);
         lobbyHolder = new LobbyHolder();
-        EventBus.subscribe(this);
         rmiService = getService(RmiHostedService.class);
         if(rmiService == null) {
             throw new RuntimeException("LobbyService requires an RMI service.");
@@ -73,16 +71,11 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
         rmi.share((byte)channel, lobbyManager, LobbyManager.class);
-        rmi.getRemoteObject(LoginSessionListener.class).notifyLogin(true);
     }
     
-    private ClientLobbyListener getDelegate(HostedConnection connection){
+    private ClientLobbyListener getCallback(HostedConnection connection){
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-        ClientLobbyListener delegate = rmi.getRemoteObject(ClientLobbyListener.class);
-        if( delegate == null ) {
-            throw new RuntimeException("No client lobby session found");
-        }
-        return delegate;
+        return NetConfig.getCallback(rmi, ClientLobbyListener.class);
     }
 
     @Override
@@ -92,19 +85,13 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         nonLobbyPlayers.remove(connection);
         
     }
-
-    @Override
-    public void notifyEvent(Event event, Class<? extends Event> T) {
-        if (T == LoginEvent.class) {
-            System.out.println("Starting to host lobby for new  client");
-            startHostingOnConnection(((LoginEvent)event).conn);
-        }
-    }
     
     private class LobbyManagerImpl implements LobbyManager{
         
         private HostedConnection connection;
         private LobbyRoom lobbyRoom;
+        private boolean authenticated = false;
+        private Account thisAccount;
         
         public LobbyManagerImpl(HostedConnection connection){
             this.connection = connection;
@@ -112,6 +99,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public List<String> join(int roomid) {
+            if (!authenticated) {
+                return null;
+            }
             LOGGER.info("Player joining (HostedLobbyService)!");
             if (lobbyRoom == null) {
                 LobbyRoom lr = lobbyHolder.getLobbyRoom(roomid);
@@ -121,15 +111,14 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                         nonLobbyPlayers.remove(connection);
                         lobbyRoom = lr;
                         List<HostedConnection> players = lobbyRoom.getPlayers();
-                        String name = connection.getAttribute(ConnectionAttribute.NAME);
                         for (HostedConnection player : players) {
                             // Send out to each player in room that this one has joined it.
                             if (player != connection) {
-                                getDelegate(player).playerJoinedLobby(name);
+                                getCallback(player).playerJoinedLobby(thisAccount.name);
                             }
                         }
                         for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                            getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
+                            getCallback(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                                     lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                         }
                         return lobbyRoom.getPlayerNames();
@@ -142,16 +131,19 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public void leave() {
+            if (!authenticated) {
+                return;
+            }
             LOGGER.info("Player leaving (HostedLobbyService)!");
             if (lobbyRoom != null) {
                 lobbyRoom.removePlayer(connection);
                 List<HostedConnection> players = lobbyRoom.getPlayers();
                 for (HostedConnection player : players) {
                     // Send out to each player in room that this one has joined it.
-                    getDelegate(player).playerLeftLobby(connection.getAttribute(ConnectionAttribute.NAME));
+                    getCallback(player).playerLeftLobby(thisAccount.name);
                 }
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                    getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
+                    getCallback(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
                 if(lobbyRoom.getNumPlayers() == 0){
@@ -165,6 +157,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
         
         @Override
         public void ready(){
+            if (!authenticated){
+                return;
+            }
             LOGGER.info("Player is ready (HostedLobbyService)!");
             boolean allReady = lobbyRoom.setPlayerReady(connection.getId());
             
@@ -172,7 +167,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
             
             for (HostedConnection player : players) {
                 // Send out to each player in room that this one is ready.
-                getDelegate(player).playerReady(connection.getAttribute(ConnectionAttribute.NAME), true);
+                getCallback(player).playerReady(thisAccount.name, true);
             }
             if(allReady){
                 LOGGER.info("All players are ready");
@@ -189,7 +184,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                 LOGGER.info("players in room: " + players.size());
                 for (HostedConnection player : players) {
                     // Send out to each player in room that all are ready.
-                    callbacks.add(getDelegate(player));
+                    callbacks.add(getCallback(player));
                     LOGGER.info("Adding player callback: " + player.getId());
                 }
                 EventBus.publish(new SetupGameEvent(playerInfo, callbacks), SetupGameEvent.class);
@@ -199,6 +194,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public boolean createLobby(String lobbyName) {
+            if (!authenticated){
+                return false;
+            }
             LobbyRoom lr = new LobbyRoom(lobbyName);
             boolean ok = lobbyHolder.addLobbyRoom(lr);
             if(ok){
@@ -207,7 +205,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
                 nonLobbyPlayers.remove(connection);
                 lobbyRoom.addPlayer(connection);
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
-                    getDelegate(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
+                    getCallback(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
                 return true;
@@ -223,14 +221,29 @@ public class HostedLobbyService extends AbstractHostedConnectionService implemen
 
         @Override
         public Map<String, Integer> getAllRooms() {
+            LOGGER.info("Trying to fetch rooms");
+            if (!authenticated){
+                return null;
+            }
             System.out.println("Fetching all rooms.");
             Map<String, Integer> rooms = new HashMap<>();
             for (LobbyRoom room : lobbyHolder.getRooms()) {
                 rooms.put(room.getName(), room.getID());
             }
-            
-            System.out.println("Done Fetching all rooms, returning");
             return rooms;
+            
+        }
+
+        @Override
+        public void authenticate(int id, String key) {
+            for (Account account : LobbyLoginService.getAccounts()) {
+                if (account.isEqual(id, key)) {
+                    LOGGER.info(id + " is authenticated.");
+                    authenticated = true;
+                    thisAccount = account;
+                    connection.setAttribute(ConnectionAttribute.ACCOUNT, account);
+                }
+            }
         }
         
     }

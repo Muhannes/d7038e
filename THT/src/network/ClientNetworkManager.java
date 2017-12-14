@@ -30,30 +30,30 @@ public class ClientNetworkManager implements
     
     private static final Logger LOGGER = Logger.getLogger(ClientNetworkManager.class.getName());
     
-    private Client client;
+    private Client lobbyClient;
     private Client gameClient;
+    private Client loginClient;
     
     public ClientNetworkManager(){
         NetConfig.initSerializables();
     }
     
-    public void connectToServer(){
+    public void connectToLobbyServer(){
         try{
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
                     new Object[]{NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT});
-            client = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT);
-            client.getServices().addService(new RpcClientService());
-            client.getServices().addService(new RmiClientService());
-            client.getServices().addService(new ClientLoginService());
-            client.getServices().addService(new ClientChatService());
-            client.getServices().addService(new ClientLobbyService());
-            client.getServices().addService(new ClientPingService());
+            lobbyClient = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT);
+            lobbyClient.getServices().addService(new RpcClientService());
+            lobbyClient.getServices().addService(new RmiClientService());
+            lobbyClient.getServices().addService(new ClientChatService());
+            lobbyClient.getServices().addService(new ClientLobbyService());
+            lobbyClient.getServices().addService(new ClientPingService());
             System.out.println("services fetched");
             
-            // Not neded since server will send message to client with all serializables.
+            // Not neded since server will send message to lobbyClient with all serializables.
             //NetworkUtil.initSerializables();
             
-            client.start();
+            lobbyClient.start();
             System.out.println("client Started");
         }catch(IOException ex){
             ex.printStackTrace();
@@ -73,17 +73,31 @@ public class ClientNetworkManager implements
             
             
             gameClient.start();
-            // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-            NetConfig.networkDelay(50);
             System.out.println("client Started");
         }catch(IOException ex){
             ex.printStackTrace();
         }
     }
     
+    public void connectToLoginServer(){
+        try{
+            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+                    new Object[]{NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT});
+            loginClient = Network.connectToServer(NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT);
+            loginClient.getServices().addService(new RpcClientService());
+            loginClient.getServices().addService(new RmiClientService()); 
+            loginClient.getServices().addService(new ClientLoginService());
+            System.out.println("services fetched");
+            
+            loginClient.start();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+    
     public synchronized void cleanUp(){
-        if (client != null && client.isStarted()) {
-            client.close();
+        if (lobbyClient != null && lobbyClient.isStarted()) {
+            lobbyClient.close();
         }
         if (gameClient != null && gameClient.isStarted()) {
             gameClient.close();
@@ -101,15 +115,15 @@ public class ClientNetworkManager implements
     }
     
     public ClientLoginService getClientLoginService(){
-        return client.getServices().getService(ClientLoginService.class);
+        return loginClient.getServices().getService(ClientLoginService.class);
     }
     
     public ClientChatService getClientChatService(){
-        return client.getServices().getService(ClientChatService.class);
+        return lobbyClient.getServices().getService(ClientChatService.class);
     }
     
     public ClientLobbyService getClientLobbyService(){
-        return client.getServices().getService(ClientLobbyService.class);
+        return lobbyClient.getServices().getService(ClientLobbyService.class);
     }
     
     public ClientGameSetupService getClientGameSetupService(){

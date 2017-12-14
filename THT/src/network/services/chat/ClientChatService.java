@@ -12,6 +12,8 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import network.util.NetConfig;
+import sun.security.krb5.internal.NetClient;
 
 /**
  *
@@ -76,10 +78,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
     
     private ChatSession getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(ChatSession.class);
-            if( delegate == null ) {
-                throw new RuntimeException("No chat session found");
-            } 
+            delegate = NetConfig.getDelegate(rmiService, ChatSession.class);
         }
         return delegate;
     }

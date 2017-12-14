@@ -12,10 +12,14 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import network.services.lobby.HostedLobbyService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
-import utils.eventbus.EventBus;
 
 /**
  *
@@ -25,11 +29,15 @@ public class HostedLoginService extends AbstractHostedConnectionService{
     
     private static final Logger LOGGER = Logger.getLogger(HostedLoginService.class);
     
+    private final List<HostedConnection> loginListeners = new ArrayList<>();
+    
     private RmiHostedService rmiService;
     // Used to sync with client and send data
     
     private int channel;
     // Channel we send on, is it a port though?
+    
+    private MessageDigest digest;
     
     public HostedLoginService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
@@ -41,6 +49,12 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
+        LOGGER.setLevel(Level.INFO);
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException ex) {
+            java.util.logging.Logger.getLogger(HostedLobbyService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         rmiService = getService(RmiHostedService.class);
         if(rmiService == null) {
             throw new RuntimeException("HostedLoginService requires an RMI service.");
@@ -69,13 +83,16 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         LOGGER.log(Level.INFO, "Login service stopped. Client id: {0}", connection.getId());
     }
     
+    
+    private LoginSessionListener getCallback(HostedConnection connection){
+        RmiRegistry rmi = rmiService.getRmiRegistry(connection);
+        return NetConfig.getCallback(rmi, LoginSessionListener.class);
+    }
+    
     private class LoginSessionImpl implements LoginSession{
 
         private HostedConnection connection;
         // Connection to a client
-        
-        private LoginSessionListener callback;
-        // Used to communicate with client side
         
         public LoginSessionImpl(HostedConnection connection){
             this.connection = connection;
@@ -85,20 +102,22 @@ public class HostedLoginService extends AbstractHostedConnectionService{
         public void login(String name) {
             LOGGER.log(Level.INFO, "Login request received from connection with ID: {0} and name: {1}", 
                     new Object[]{connection.getId(), name});
-            connection.setAttribute(ConnectionAttribute.NAME, name);
-            EventBus.publish(new LoginEvent(connection), LoginEvent.class);
+
+            byte[] hash = digest.digest("".getBytes());
+            for (HostedConnection loginListener : loginListeners) {
+                getCallback(loginListener).notifyLogin(true, hash.toString(), connection.getId(), name);
+            }
+            getCallback(connection).notifyLogin(true, hash.toString(), connection.getId(), name);
+            
+            LOGGER.info("Login callbacks sent out. " + loginListeners.size() + " listeners.");
             // NOTE: Moved login ack to lobbySession (Due to client trying to access LobbyManager before shared)
         }
-        
-        private LoginSessionListener getCallback(){
-            if(callback == null){
-                RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-                callback = rmi.getRemoteObject(LoginSessionListener.class);
-                if(callback == null){
-                    throw new RuntimeException("No client callback found for LoginSessionListener");
-                }
-            }
-            return callback;
+
+        @Override
+        public void listenForLogins() {
+            System.out.println("GESFDSGDRGDTHDTHSDGS");
+            loginListeners.add(connection);
+            LOGGER.info("Login listeners: " + loginListeners.size());
         }
     }
     

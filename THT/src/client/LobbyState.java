@@ -17,6 +17,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
+import network.services.login.Account;
+import network.services.login.ClientLoginService;
+import network.util.NetConfig;
 
 /**
  *
@@ -28,25 +31,26 @@ public class LobbyState extends BaseAppState implements
 
     private static final Logger LOGGER = Logger.getLogger(LobbyState.class.getName());
     private NiftyJmeDisplay niftyDisplay;
-    private Application app;
+    private ClientApplication app;
     private Map<String, Integer> rooms;
     
-    private final ClientLobbyService clientLobbyService;
+    private ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
     
     private LobbyGUI gui;
     
     private String username = null;
+    
+    private boolean lobbyAuthenticated = false;
 
-    public LobbyState(ClientLobbyService cls){
-        this.clientLobbyService = cls;
+    public LobbyState(){
     }        
     
     @Override
     public void initialize(Application app){
         LOGGER.log(Level.FINE, "Initializing LoginScreen"); 
         
-        this.app = app;
+        this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
             app.getAssetManager(), app.getInputManager(), 
@@ -171,7 +175,13 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     protected void onEnable() {
+        clientLobbyService = app.getClientLobbyService();
         // Create GUI
+        if (!lobbyAuthenticated) {
+            //NetConfig.networkDelay(30);
+            Account acc = ClientLoginService.getAccount();
+            clientLobbyService.authenticate(acc.id, acc.key);
+        }
         gui = new LobbyGUI(niftyDisplay);
         gui.addLobbyGUIListener(this);
         clientLobbyService.addClientLobbyListener(this);
