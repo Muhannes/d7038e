@@ -17,6 +17,7 @@ import network.services.chat.ClientChatService;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
+import network.services.login.HostedLoginService;
 import network.services.ping.ClientPingService;
 import network.util.NetConfig;
 
@@ -72,6 +73,12 @@ public class ClientNetworkManager implements
             
             
             gameClient.start();
+            // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.println("client Started");
         }catch(IOException ex){
             ex.printStackTrace();

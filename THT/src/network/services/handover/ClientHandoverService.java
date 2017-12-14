@@ -70,7 +70,7 @@ public class ClientHandoverService extends AbstractClientService{
             // todo : setup, bla blabla
             System.out.println("StartSetup");
             EventBus.publish(new SetupGameEvent(playerInfo, null), SetupGameEvent.class);
-            getClient().close();
+            //getClient().close();
         }
         
     }

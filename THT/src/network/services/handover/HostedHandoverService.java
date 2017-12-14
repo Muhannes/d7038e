@@ -15,6 +15,7 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.SetupGameEvent;
 import network.services.lobby.ClientLobbyListener;
 import network.services.login.HostedLoginService;
@@ -80,16 +81,19 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if (T == SetupGameEvent.class) {
-            System.out.println("Setup event occured hostedHandoverSErvice");
+            LOGGER.info("Setup event occured hostedHandoverSErvice");
             SetupGameEvent setupGameEvent = (SetupGameEvent) event;
             if (!gameServers.isEmpty()) {
                 GameServer gameServer = gameServers.remove(0);
-                System.out.println("Sending setup to game server");
+                LOGGER.info("Sending setup to game server");
                 gameServer.gameCallback.startSetup(setupGameEvent.getPlayers());
-                for (ClientLobbyListener callback : setupGameEvent.getCallbacks()) {
+                List<ClientLobbyListener> callbacks = setupGameEvent.getCallbacks();
+                LOGGER.info("Num of callbacks: " + callbacks.size());
+                for (ClientLobbyListener callback : callbacks) {
                     System.out.println("Sending allready");
                     callback.allReady(gameServer.ipAddress, gameServer.port);
                 }
+                LOGGER.info("All ready sent out to clients");
             } else {
                 LOGGER.severe("No GameServer Available!");
             }
