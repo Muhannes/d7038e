@@ -14,6 +14,7 @@ import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
 import java.util.logging.Level;
 import network.util.ConnectionAttribute;
+import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
 /**
@@ -50,11 +51,7 @@ public class HostedLoginService extends AbstractHostedConnectionService{
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Login service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        NetConfig.networkDelay(50);
         // The newly connected client will be represented by this object on
         // the server side
         LoginSessionImpl session = new LoginSessionImpl(connection);

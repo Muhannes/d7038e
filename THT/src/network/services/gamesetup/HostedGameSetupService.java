@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import network.services.lobby.ClientLobbyListener;
 import network.services.login.HostedLoginService;
 import network.util.ConnectionAttribute;
+import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -68,11 +69,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Game setup service started. Client id: {0}", connection.getId());
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        NetConfig.networkDelay(50);
         // Create an object that the client can reach
         GameSetupSession session = new GameSetupSessionImpl(connection);
         // Now we expose this object such that the client can get hold of it

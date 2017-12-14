@@ -74,11 +74,7 @@ public class ClientNetworkManager implements
             
             gameClient.start();
             // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException ex) {
-                java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            NetConfig.networkDelay(50);
             System.out.println("client Started");
         }catch(IOException ex){
             ex.printStackTrace();

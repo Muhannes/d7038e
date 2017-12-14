@@ -5,6 +5,7 @@
  */
 package network.services.handover;
 
+import com.jme3.network.Client;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
@@ -70,7 +71,16 @@ public class ClientHandoverService extends AbstractClientService{
             // todo : setup, bla blabla
             System.out.println("StartSetup");
             EventBus.publish(new SetupGameEvent(playerInfo, null), SetupGameEvent.class);
-            //getClient().close();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Client client = getClient();
+                    if (client.isConnected()) {
+                        client.close();
+                    }
+                    
+                }
+            }).start();
         }
         
     }

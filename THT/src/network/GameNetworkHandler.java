@@ -42,11 +42,7 @@ public class GameNetworkHandler {
         server.start();
         lobbyClient.start();
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        NetConfig.networkDelay(150);
         getClientHandoverService().joinLobby();
     }
     

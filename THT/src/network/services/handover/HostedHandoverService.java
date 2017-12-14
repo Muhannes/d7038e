@@ -19,6 +19,7 @@ import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.SetupGameEvent;
 import network.services.lobby.ClientLobbyListener;
 import network.services.login.HostedLoginService;
+import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
@@ -54,11 +55,7 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
         HandoverSession gls = new GameLobbySessionImpl(connection);
         // Now we expose this object such that the client can get hold of it
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(HostedLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        NetConfig.networkDelay(50);
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         System.out.println("Sharing HandoverSession");
         rmi.share((byte)channel, gls, HandoverSession.class);

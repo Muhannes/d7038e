@@ -8,6 +8,7 @@ package network.util;
 import api.models.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.serializing.Serializer;
+import java.util.logging.Level;
 
 /**
  *
@@ -24,5 +25,13 @@ public class NetConfig {
     public static void initSerializables(){
         Serializer.registerClass(LobbyRoom.class);
         Serializer.registerClass(Player.class);
+    }
+    
+    public static void networkDelay(int ms){
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger("").log(Level.SEVERE, null, ex);
+        }
     }
 }
