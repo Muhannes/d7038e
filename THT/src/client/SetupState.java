@@ -12,6 +12,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -118,20 +119,31 @@ public class SetupState extends BaseAppState implements
         world.attachChild(creepyhouse);   
         
         
-        Spatial walls = ((Node)creepyhouse).getChild("walls");
-        
+        Spatial walls = ((Node)creepyhouse).getChild("walls");        
         ((Node)walls).getChildren().forEach((wall) -> {
+            
+/*            CollisionShape tmp1 = walls.getControl(RigidBodyControl.class).getCollisionShape();
+            walls.getControl(RigidBodyControl.class).setCollisionShape(tmp1);
+            bulletAppState.getPhysicsSpace().add(walls.getControl(RigidBodyControl.class));
+        */
             RigidBodyControl b = new RigidBodyControl(
                     CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
-            wall.addControl(b);            
-            bulletAppState.getPhysicsSpace().add(b);          
+            wall.addControl(b);        
+            
+            //Needed
+            wall.getControl(RigidBodyControl.class).setKinematicSpatial(true);
+            wall.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion());
+                        
+            bulletAppState.getPhysicsSpace().add(b);  
         });
         
         Spatial floors = ((Node)creepyhouse).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
-            RigidBodyControl b = new RigidBodyControl(
-                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
+//            RigidBodyControl b = new RigidBodyControl(
+//                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
+            RigidBodyControl b = new RigidBodyControl(0);
             floor.addControl(b);
+
             bulletAppState.getPhysicsSpace().add(b);
         });
         
