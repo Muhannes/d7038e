@@ -50,7 +50,6 @@ public class GameState extends BaseAppState {
     
     public GameState(int entityId){
         this.id = entityId;
-        human = new Human();
     }
     
     
@@ -87,8 +86,9 @@ public class GameState extends BaseAppState {
         Node playerNode = (Node) root.getChild("players");
         for(int i = 0; i < playerNode.getChildren().size(); i++){
             System.out.println(playerNode.getChild(i).getName());
-            if(("player" + id).equals(playerNode.getChild(i).getName())){
-                chaseCamera = new ChaseCamera(camera, root.getChild("player" + id), input);
+            if(("player#" + id).equals(playerNode.getChild(i).getName())){
+                chaseCamera = new ChaseCamera(camera, root.getChild("player#" + id), input);
+                human = new Human();
                 human.initKeys(input);               
             }
 
@@ -117,12 +117,12 @@ public class GameState extends BaseAppState {
         if(human.right) walkingDirection.addLocal(camLeft.negate());
         if(human.forward) walkingDirection.addLocal(camDir);
         if(human.backward) walkingDirection.addLocal(camDir.negate());
-        System.out.println("controller : " + human.getController());
-        /*
-        if(root.getChild("players") != null){ 
+        System.out.println("Human controller : " + human.getController());
+        if(human.getController() != null){ 
             walkingDirection.multLocal(40f).multLocal(tpf);
             human.getController().setWalkDirection(walkingDirection);
-        }*/
+        }
+
     }
     
 }
