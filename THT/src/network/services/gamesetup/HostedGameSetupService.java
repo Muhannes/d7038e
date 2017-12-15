@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import network.services.lobby.ClientLobbyListener;
+import network.services.login.Account;
 import network.services.login.HostedLoginService;
+import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 import utils.eventbus.Event;
@@ -125,6 +127,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         private final HostedConnection connection;
         private int globalID = -1;
         private boolean joined = false;
+        private boolean authenticated = false;
         
         private GameSetupSessionImpl(HostedConnection connection){
             this.connection = connection;
@@ -132,7 +135,15 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
         @Override
         public void join(int globalID, String key, String name) {
-            if (initialized && !joined) {
+            for (Account account : LoginListenerService.getAccounts()) {
+                if (account.isEqual(globalID, key)) {
+                    authenticated = true;
+                    connection.setAttribute(ConnectionAttribute.ACCOUNT, account);
+                    break;
+                }
+            }
+            
+            if (initialized && !joined && authenticated) {
                 LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;
                 // TODO: Add security to make sure no one takes another ones id!
@@ -141,13 +152,13 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                         getRmiRegistry(connection), GameSetupSessionListener.class).initPlayer(players);
                 joined = true;
             } else {
-                LOGGER.warning("Join failed, was not initialized(or already joined)!");
+                LOGGER.warning("Join failed, was not initialized, authenticated or has already joined!");
             }
         }
 
         @Override
         public void ready() {
-            if (globalID != -1) { // it has joined.
+            if (globalID != -1 && authenticated) { // it has joined.
                 if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
                     readyPlayers.add(globalID);
                 }

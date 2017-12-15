@@ -25,7 +25,7 @@ import network.services.handover.HostedHandoverService;
 import network.services.lobby.HostedLobbyService;
 import network.services.login.ClientLoginService;
 import network.services.login.HostedLoginService;
-import network.services.login.LobbyLoginService;
+import network.services.login.LoginListenerService;
 import network.services.ping.HostedPingService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
@@ -114,10 +114,10 @@ public class LobbyNetworkHandler {
             loginClient = Network.connectToServer(NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT);
             loginClient.getServices().addService(new RpcClientService());
             loginClient.getServices().addService(new RmiClientService()); 
-            loginClient.getServices().addService(new LobbyLoginService());
+            loginClient.getServices().addService(new LoginListenerService());
             
             loginClient.start();
-            loginClient.getServices().getService(LobbyLoginService.class).listenForLogins();
+            loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
         }catch(IOException ex){
             ex.printStackTrace();
         }

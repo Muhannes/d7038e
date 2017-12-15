@@ -19,7 +19,7 @@ import java.util.Map;
 import com.sun.istack.internal.logging.Logger;
 import network.services.gamesetup.SetupGameEvent;
 import network.services.login.Account;
-import network.services.login.LobbyLoginService;
+import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
@@ -235,7 +235,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
 
         @Override
         public void authenticate(int id, String key) {
-            for (Account account : LobbyLoginService.getAccounts()) {
+            for (Account account : LoginListenerService.getAccounts()) {
                 if (account.isEqual(id, key)) {
                     LOGGER.info(id + " is authenticated.");
                     authenticated = true;

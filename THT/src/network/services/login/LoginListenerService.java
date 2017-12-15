@@ -19,9 +19,9 @@ import network.util.NetConfig;
  *
  * @author hannes
  */
-public class LobbyLoginService extends AbstractClientService{
+public class LoginListenerService extends AbstractClientService{
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyLoginService.class);
+    private static final Logger LOGGER = Logger.getLogger(LoginListenerService.class);
     
     private static final List<Account> accounts = new ArrayList<>();
     
@@ -40,11 +40,11 @@ public class LobbyLoginService extends AbstractClientService{
     private int channel;
     // Channel we send on, is it a port though?
             
-    public LobbyLoginService(){
+    public LoginListenerService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
     }
     
-    public LobbyLoginService(int channel){
+    public LoginListenerService(int channel){
         this.channel = channel;
     }
     

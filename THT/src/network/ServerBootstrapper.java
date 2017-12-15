@@ -18,13 +18,13 @@ public class ServerBootstrapper {
     public static void main(String args[]){
         LoginNetworkHandler loginNH = new LoginNetworkHandler();
         LobbyNetworkHandler lobbyNH = new LobbyNetworkHandler();
-        GameNetworkHandler gameNH = new GameNetworkHandler();
+        //GameNetworkHandler gameNH = new GameNetworkHandler();
         loginNH.startServer();
         lobbyNH.startServers();
-        gameNH.startServer();
+        //gameNH.startServer();
         NetConfig.networkDelay(30);
         lobbyNH.connectToLoginServer();
-        gameNH.connectToLobbyServer();
+        //gameNH.connectToLobbyServer();
         while (true){
             try {
                 Thread.sleep(1000);

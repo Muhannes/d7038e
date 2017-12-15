@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import network.services.handover.ClientHandoverService;
 import network.services.gamesetup.HostedGameSetupService;
 import network.services.login.HostedLoginService;
+import network.services.login.LoginListenerService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
 
@@ -27,10 +28,26 @@ import static network.util.NetConfig.initSerializables;
  */
 public class GameNetworkHandler {
     
+    @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String args[]){
+        GameNetworkHandler gnh = new GameNetworkHandler();
+        gnh.startServer();
+        gnh.connectToLobbyServer();
+        gnh.connectToLoginServer();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     private static final Logger LOGGER = Logger.getLogger(GameNetworkHandler.class.getName());
     
     private Server server;
     private Client lobbyClient;
+    private Client loginClient;
     
     
     public GameNetworkHandler(){
@@ -70,6 +87,22 @@ public class GameNetworkHandler {
             
             lobbyClient.start();
             getClientHandoverService().joinLobby();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+    
+    public void connectToLoginServer(){
+        try{
+            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+                    new Object[]{NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT});
+            loginClient = Network.connectToServer(NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT);
+            loginClient.getServices().addService(new RpcClientService());
+            loginClient.getServices().addService(new RmiClientService()); 
+            loginClient.getServices().addService(new LoginListenerService());
+            
+            loginClient.start();
+            loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
         }catch(IOException ex){
             ex.printStackTrace();
         }
