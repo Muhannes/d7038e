@@ -20,6 +20,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 
@@ -42,12 +43,14 @@ public class GameState extends BaseAppState {
     private Spatial player;
     private int id;
     private boolean left = false, right = false, forward = false, backward = false;
-    private final Vector3f walkingDirection = Vector3f.ZERO;
+    private Vector3f walkingDirection = Vector3f.ZERO;
     private ChaseCamera chaseCamera;
     private Camera camera;
+    private Human human;
     
     public GameState(int entityId){
         this.id = entityId;
+        human = new Human();
     }
     
     
@@ -83,14 +86,12 @@ public class GameState extends BaseAppState {
         app.getFlyByCamera().setEnabled(false);
         
         
-        System.out.println("This screens id is : " + this.id + "\nChildren of root:\n" + root.getChildren());
         Node playerNode = (Node) root.getChild("players");
-        System.out.println("Players : " + playerNode.getChildren().size());
         for(int i = 0; i < playerNode.getChildren().size(); i++){
             System.out.println(playerNode.getChild(i).getName());
             if(("player" + id).equals(playerNode.getChild(i).getName())){
-                System.out.println("I'm playerNode id: " + "player"+id);
                 chaseCamera = new ChaseCamera(camera, root.getChild("player" + id), input);
+                human.initKeys(input);               
             }
 
         }
@@ -104,7 +105,6 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
-        /*
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
 
@@ -115,16 +115,16 @@ public class GameState extends BaseAppState {
         camLeft.normalizeLocal();
         walkingDirection.set(0,0,0);
         
-        if(left) walkingDirection.addLocal(camLeft);
-        if(right) walkingDirection.addLocal(camLeft.negate());
-        if(forward) walkingDirection.addLocal(camDir);
-        if(backward) walkingDirection.addLocal(camDir.negate());
-        
+        if(human.left) walkingDirection.addLocal(camLeft);
+        if(human.right) walkingDirection.addLocal(camLeft.negate());
+        if(human.forward) walkingDirection.addLocal(camDir);
+        if(human.backward) walkingDirection.addLocal(camDir.negate());
+        System.out.println("controller : " + human.getController());
+        /*
         if(root.getChild("players") != null){ 
             walkingDirection.multLocal(40f).multLocal(tpf);
-            player.getController().setWalkDirection(walkingDirection);
-        }
-        */
+            human.getController().setWalkDirection(walkingDirection);
+        }*/
     }
     
 }

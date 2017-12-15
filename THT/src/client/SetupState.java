@@ -148,8 +148,6 @@ public class SetupState extends BaseAppState implements
         mat.setColor("Color", ColorRGBA.Blue);
         player.setMaterial(mat);
         
-        //player.setLocalTranslation(position);
-        
         RigidBodyControl b = new RigidBodyControl(CollisionShapeFactory.createBoxShape(player), 0); // TODO: Change mass
         player.addControl(b);
         bulletAppState.getPhysicsSpace().add(b);

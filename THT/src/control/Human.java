@@ -5,6 +5,7 @@
  */
 package control;
 
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import control.action.Jump;
@@ -18,9 +19,13 @@ import com.jme3.input.controls.KeyTrigger;
 public class Human extends AbstractController implements ActionListener{
 
     private Jump jump;
+    private CharacterControl control;
+    
+    public Boolean forward = false, backward = false, left = false, right = false;
     
     public Human(){
-        jump = new Jump();
+        jump = new Jump();        
+        control = new CharacterControl();
     }
     
     @Override
@@ -29,7 +34,15 @@ public class Human extends AbstractController implements ActionListener{
         if(name.equals("Jump")){ 
             System.out.println("Jump?");
             jump.execute(entity);
-        }
+        } else if(name.equals("forward")){
+            forward = true;
+        } else if(name.equals("backward")){
+            backward = true;
+        } else if(name.equals("left")){
+            left = true;
+        } else if(name.equals("right")){
+            right = true;
+        } else {}
     }
 
     @Override
@@ -42,6 +55,12 @@ public class Human extends AbstractController implements ActionListener{
         manager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
         manager.addListener(this, "Left", "Right", "Forward", "Backward", "Jump", "Trap");
+    }
+    
+    
+    public CharacterControl getController(){
+        System.out.println("Controller : " + control);
+        return control;
     }
     
 }

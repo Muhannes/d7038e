@@ -166,8 +166,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;
                 // TODO: Add security to make sure no one takes another ones id!
-                
-                Player p = getPlayerByID(globalID);
                 getCallback(connection).initPlayer(players);
                 joined = true;
             } else {
