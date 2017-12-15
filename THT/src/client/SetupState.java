@@ -10,6 +10,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
@@ -93,7 +94,7 @@ public class SetupState extends BaseAppState implements
         world.attachChild(players);
         
         listOfPlayers.forEach(p -> {
-            world.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
+            players.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
         });
         
         // Tell server we are ready
@@ -117,16 +118,20 @@ public class SetupState extends BaseAppState implements
         Spatial walls = ((Node)creepyhouse).getChild("walls");
         
         ((Node)walls).getChildren().forEach((wall) -> {
-            RigidBodyControl b = new RigidBodyControl(
-                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
+            //RigidBodyControl b = new RigidBodyControl(
+            //        CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
+            RigidBodyControl b = new RigidBodyControl(0.0f); // 0 Mass = static            
             wall.addControl(b);
             bulletAppState.getPhysicsSpace().add(b);
+            
         });
         
         Spatial floors = ((Node)creepyhouse).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
-            RigidBodyControl b = new RigidBodyControl(
-                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
+            //RigidBodyControl b = new RigidBodyControl(
+            //        CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
+            RigidBodyControl b = new RigidBodyControl(0.0f); // 0 Mass = static
+            
             floor.addControl(b);
             bulletAppState.getPhysicsSpace().add(b);
         });
@@ -138,16 +143,23 @@ public class SetupState extends BaseAppState implements
     private Spatial createPlayer(String name, Vector3f position){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        Box mesh = new Box(5f, 5f, 5f);
+        Box mesh = new Box(0.2f, 0.2f, 0.2f);
         Geometry player = new Geometry(name, mesh);
         
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Blue);
         player.setMaterial(mat);
-        
-        RigidBodyControl b = new RigidBodyControl(CollisionShapeFactory.createBoxShape(player), 0); // TODO: Change mass
-        player.addControl(b);
-        bulletAppState.getPhysicsSpace().add(b);
+        player.setLocalTranslation(new Vector3f(-5.5f,5f, -9.5f));
+        CharacterControl charControl = new CharacterControl(CollisionShapeFactory.createBoxShape(player), 1.0f); // TODO: Change mass
+        player.addControl(charControl);
+        if(bulletAppState == null){
+            LOGGER.log(Level.SEVERE, "BulletAppState is null");   
+            
+        }
+        if(bulletAppState.getPhysicsSpace() == null){
+            LOGGER.log(Level.SEVERE, "physicsSpace is null");
+        }
+        bulletAppState.getPhysicsSpace().add(charControl);
         
         return player;
     }

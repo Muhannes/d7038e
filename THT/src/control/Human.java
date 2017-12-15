@@ -11,6 +11,9 @@ import com.jme3.input.KeyInput;
 import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 
 /**
  *
@@ -19,48 +22,60 @@ import com.jme3.input.controls.KeyTrigger;
 public class Human extends AbstractController implements ActionListener{
 
     private Jump jump;
-    private CharacterControl control;
     
     public Boolean forward = false, backward = false, left = false, right = false;
     
-    public Human(){
-        jump = new Jump();        
-        control = new CharacterControl();
+    private final CharacterControl charController;
+    
+    private final float movementSpeed = 3.0f;
+    
+    public Human(CharacterControl charControl){ 
+        this.charController = charControl;
     }
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         System.out.println("New action");
         if(name.equals("Jump")){ 
-            System.out.println("Jump?");
-            jump.execute(entity);
+            charController.jump();
         } else if(name.equals("forward")){
-            forward = true;
+            if(isPressed){
+                charController.setWalkDirection(new Vector3f(-movementSpeed*tpf, 0f, 0f));            
+            }else{
+                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+            }
         } else if(name.equals("backward")){
-            backward = true;
+            if(isPressed){
+                charController.setWalkDirection(new Vector3f(movementSpeed*tpf, 0f, 0f));
+            }else{
+                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+            }
         } else if(name.equals("left")){
-            left = true;
+            if(isPressed){
+                charController.setWalkDirection(new Vector3f(0f, 0f, movementSpeed*tpf));
+            }else{
+                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+            }
         } else if(name.equals("right")){
-            right = true;
-        } else {}
+            if(isPressed){
+                charController.setWalkDirection(new Vector3f(0f, 0f, -movementSpeed*tpf));
+            }else{
+                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+            }
+        } else {
+        }
     }
 
     @Override
     public void initKeys(InputManager manager) {
-        manager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        manager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
-        manager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
-        manager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        manager.addMapping("Trap", new KeyTrigger(KeyInput.KEY_F));        
-        manager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+        manager.addMapping("left", new KeyTrigger(KeyInput.KEY_A));
+        manager.addMapping("forward", new KeyTrigger(KeyInput.KEY_W));
+        manager.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
+        manager.addMapping("right", new KeyTrigger(KeyInput.KEY_D));
+        manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
+        manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
-        manager.addListener(this, "Left", "Right", "Forward", "Backward", "Jump", "Trap");
-    }
-    
-    
-    public CharacterControl getController(){
-        System.out.println("Controller : " + control);
-        return control;
+        manager.addListener(this, "left", "right", "forward", "backward", "jump", "trap");
     }
     
 }

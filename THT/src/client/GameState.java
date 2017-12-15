@@ -13,6 +13,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
@@ -23,13 +24,16 @@ import com.jme3.scene.Spatial;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import network.services.login.ClientLoginService;
 
 /**
  *
  * @author ted
  */
 public class GameState extends BaseAppState {
-    
+    private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private SimpleApplication app;
     private NiftyJmeDisplay niftyDisplay; 
     private Nifty nifty;
@@ -41,20 +45,18 @@ public class GameState extends BaseAppState {
     
     
     private Spatial player;
-    private int id;
+    private Spatial playerSpatial;
     private boolean left = false, right = false, forward = false, backward = false;
     private Vector3f walkingDirection = Vector3f.ZERO;
     private ChaseCamera chaseCamera;
     private Camera camera;
     private Human human;
     
-    public GameState(int entityId){
-        this.id = entityId;
-    }
-    
     
     @Override
     protected void initialize(Application app) {
+        
+        
         this.app = (SimpleApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -82,18 +84,25 @@ public class GameState extends BaseAppState {
         this.input = app.getInputManager();
         this.camera = app.getCamera();
         
-        
         Node playerNode = (Node) root.getChild("players");
-        for(int i = 0; i < playerNode.getChildren().size(); i++){
-            System.out.println(playerNode.getChild(i).getName());
-            if(("player#" + id).equals(playerNode.getChild(i).getName())){
-                chaseCamera = new ChaseCamera(camera, root.getChild("player#" + id), input);
-                human = new Human();
-                human.initKeys(input);               
-            }
-
+        player = playerNode.getChild("player#" + ClientLoginService.getAccount().id);
+        if(player == null){
+            LOGGER.log(Level.SEVERE, "player is null");
+        }
+        if(camera == null){
+            LOGGER.log(Level.SEVERE, "chaseCamera is null");
+        }
+        if(input == null){
+            LOGGER.log(Level.SEVERE, "inputmanager is null");
         }
         
+        chaseCamera = new ChaseCamera(camera, player, input);
+        if(chaseCamera == null){
+            LOGGER.log(Level.SEVERE, "chaseCamera is null");
+        }
+        human = new Human(player.getControl(CharacterControl.class));
+        human.initKeys(input);               
+
     }
 
     @Override
@@ -103,6 +112,7 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
+    /*
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
 
@@ -117,12 +127,9 @@ public class GameState extends BaseAppState {
         if(human.right) walkingDirection.addLocal(camLeft.negate());
         if(human.forward) walkingDirection.addLocal(camDir);
         if(human.backward) walkingDirection.addLocal(camDir.negate());
-        System.out.println("Human controller : " + human.getController());
-        if(human.getController() != null){ 
-            walkingDirection.multLocal(40f).multLocal(tpf);
-            human.getController().setWalkDirection(walkingDirection);
-        }
-
+        
+        walkingDirection.multLocal(40f).multLocal(tpf);
+    */
     }
     
 }
