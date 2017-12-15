@@ -119,6 +119,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         if (T == PlayerInfoEvent.class) {
             PlayerInfoEvent playerInfoEvent = (PlayerInfoEvent) event;
             
+            System.out.println("PlayerInfoEvent received!");
             setupGame(playerInfoEvent.playerInfo);
             
             initialized = true;

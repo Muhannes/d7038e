@@ -11,6 +11,7 @@ import com.jme3.network.Network;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
@@ -117,7 +118,7 @@ public class ClientNetworkManager implements
     }
     
     public int getGlobalId(){
-        return 0;//client.getId();
+        return 0; //client.getId();
     }
 }
 
