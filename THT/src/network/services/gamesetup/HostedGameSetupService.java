@@ -163,7 +163,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             }
             
             if (initialized && !joined && authenticated) {
-                LOGGER.fine("Join received by id: " + globalID);
+                LOGGER.info("Join received by id: " + globalID);
                 this.globalID = globalID;
                 // TODO: Add security to make sure no one takes another ones id!
                 

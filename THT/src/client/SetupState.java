@@ -53,7 +53,6 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         world = new Node("world");
         this.app.getRootNode().attachChild(world);
-        this.app.getFlyByCamera().setEnabled(true);
     }
 
     @Override
@@ -140,6 +139,8 @@ public class SetupState extends BaseAppState implements
     
     private Spatial createPlayer(String name, Vector3f position){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
+        
+        System.out.println("My id: " + ClientLoginService.getAccount().id);
         
         Box mesh = new Box(5f, 5f, 5f);
         Geometry player = new Geometry(name, mesh);

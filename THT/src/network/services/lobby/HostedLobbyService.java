@@ -174,7 +174,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
                 // TODO: Start game.
                 Map<Integer, String> playerInfo = new HashMap<>();
                 List<Integer> ids = lobbyRoom.getPlayerIDs();
-                ids.forEach(id -> System.out.println(id));
+                ids.forEach(id -> System.out.println("Player id: " + id));
                 List<String> names = lobbyRoom.getPlayerNames();
                 for (int i = 0; i < names.size(); i++) {
                     String name = names.get(i);
