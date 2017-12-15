@@ -14,7 +14,7 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface LoginSessionListener {
     
     @Asynchronous
-    void notifyLogin(boolean loggedIn);
+    void notifyLogin(boolean loggedIn, String key, int id, String name);
     
     @Asynchronous
     void notifyLobbyServerInfo(String hostname, int port);

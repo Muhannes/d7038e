@@ -6,6 +6,7 @@
 package client;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.login.LoginGUI;
@@ -15,6 +16,8 @@ import network.services.login.ClientLoginService;
 import network.services.login.LoginSessionListener;
 import gui.login.LoginGUIListener;
 import java.util.concurrent.Callable;
+import network.services.login.Account;
+import network.util.NetConfig;
 
 /**
  * 
@@ -26,7 +29,7 @@ public class LoginState extends BaseAppState implements
     
     private static final Logger LOGGER = Logger.getLogger(LoginState.class.getName());
     private NiftyJmeDisplay niftyDisplay;
-    private Application app;
+    private ClientApplication app;
     
     private ClientLoginService clientLoginService;
     
@@ -34,13 +37,12 @@ public class LoginState extends BaseAppState implements
     
     LoginGUI gui;
     
-    public LoginState(ClientLoginService clientLoginService){   
-        this.clientLoginService = clientLoginService;
+    public LoginState(){
     }
     
     @Override
     public void initialize(Application app){  
-        this.app = app;
+        this.app = (ClientApplication) app;
         
         niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
             app.getAssetManager(), app.getInputManager(), 
@@ -53,9 +55,16 @@ public class LoginState extends BaseAppState implements
     public void cleanup(Application app){
     }
 
+    /**
+     * A login attempt has been approved or denied.
+     * TODO: Do something with key (password)
+     * @param loggedIn
+     * @param key 
+     */
     @Override
-    public void notifyLogin(boolean loggedIn) {
+    public void notifyLogin(boolean loggedIn, String key, int id, String name) {
         if(loggedIn){
+            //((ClientApplication)app).connectToLobbyServer();
             LobbyState lobbyState = app.getStateManager().getState(LobbyState.class);
             lobbyState.setUsername(username);
             LoginState ls = this;
@@ -91,6 +100,7 @@ public class LoginState extends BaseAppState implements
 
     @Override
     protected void onEnable() {
+        clientLoginService = app.getClientLoginService();
         gui = new LoginGUI(niftyDisplay);
         gui.addLoginScreeenListener(this);
         

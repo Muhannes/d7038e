@@ -10,7 +10,10 @@ import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
+import network.services.chat.ClientChatService;
 import network.services.gamesetup.ClientGameSetupService;
+import network.services.lobby.ClientLobbyService;
+import network.services.login.ClientLoginService;
 
 /**
  *
@@ -35,19 +38,18 @@ public class ClientApplication extends SimpleApplication{
         Logger.getLogger("NiftyInputEventHandlingLog").setLevel(Level.SEVERE);
         
         clientNetworkManager = new ClientNetworkManager();
-        clientNetworkManager.connectToServer();
+        clientNetworkManager.connectToLoginServer();
+        connectToLobbyServer();
         // Create and attach all states. TODO: move to function for cleaner code.
         
-        LoginState loginScreen = new LoginState(clientNetworkManager.getClientLoginService());
+        LoginState loginScreen = new LoginState();
         loginScreen.setEnabled(false);
         stateManager.attach(loginScreen);
-        
-        LobbyState lobbyState = new LobbyState(clientNetworkManager.getClientLobbyService());
+        LobbyState lobbyState = new LobbyState();
         lobbyState.setEnabled(false);
         stateManager.attach(lobbyState);
         
-        GameLobbyScreen gameLobbyScreen = new GameLobbyScreen(clientNetworkManager.getClientChatService(),
-                clientNetworkManager.getClientLobbyService());
+        GameLobbyScreen gameLobbyScreen = new GameLobbyScreen();
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
         System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
@@ -83,8 +85,24 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager.connectToGameServer(ip, port);
     }
     
+    public void connectToLobbyServer(){
+        clientNetworkManager.connectToLobbyServer();
+    }
+    
     public ClientGameSetupService getGameSetupService(){
         return clientNetworkManager.getClientGameSetupService();
+    }
+    
+    public ClientLoginService getClientLoginService(){
+        return clientNetworkManager.getClientLoginService();
+    }
+    
+    public ClientLobbyService getClientLobbyService(){
+        return clientNetworkManager.getClientLobbyService();
+    }
+    
+    public ClientChatService getClientChatService(){
+        return clientNetworkManager.getClientChatService();
     }
     
     public static void main(String[] args){

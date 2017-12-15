@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import network.LobbyNetworkHandler;
 import network.services.chat.ClientChatService;
+import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
 /**
@@ -59,28 +60,14 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
     
     private GameSetupSession getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(GameSetupSession.class);
-            System.out.println("GameSetupSession (Delegate) : " + delegate);
-            if( delegate == null ) {
-                try{
-                    Thread.sleep(50);
-                    getDelegate();
-                    
-                } catch (RuntimeException ex) {
-                    throw new RuntimeException("No GameSetup session found");
-                } catch (InterruptedException ex) {
-                    java.util.logging.Logger.getLogger(ClientGameSetupService.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            } 
+            delegate = NetConfig.getDelegate(rmiService, GameSetupSession.class);
         }
         return delegate;
     }
-
+    
     @Override
-    public void join(int globalID) {
-        System.out.println("Joing with globalId : " + globalID + " at ClientGameSetupService");
-        getDelegate().join(globalID);
+    public void join(int globalID, String key, String name) {
+        getDelegate().join(globalID, key, name);
     }
 
     @Override

@@ -56,10 +56,7 @@ public class ClientHandoverService extends AbstractClientService {
     
     private HandoverSession getDelegate(){
         if(delegate == null){
-            delegate = rmiService.getRemoteObject(HandoverSession.class);
-            if( delegate == null ) {
-                throw new RuntimeException("No Handover session found");
-            } 
+            delegate = NetConfig.getDelegate(rmiService, HandoverSession.class);
         }
         return delegate;
     }

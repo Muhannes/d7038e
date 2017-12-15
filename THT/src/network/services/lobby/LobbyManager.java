@@ -15,6 +15,8 @@ import java.util.Map;
  */
 public interface LobbyManager {
     
+    void authenticate(int id, String key);
+    
     List<String> join(int roomid);
 
     @Asynchronous

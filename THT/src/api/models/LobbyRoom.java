@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import network.services.login.Account;
 import network.util.ConnectionAttribute;
 
 /**
@@ -59,7 +60,7 @@ public class LobbyRoom{
     public synchronized List<String> getPlayerNames(){
         List<String> names = new ArrayList<>();
         for (HostedConnection player : players) {
-            names.add(player.getAttribute(ConnectionAttribute.NAME));
+            names.add(((Account)player.getAttribute(ConnectionAttribute.ACCOUNT)).name);
         }
         return names;
     }

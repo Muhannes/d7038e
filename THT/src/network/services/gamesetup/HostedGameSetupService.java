@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import network.services.lobby.ClientLobbyListener;
+import network.services.login.Account;
 import network.services.login.HostedLoginService;
+import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 import utils.eventbus.Event;
@@ -127,19 +129,14 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         }
     }
     
-    private GameSetupSessionListener getDelegate(HostedConnection connection){
-        RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        GameSetupSessionListener callback = 
-                rmiRegistry.getRemoteObject(GameSetupSessionListener.class);
-        if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for GameSetupSessionListener");
-        }
-        return callback;
+    private GameSetupSessionListener getCallback(HostedConnection connection){
+        return NetConfig.getCallback(rmiHostedService.
+                        getRmiRegistry(connection), GameSetupSessionListener.class);
     }
     
     private void postAllReady(){
         System.out.println("postAllReady before");
-        sessions.forEach(s -> getDelegate(s.connection).startGame());
+        sessions.forEach(s -> getCallback(s.connection).startGame());
         System.out.println("postAllReady after");
         
     }
@@ -149,33 +146,40 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         private final HostedConnection connection;
         private int globalID = -1;
         private boolean joined = false;
+        private boolean authenticated = false;
         
         private GameSetupSessionImpl(HostedConnection connection){
             this.connection = connection;
         }
         
         @Override
-        public void join(int globalID) {
-            System.out.println("Calling join() in HGSS\n globalID = " + globalID);
-            if (initialized && !joined) {
+        public void join(int globalID, String key, String name) {
+            for (Account account : LoginListenerService.getAccounts()) {
+                if (account.isEqual(globalID, key)) {
+                    authenticated = true;
+                    connection.setAttribute(ConnectionAttribute.ACCOUNT, account);
+                    break;
+                }
+            }
+            
+            if (initialized && !joined && authenticated) {
                 LOGGER.fine("Join received by id: " + globalID);
                 this.globalID = globalID;
-                connection.setAttribute(ConnectionAttribute.GLOBAL_ID, globalID);
                 // TODO: Add security to make sure no one takes another ones id!
-                rmiHostedService.getRmiRegistry(connection).
-                        getRemoteObject(GameSetupSessionListener.class).initPlayer(players);
+                
+                Player p = getPlayerByID(globalID);
+                getCallback(connection).initPlayer(players);
                 joined = true;
             } else {
-                LOGGER.fine("Join failed, was not initialized(or already joined)!");
+                LOGGER.warning("Join failed, was not initialized, authenticated or has already joined!");
             }
         }
 
         @Override
         public void ready() {
-            System.out.println("Calling ready() in HGSS\n globalID = " + globalID);
-            if (globalID != -1) { // it has joined.
+            if (globalID != -1 && authenticated) { // it has joined.
                 if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
-                    readyPlayers.add(connection.getAttribute(ConnectionAttribute.GLOBAL_ID));
+                    readyPlayers.add(globalID);
                 }
                 if (readyPlayers.size() == players.size()) {
                

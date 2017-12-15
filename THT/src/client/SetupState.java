@@ -24,6 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
+import network.services.login.Account;
+import network.services.login.ClientLoginService;
 
 /**
  * This state is used to set up the game
@@ -69,9 +71,8 @@ public class SetupState extends BaseAppState implements
         // Will notify us when when eveyone is ready
         gameSetupService.addGameSetupSessionListener(this);
         
-        // Joining the game server
-        //TODO: gameSetupService.join(Account.getGlobalID());
-        gameSetupService.join(0); // REMOVE THIS 
+        Account acc = ClientLoginService.getAccount();
+        gameSetupService.join(acc.id, acc.key, acc.name);
             
         //Bullet physics for players, walls, objects
         bulletAppState = new BulletAppState();
@@ -98,7 +99,6 @@ public class SetupState extends BaseAppState implements
             world.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition()));
         });
         
-        LOGGER.log(Level.INFO, "BEFORE CRASH");
         // Tell server we are ready
         gameSetupService.ready();
     }

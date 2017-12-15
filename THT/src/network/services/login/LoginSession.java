@@ -12,8 +12,9 @@ import com.jme3.network.service.rmi.Asynchronous;
  * @author truls
  */
 public interface LoginSession {
-    
     @Asynchronous
     void login(String name);
+    @Asynchronous
+    void listenForLogins();
     
 }

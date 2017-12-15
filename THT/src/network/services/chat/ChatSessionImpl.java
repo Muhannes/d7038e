@@ -6,7 +6,9 @@
 package network.services.chat;
 
 import com.jme3.network.HostedConnection;
+import network.services.login.Account;
 import network.util.ConnectionAttribute;
+import network.util.NetConfig;
 
 /**
  *
@@ -23,7 +25,8 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
     }
     
     String getName(){
-        return conn.getAttribute(ConnectionAttribute.NAME);
+        return "placeHolderName";
+        //return ((Account)conn.getAttribute(ConnectionAttribute.ACCOUNT)).name;
     }
 
     @Override
@@ -55,4 +58,5 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
     public void playerLeftChat(String name, int chat) {
         callback.playerLeftChat(name, chat);
     }
+    
 }
