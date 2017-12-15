@@ -80,8 +80,6 @@ public class GameState extends BaseAppState {
         this.input = app.getInputManager();
         this.camera = app.getCamera();
         
-        app.getFlyByCamera().setEnabled(false);
-        
         
         System.out.println("This screens id is : " + this.id + "\nChildren of root:\n" + root.getChildren());
         Node playerNode = (Node) root.getChild("players");

@@ -98,8 +98,10 @@ public class LobbyRoom{
     }
     
     public synchronized List<Integer> getPlayerIDs(){
-        List<Integer> ids = new ArrayList<>(Arrays.asList(
-                playersReady.keySet().toArray(new Integer[playersReady.keySet().size()])));
+        List<Integer> ids = new ArrayList<>();
+        for(HostedConnection p : players){
+            ids.add(((Account)p.getAttribute(ConnectionAttribute.ACCOUNT)).id);
+        }
         return ids;
     }
     
