@@ -7,15 +7,18 @@ package client;
 
 import api.models.Player;
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +51,7 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         world = new Node("world");
         this.app.getRootNode().attachChild(world);
+        this.app.getFlyByCamera().setEnabled(true);
     }
 
     @Override
@@ -71,7 +75,7 @@ public class SetupState extends BaseAppState implements
             
         //Bullet physics for players, walls, objects
         bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(false);  
+        bulletAppState.setDebugEnabled(true);  
         app.getStateManager().attach(bulletAppState);
         
         loadStaticGeometry();       
@@ -110,20 +114,22 @@ public class SetupState extends BaseAppState implements
     
     private void loadStaticGeometry(){   
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
-        
         world.attachChild(creepyhouse);   
+        
         
         Spatial walls = ((Node)creepyhouse).getChild("walls");
         
         ((Node)walls).getChildren().forEach((wall) -> {
-            RigidBodyControl b = new RigidBodyControl();
+            RigidBodyControl b = new RigidBodyControl(
+                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             wall.addControl(b);
             bulletAppState.getPhysicsSpace().add(b);
         });
         
         Spatial floors = ((Node)creepyhouse).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
-            RigidBodyControl b = new RigidBodyControl();
+            RigidBodyControl b = new RigidBodyControl(
+                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
             floor.addControl(b);
             bulletAppState.getPhysicsSpace().add(b);
         });
@@ -135,10 +141,16 @@ public class SetupState extends BaseAppState implements
     private Spatial createPlayer(String name, Vector3f position){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        Spatial player = new Geometry(name);
-        player.setLocalTranslation(position);
+        Box mesh = new Box(5f, 5f, 5f);
+        Geometry player = new Geometry(name, mesh);
         
-        RigidBodyControl b = new RigidBodyControl();
+        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        player.setMaterial(mat);
+        
+        //player.setLocalTranslation(position);
+        
+        RigidBodyControl b = new RigidBodyControl(CollisionShapeFactory.createBoxShape(player), 0); // TODO: Change mass
         player.addControl(b);
         bulletAppState.getPhysicsSpace().add(b);
         
