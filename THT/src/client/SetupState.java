@@ -42,8 +42,6 @@ public class SetupState extends BaseAppState implements
     
     private Node world;
     
-    //private Node world;
-    
     private AssetManager asset;
     
     private BulletAppState bulletAppState;
@@ -95,7 +93,7 @@ public class SetupState extends BaseAppState implements
         world.attachChild(players);
         
         listOfPlayers.forEach(p -> {
-            world.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition()));
+            world.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
         });
         
         // Tell server we are ready
@@ -139,8 +137,6 @@ public class SetupState extends BaseAppState implements
     
     private Spatial createPlayer(String name, Vector3f position){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
-        
-        System.out.println("My id: " + ClientLoginService.getAccount().id);
         
         Box mesh = new Box(5f, 5f, 5f);
         Geometry player = new Geometry(name, mesh);

@@ -78,7 +78,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         NetConfig.networkDelay(50);
         session = new GameSetupSessionImpl(connection);
         sessions.add(session);
-        System.out.println("Session list : " + sessions.size());
         // Now we expose this object such that the client can get hold of it
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, session, GameSetupSession.class);
