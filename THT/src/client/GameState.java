@@ -100,7 +100,7 @@ public class GameState extends BaseAppState {
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        human = new Human(player.getControl(CharacterControl.class));
+        human = new Human(player);
         human.initKeys(input);               
 
     }
@@ -112,24 +112,7 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
-    /*
-        Vector3f camDir = camera.getDirection().clone();
-        Vector3f camLeft = camera.getLeft().clone();
-
-        camDir.y = 0;
-        camLeft.y = 0;
-        
-        camDir.normalizeLocal();
-        camLeft.normalizeLocal();
-        walkingDirection.set(0,0,0);
-        
-        if(human.left) walkingDirection.addLocal(camLeft);
-        if(human.right) walkingDirection.addLocal(camLeft.negate());
-        if(human.forward) walkingDirection.addLocal(camDir);
-        if(human.backward) walkingDirection.addLocal(camDir.negate());
-        
-        walkingDirection.multLocal(40f).multLocal(tpf);
-    */
+    
     }
     
 }

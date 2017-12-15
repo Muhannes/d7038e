@@ -11,6 +11,7 @@ import com.jme3.input.KeyInput;
 import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -26,44 +27,53 @@ public class Human extends AbstractController implements ActionListener{
     public Boolean forward = false, backward = false, left = false, right = false;
     
     private final CharacterControl charController;
+    private final Spatial self;
     
     private final float movementSpeed = 3.0f;
     
-    public Human(CharacterControl charControl){ 
-        this.charController = charControl;
+    public Human(Spatial player){
+        this.self = player;
+        this.charController = self.getControl(CharacterControl.class);
     }
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         System.out.println("New action");
-        if(name.equals("Jump")){ 
+        if(name.equals("jump")){ 
             charController.jump();
-        } else if(name.equals("forward")){
+        }
+        if(name.equals("forward")){
             if(isPressed){
                 charController.setWalkDirection(new Vector3f(-movementSpeed*tpf, 0f, 0f));            
             }else{
-                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));                   
             }
-        } else if(name.equals("backward")){
+        }
+        if(name.equals("backward")){
             if(isPressed){
                 charController.setWalkDirection(new Vector3f(movementSpeed*tpf, 0f, 0f));
             }else{
                 charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
             }
-        } else if(name.equals("left")){
+        }
+        if(name.equals("left")){
             if(isPressed){
+                charController.setViewDirection(new Vector3f(0f, 0f, movementSpeed*tpf));
                 charController.setWalkDirection(new Vector3f(0f, 0f, movementSpeed*tpf));
             }else{
                 charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
             }
-        } else if(name.equals("right")){
+        }
+        if(name.equals("right")){
             if(isPressed){
+                charController.setViewDirection(new Vector3f(0f, 0f, -movementSpeed*tpf));
                 charController.setWalkDirection(new Vector3f(0f, 0f, -movementSpeed*tpf));
             }else{
                 charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
             }
-        } else {
+        
         }
+            
     }
 
     @Override
