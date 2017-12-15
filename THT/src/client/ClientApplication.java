@@ -40,6 +40,7 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager = new ClientNetworkManager();
         clientNetworkManager.connectToLoginServer();
         connectToLobbyServer();
+        connectToChatServer();
         // Create and attach all states. TODO: move to function for cleaner code.
         
         LoginState loginScreen = new LoginState();
@@ -87,6 +88,10 @@ public class ClientApplication extends SimpleApplication{
     
     public void connectToLobbyServer(){
         clientNetworkManager.connectToLobbyServer();
+    }
+    
+    public void connectToChatServer(){
+        clientNetworkManager.connectToChatServer();
     }
     
     public ClientGameSetupService getGameSetupService(){

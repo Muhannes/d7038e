@@ -11,6 +11,7 @@ import com.jme3.network.Network;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
+import java.rmi.ConnectException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +35,7 @@ public class ClientNetworkManager implements
     private Client lobbyClient;
     private Client gameClient;
     private Client loginClient;
+    private Client chatClient;
     
     public ClientNetworkManager(){
         NetConfig.initSerializables();
@@ -46,7 +48,7 @@ public class ClientNetworkManager implements
             lobbyClient = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT);
             lobbyClient.getServices().addService(new RpcClientService());
             lobbyClient.getServices().addService(new RmiClientService());
-            lobbyClient.getServices().addService(new ClientChatService());
+            //lobbyClient.getServices().addService(new ClientChatService());
             lobbyClient.getServices().addService(new ClientLobbyService());
             lobbyClient.getServices().addService(new ClientPingService());
             System.out.println("services fetched");
@@ -96,6 +98,25 @@ public class ClientNetworkManager implements
         }
     }
     
+    public void connectToChatServer(){
+        try{
+            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+                    new Object[]{NetConfig.CHAT_SERVER_NAME, NetConfig.CHAT_SERVER_PORT});
+            chatClient = Network.connectToServer(NetConfig.CHAT_SERVER_NAME, NetConfig.CHAT_SERVER_PORT);
+            chatClient.getServices().addService(new RpcClientService());
+            chatClient.getServices().addService(new RmiClientService()); 
+            chatClient.getServices().addService(new ClientChatService());
+            System.out.println("Chat services fetched");
+            
+            chatClient.start();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * TODO: Clean all!
+     */
     public synchronized void cleanUp(){
         if (lobbyClient != null && lobbyClient.isStarted()) {
             lobbyClient.close();
@@ -120,7 +141,7 @@ public class ClientNetworkManager implements
     }
     
     public ClientChatService getClientChatService(){
-        return lobbyClient.getServices().getService(ClientChatService.class);
+        return chatClient.getServices().getService(ClientChatService.class);
     }
     
     public ClientLobbyService getClientLobbyService(){
@@ -131,6 +152,10 @@ public class ClientNetworkManager implements
         return gameClient.getServices().getService(ClientGameSetupService.class);
     }
     
+    /**
+     * TODO: remove? this exists in login client service
+     * @return 
+     */
     public int getGlobalId(){
         return 0; //client.getId();
     }

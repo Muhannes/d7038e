@@ -40,7 +40,10 @@ public class HostedChatService extends AbstractHostedConnectionService{
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        setAutoHost(false);
+        //setAutoHost(false);
+        
+        int id = ChatSpace.Chat.GLOBAL.ordinal();
+        ChatSpace space = ChatSpace.getChatSpace(id);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("ChatHostedService requires an RMI service.");
@@ -50,24 +53,23 @@ public class HostedChatService extends AbstractHostedConnectionService{
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Chat service started. Client id: {0}", connection.getId());
-        NetConfig.networkDelay(100);
-        // Retrieve the client side callback
-        ChatSessionListener callback = getCallback(connection);
+        NetConfig.networkDelay(30);
         
         // The newly connected client will be represented by this object on
         // the server side
-        ChatSessionImpl player = new ChatSessionImpl(connection, callback);
+        ChatSessionImpl player = new ChatSessionImpl(connection, rmiHostedService);
         
         connection.setAttribute(CHAT, player);
         
         // Now we expose this object such that the client can get hold of it
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, player, ChatSession.class);
-        
+        /*
         int id = ChatSpace.Chat.GLOBAL.ordinal();
         ChatSpace space = ChatSpace.getChatSpace(id);
         
         space.add(player);
+        */
     }
 
     @Override
@@ -76,8 +78,4 @@ public class HostedChatService extends AbstractHostedConnectionService{
         ChatSpace.removeFromAll((ChatSessionImpl)connection.getAttribute(CHAT));
     } 
     
-    private ChatSessionListener getCallback(HostedConnection connection){
-        RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        return NetConfig.getCallback(rmiRegistry, ChatSessionListener.class);
-    }
 }

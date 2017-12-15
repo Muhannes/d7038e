@@ -77,6 +77,7 @@ public class ChatSpace {
     }
     
     void postMessage(ChatSessionImpl from, String message){
+        //LOGGER.info("sending to : " + participants.size() + "clients. -> roomID: " + id);
         participants.forEach(p -> p.newMessage(message, id));
     }
     

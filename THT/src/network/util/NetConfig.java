@@ -11,9 +11,6 @@ import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.logging.Level;
-import network.services.chat.ChatSessionListener;
-import network.services.login.LoginSession;
-import utils.eventbus.Event;
 
 /**
  *
@@ -29,6 +26,10 @@ public class NetConfig {
     
     public static String LOGIN_SERVER_NAME = "localhost";
     public static int LOGIN_SERVER_PORT = 8002;
+    
+    
+    public static String CHAT_SERVER_NAME = "localhost";
+    public static int CHAT_SERVER_PORT = 8003;
     
     public static void initSerializables(){
         Serializer.registerClass(LobbyRoom.class);

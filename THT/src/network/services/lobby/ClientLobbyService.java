@@ -81,7 +81,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public boolean createLobby(String lobbyName) {
+    public int createLobby(String lobbyName) {
         return getDelegate().createLobby(lobbyName);
     }
 

@@ -38,6 +38,7 @@ public class GameLobbyScreen extends BaseAppState implements
     LobbyState lobbyScreen;
     private ClientChatService ccs;
     private ClientLobbyService cls;
+    private int roomID;
     
     private GameLobbyGUI gui;
 
@@ -71,6 +72,14 @@ public class GameLobbyScreen extends BaseAppState implements
     
     public ArrayList<String> getPlayers(){
         return players;
+    }
+    
+    public void setID(int id){
+        this.roomID = id;
+    }
+    
+    public int getID(){
+        return roomID;
     }
     
     public void setName(String name){
@@ -159,6 +168,10 @@ public class GameLobbyScreen extends BaseAppState implements
     @Override
     public void onReturnToLobby() {
         cls.leave();
+        if (ccs != null) {
+            ccs.leavechat(roomID);
+        }
+        
         GameLobbyScreen gls = this;
         app.enqueue(new Runnable() {
             @Override
@@ -178,12 +191,20 @@ public class GameLobbyScreen extends BaseAppState implements
 
     @Override
     public void onSendMessage(String message) {
-      ccs.sendMessage(message, GLOBAL_CHAT);
+        if (ccs != null) {
+            ccs.sendMessage(message, roomID);
+        }
+        
     }
 
     @Override
     protected void onEnable() {
-        ccs = app.getClientChatService();
+        try {
+            ccs = app.getClientChatService();
+            ccs.addChatSessionListener(this);
+        } catch (Exception e) {
+            LOGGER.warning("Chat is offline");
+        }
         cls = app.getClientLobbyService();
         gui = new GameLobbyGUI(niftyDisplay);
         
@@ -192,7 +213,6 @@ public class GameLobbyScreen extends BaseAppState implements
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         // attach the Nifty display to the gui view port as a processor
-        ccs.addChatSessionListener(this);
         cls.addClientLobbyListener(this);
         
         for (String player : players) {
@@ -204,7 +224,9 @@ public class GameLobbyScreen extends BaseAppState implements
     protected void onDisable() {
         players.clear();
         gui.clearChat();
-        ccs.removeChatSessionListener(this);
+        if (ccs != null) {
+            ccs.removeChatSessionListener(this);
+        }
         cls.removeClientLobbyListener(this);
         gui.removeGameLobbyGUIListener(this);
         app.getViewPort().removeProcessor(niftyDisplay);

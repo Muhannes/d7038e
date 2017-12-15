@@ -13,7 +13,6 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import network.util.NetConfig;
-import sun.security.krb5.internal.NetClient;
 
 /**
  *
@@ -23,7 +22,7 @@ public class ClientChatService extends AbstractClientService implements ChatSess
 
     private static final Logger LOGGER = Logger.getLogger(ClientChatService.class);
     
-    private ChatSessionCallBack callback = new ChatSessionCallBack();
+    private ChatSessionListener callback = new ChatSessionCallBack();
     // Used to get notifications from the server
     
     private ArrayList<ChatSessionListener> listeners = new ArrayList<>();
@@ -52,17 +51,34 @@ public class ClientChatService extends AbstractClientService implements ChatSess
     
     @Override
     public void sendMessage(String message, int chat) {
-        getDelegate().sendMessage(message, chat);
+        try {
+            getDelegate().sendMessage(message, chat);
+        } catch (Exception e) {
+            LOGGER.warning("Chat server is offline");
+        }
     }
     
     @Override
     public void joinchat(int chat){
-        getDelegate().joinchat(chat);
+        try {
+            getDelegate().joinchat(chat);
+        } catch (Exception e) {
+            LOGGER.warning("Chat server is offline");
+        }
     }
 
     @Override
     public void leavechat(int chat){
-        getDelegate().leavechat(chat);
+        try {
+            getDelegate().leavechat(chat);
+        } catch (Exception e) {
+            LOGGER.warning("Chat server is offline");
+        }
+    }
+
+    @Override
+    public void authenticate(int id, String key, String name) {
+        getDelegate().authenticate(id, key, name);
     }
 
     @Override

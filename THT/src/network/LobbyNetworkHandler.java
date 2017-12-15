@@ -73,7 +73,7 @@ public class LobbyNetworkHandler {
             playerServer = Network.createServer(NetConfig.LOBBY_PLAYER_SERVER_PORT);
             playerServer.getServices().addService(new RpcHostedService());
             playerServer.getServices().addService(new RmiHostedService());
-            playerServer.getServices().addService(new HostedChatService());
+            //playerServer.getServices().addService(new HostedChatService());
             playerServer.getServices().addService(new HostedLobbyService());
             playerServer.getServices().addService(new HostedPingService());
             

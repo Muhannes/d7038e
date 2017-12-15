@@ -25,7 +25,7 @@ public interface LobbyManager {
     @Asynchronous
     void ready();
     
-    boolean createLobby(String lobbyName);
+    int createLobby(String lobbyName);
     
     Map<String, Integer> getAllRooms();
 

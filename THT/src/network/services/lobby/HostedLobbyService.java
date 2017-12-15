@@ -194,9 +194,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
         }
 
         @Override
-        public boolean createLobby(String lobbyName) {
+        public int createLobby(String lobbyName) {
             if (!authenticated){
-                return false;
+                return -1;
             }
             LobbyRoom lr = new LobbyRoom(lobbyName);
             boolean ok = lobbyHolder.addLobbyRoom(lr);
@@ -209,9 +209,9 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
                     getCallback(nonLobbyPlayer).updateLobby(lobbyRoom.getName(), lobbyRoom.getID(), 
                             lobbyRoom.getNumPlayers(), lobbyRoom.getMaxPlayers());
                 }
-                return true;
+                return lobbyRoom.getID();
             } else {
-                return false;
+                return -1;
             }
         }
         

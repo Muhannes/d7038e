@@ -6,8 +6,10 @@
 package network.services.chat;
 
 import com.jme3.network.HostedConnection;
+import com.jme3.network.service.rmi.RmiHostedService;
+import com.jme3.network.service.rmi.RmiRegistry;
 import network.services.login.Account;
-import network.util.ConnectionAttribute;
+import network.services.login.LoginListenerService;
 import network.util.NetConfig;
 
 /**
@@ -17,46 +19,92 @@ import network.util.NetConfig;
 public class ChatSessionImpl implements ChatSession, ChatSessionListener {
     
     private final HostedConnection conn;
-    private final ChatSessionListener callback;
+    private ChatSessionListener callback;
+    private final RmiHostedService rmi;
+    private Account account;
+    private boolean authenticated;
 
-    public ChatSessionImpl(HostedConnection conn, ChatSessionListener callback){
+    
+    public ChatSessionImpl(HostedConnection conn, RmiHostedService rmi){
         this.conn = conn;
-        this.callback = callback;
+        this.rmi = rmi;
     }
     
     String getName(){
-        return "placeHolderName";
-        //return ((Account)conn.getAttribute(ConnectionAttribute.ACCOUNT)).name;
+        if (!authenticated) {
+            return null;
+        }
+        return account.name;
     }
 
     @Override
     public void sendMessage(String message, int chat) {
+        if (!authenticated) {
+            return ;
+        }
         ChatSpace.getChatSpace(chat).postMessage(this, message);
     }
 
     @Override
     public void joinchat(int chat){
+        if (!authenticated) {
+            return;
+        }
+        System.out.println("Joined room: " + chat);
         ChatSpace.getChatSpace(chat).add(this);
     }
 
     @Override
     public void leavechat(int chat){
+        if (!authenticated) {
+            return;
+        }
         ChatSpace.getChatSpace(chat).remove(this);
     }
 
     @Override
     public void newMessage(String message, int chat) {
-        callback.newMessage(message, chat);
+        if (!authenticated) {
+            return;
+        }
+        getCallback().newMessage(message, chat);
     }
 
     @Override
     public void playerJoinedChat(String name, int chat) {
-        callback.playerJoinedChat(name, chat);
+        if (!authenticated) {
+            return;
+        }
+        getCallback().playerJoinedChat(name, chat);
     }
 
     @Override
     public void playerLeftChat(String name, int chat) {
-        callback.playerLeftChat(name, chat);
+        if (!authenticated) {
+            return;
+        }
+        getCallback().playerLeftChat(name, chat);
+    }
+    
+    
+    private ChatSessionListener getCallback(){
+        if (callback == null){
+            RmiRegistry rmiRegistry = rmi.getRmiRegistry(conn);
+            callback =  NetConfig.getCallback(rmiRegistry, ChatSessionListener.class);
+        }
+        return callback;
+    }
+
+    @Override
+    public void authenticate(int id, String key, String name) {
+        for (Account account : LoginListenerService.getAccounts()) {
+            if (account.isEqual(id, key)) {
+                this.authenticated = true;
+                this.account = account;
+                System.out.println(account.name + " authenticated.");
+            }
+        }
+        
     }
     
 }
