@@ -120,12 +120,7 @@ public class SetupState extends BaseAppState implements
         
         
         Spatial walls = ((Node)creepyhouse).getChild("walls");        
-        ((Node)walls).getChildren().forEach((wall) -> {
-            
-/*            CollisionShape tmp1 = walls.getControl(RigidBodyControl.class).getCollisionShape();
-            walls.getControl(RigidBodyControl.class).setCollisionShape(tmp1);
-            bulletAppState.getPhysicsSpace().add(walls.getControl(RigidBodyControl.class));
-        */
+        ((Node)walls).getChildren().forEach((wall) -> {                    
             RigidBodyControl b = new RigidBodyControl(
                     CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             wall.addControl(b);        
