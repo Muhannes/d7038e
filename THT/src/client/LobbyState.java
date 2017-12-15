@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.services.chat.ClientChatService;
 import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.Account;
@@ -34,6 +35,7 @@ public class LobbyState extends BaseAppState implements
     private ClientApplication app;
     private Map<String, Integer> rooms;
     
+    private ClientChatService clientChatService;
     private ClientLobbyService clientLobbyService;
     private GameLobbyScreen gameLobbyScreen;
     
@@ -42,6 +44,7 @@ public class LobbyState extends BaseAppState implements
     private String username = null;
     
     private boolean lobbyAuthenticated = false;
+    private boolean chatAuthenticated = false;
 
     public LobbyState(){
     }        
@@ -72,6 +75,9 @@ public class LobbyState extends BaseAppState implements
     public void joinGame(GameLobbyScreen gls){
         LOGGER.log(Level.FINE, "Joining game {0}", gls.getName());
         LobbyState ls = this;
+        if (clientChatService != null) {
+            clientChatService.joinchat(gls.getID());
+        }
         app.enqueue(new Runnable() {
             @Override
             public void run() {
@@ -133,11 +139,13 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     public void onJoinLobby(String lobbyName) {
-        List<String> playerNames = clientLobbyService.join(rooms.get(lobbyName));
+        int roomID = rooms.get(lobbyName);
+        List<String> playerNames = clientLobbyService.join(roomID);
         if (playerNames != null) {
             
             GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
             gls.setName(lobbyName);
+            gls.setID(roomID);
             LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
             playerNames.forEach(name -> gls.addPlayers(name));
             joinGame(gls);
@@ -154,11 +162,12 @@ public class LobbyState extends BaseAppState implements
     @Override
     public void onCreateLobby(String lobbyName) {
         if(!lobbyName.isEmpty()){
-            boolean created = clientLobbyService.createLobby(lobbyName);
-            if (created) {
+            int roomID = clientLobbyService.createLobby(lobbyName);
+            if (roomID != -1) {
                 GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
-                gls.addPlayers("me"); //TODO: use real name for me
+                gls.addPlayers(username);
                 gls.setName(lobbyName);
+                gls.setID(roomID);
                 joinGame(gls);
             } else {
                 LOGGER.log(Level.INFO, "Server did not approve new name.");
@@ -178,12 +187,21 @@ public class LobbyState extends BaseAppState implements
         clientLobbyService = app.getClientLobbyService();
         // Create GUI
         if (!lobbyAuthenticated) {
-            //NetConfig.networkDelay(30);
             Account acc = ClientLoginService.getAccount();
             clientLobbyService.authenticate(acc.id, acc.key);
+            lobbyAuthenticated = true;
+        }
+        if (!chatAuthenticated) {
+            Account acc = ClientLoginService.getAccount();
+            try {
+                clientChatService = app.getClientChatService();
+                clientChatService.authenticate(acc.id, acc.key, acc.name);
+                chatAuthenticated = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         gui = new LobbyGUI(niftyDisplay);
-        gui.addLobbyGUIListener(this);
         clientLobbyService.addClientLobbyListener(this);
 
         app.getGuiViewPort().addProcessor(niftyDisplay);
@@ -191,6 +209,7 @@ public class LobbyState extends BaseAppState implements
         // Fetching available lobbyRooms
         rooms = clientLobbyService.getAllRooms();
         rooms.forEach((name, id) -> gui.addLobbyRoom(name));
+        gui.addLobbyGUIListener(this);
     }
 
     @Override

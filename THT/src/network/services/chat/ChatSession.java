@@ -14,6 +14,15 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface ChatSession {
     
     /**
+     * Authenticate the client to the chat server
+     * @param id
+     * @param key
+     * @param name 
+     */
+    @Asynchronous
+    void authenticate(int id, String key, String name);
+    
+    /**
      * Sends a message to the chat identified by 
      * @param message Message
      * @param chat Chat ID
