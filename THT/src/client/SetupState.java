@@ -17,6 +17,7 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -120,18 +121,16 @@ public class SetupState extends BaseAppState implements
         Spatial walls = ((Node)creepyhouse).getChild("walls");
         
         ((Node)walls).getChildren().forEach((wall) -> {
-            System.out.println("Wall rotation : " + wall.getLocalRotation());
             RigidBodyControl b = new RigidBodyControl(
                     CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
-            wall.addControl(b);
-            bulletAppState.getPhysicsSpace().add(b);            
+            wall.addControl(b);            
+            bulletAppState.getPhysicsSpace().add(b);          
         });
         
         Spatial floors = ((Node)creepyhouse).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
-            //RigidBodyControl b = new RigidBodyControl(
-            //        CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
-            RigidBodyControl b = new RigidBodyControl(0.0f); // 0 Mass = static            
+            RigidBodyControl b = new RigidBodyControl(
+                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
             floor.addControl(b);
             bulletAppState.getPhysicsSpace().add(b);
         });
