@@ -42,8 +42,6 @@ public class SetupState extends BaseAppState implements
     
     private Node world;
     
-    //private Node world;
-    
     private AssetManager asset;
     
     private BulletAppState bulletAppState;
@@ -53,7 +51,6 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         world = new Node("world");
         this.app.getRootNode().attachChild(world);
-        this.app.getFlyByCamera().setEnabled(true);
     }
 
     @Override
@@ -96,7 +93,7 @@ public class SetupState extends BaseAppState implements
         world.attachChild(players);
         
         listOfPlayers.forEach(p -> {
-            world.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition()));
+            world.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
         });
         
         // Tell server we are ready

@@ -83,8 +83,6 @@ public class GameState extends BaseAppState {
         this.input = app.getInputManager();
         this.camera = app.getCamera();
         
-        app.getFlyByCamera().setEnabled(false);
-        
         
         Node playerNode = (Node) root.getChild("players");
         for(int i = 0; i < playerNode.getChildren().size(); i++){
