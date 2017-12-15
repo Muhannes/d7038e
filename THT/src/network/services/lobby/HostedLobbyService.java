@@ -64,7 +64,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         nonLobbyPlayers.add(connection);
-        
+        NetConfig.networkDelay(30);
         LobbyManagerImpl lobbyManager = new LobbyManagerImpl(connection);
         connection.setAttribute(LOBBY_SERVICE, lobbyManager);
         
@@ -225,7 +225,6 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
             if (!authenticated){
                 return null;
             }
-            System.out.println("Fetching all rooms.");
             Map<String, Integer> rooms = new HashMap<>();
             for (LobbyRoom room : lobbyHolder.getRooms()) {
                 rooms.put(room.getName(), room.getID());
@@ -242,6 +241,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
                     authenticated = true;
                     thisAccount = account;
                     connection.setAttribute(ConnectionAttribute.ACCOUNT, account);
+                    return;
                 }
             }
         }

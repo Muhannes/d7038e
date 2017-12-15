@@ -115,7 +115,6 @@ public class HostedLoginService extends AbstractHostedConnectionService{
 
         @Override
         public void listenForLogins() {
-            System.out.println("GESFDSGDRGDTHDTHSDGS");
             loginListeners.add(connection);
             LOGGER.info("Login listeners: " + loginListeners.size());
         }

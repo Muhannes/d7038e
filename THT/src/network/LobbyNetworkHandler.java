@@ -115,12 +115,9 @@ public class LobbyNetworkHandler {
             loginClient.getServices().addService(new RpcClientService());
             loginClient.getServices().addService(new RmiClientService()); 
             loginClient.getServices().addService(new LobbyLoginService());
-            System.out.println("services fetched");
             
             loginClient.start();
-            System.out.println("Sending...");
             loginClient.getServices().getService(LobbyLoginService.class).listenForLogins();
-            System.out.println("Sent!");
         }catch(IOException ex){
             ex.printStackTrace();
         }

@@ -117,6 +117,9 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         }
     }
     
+    /**
+     * TODO: Add authentication
+     */
     private class GameSetupSessionImpl implements GameSetupSession {
 
         private final HostedConnection connection;
@@ -138,7 +141,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                         getRmiRegistry(connection), GameSetupSessionListener.class).initPlayer(players);
                 joined = true;
             } else {
-                LOGGER.fine("Join failed, was not initialized(or already joined)!");
+                LOGGER.warning("Join failed, was not initialized(or already joined)!");
             }
         }
 

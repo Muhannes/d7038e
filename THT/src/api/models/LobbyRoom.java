@@ -23,7 +23,6 @@ import network.util.ConnectionAttribute;
 public class LobbyRoom{
     
     private final List<HostedConnection> players = new ArrayList<>();
-    private final List<Account> accounts = new ArrayList<>();
     private final Map<Integer, Boolean> playersReady = new HashMap<>();
     private final int roomID;
     private final String roomName;

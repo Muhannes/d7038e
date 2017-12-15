@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import network.util.NetConfig;
 
 /**
  *
@@ -56,7 +57,7 @@ public class HostedPingService extends AbstractHostedConnectionService{
         // the server side
         PingerImpl session = new PingerImpl(connection);
         connection.setAttribute(PING, session);
-        
+        NetConfig.networkDelay(30);
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
         if (rmi == null) {
