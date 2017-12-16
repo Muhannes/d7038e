@@ -109,6 +109,26 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
+        
+        Vector3f camDir = camera.getDirection().clone();
+        Vector3f camLeft = camera.getLeft().clone();
+
+        camDir.y = 0;
+        camLeft.y = 0;
+        
+        camDir.normalizeLocal();
+        camLeft.normalizeLocal();
+        
+        walkingDirection.set(0,0,0);
+        
+        if(human.left) walkingDirection.addLocal(camLeft);
+        if(human.right) walkingDirection.addLocal(camLeft.negate());
+        if(human.forward) walkingDirection.addLocal(camDir);
+        if(human.backward) walkingDirection.addLocal(camDir.negate());
+        if(player != null){
+            walkingDirection.multLocal(3f).multLocal(tpf);
+            player.getControl(CharacterControl.class).setWalkDirection(walkingDirection);
+        }
     }
     
 }

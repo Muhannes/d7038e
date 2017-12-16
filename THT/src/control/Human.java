@@ -43,33 +43,30 @@ public class Human extends AbstractController implements ActionListener{
         }
         if(name.equals("forward")){
             if(isPressed){
-                charController.setWalkDirection(new Vector3f(-movementSpeed*tpf, 0f, 0f));            
+                forward = true;
             }else{
-                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));                   
+                forward = false;
             }
         }
         if(name.equals("backward")){
             if(isPressed){
-                charController.setWalkDirection(new Vector3f(movementSpeed*tpf, 0f, 0f));
+                backward = true;
             }else{
-                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+                backward = false;
             }
         }
         if(name.equals("left")){
             if(isPressed){
-                self.getLocalRotation();
-//                charController.setViewDirection(new Vector3f(0f, 0f, movementSpeed*tpf));
-                charController.setWalkDirection(new Vector3f(0f, 0f, movementSpeed*tpf));
+                left = true;                
             }else{
-                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+                left = false;
             }
         }
         if(name.equals("right")){
             if(isPressed){
-//                charController.setViewDirection(new Vector3f(0f, 0f, -movementSpeed*tpf));
-                charController.setWalkDirection(new Vector3f(0f, 0f, -movementSpeed*tpf));
+                right = true;
             }else{
-                charController.setWalkDirection(new Vector3f(0f, 0f, 0f));            
+                right = false;
             }
         
         }

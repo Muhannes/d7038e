@@ -14,7 +14,7 @@ import com.jme3.network.serializing.Serializable;
  * @author hannes
  */
 @Serializable
-public class Player {
+public class Player{
     private EntityType type;
     private Vector3f position;
     private Quaternion rotation;
