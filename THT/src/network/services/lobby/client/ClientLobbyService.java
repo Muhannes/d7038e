@@ -12,7 +12,8 @@ import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.util.NetConfig;
 import network.services.lobby.LobbySessionListener;
 import network.services.lobby.LobbySession;
@@ -22,7 +23,8 @@ import network.services.lobby.LobbySession;
  * @author truls
  */
 public class ClientLobbyService extends AbstractClientService implements ClientLobbyEmitter, LobbySession{
-    private static final Logger LOGGER = Logger.getLogger(ClientLobbyService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientLobbyService.class.getName());
+    
     private List<LobbySessionListener> listeners = new ArrayList<>();
     
     private LobbySessionListener callback;
@@ -66,17 +68,19 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
 
     @Override
     public List<String> join(int roomid) {
+        LOGGER.log(Level.FINE, "Sending join message to server. Roomid: {0}", roomid);
         return getDelegate().join(roomid);
     }
 
     @Override
     public void leave() {
+        LOGGER.log(Level.FINE, "Sending leave message to server");
         getDelegate().leave();
     }
 
     @Override
     public void ready() {
-        LOGGER.fine("Pressed ready! (clientlobbyservice) ");
+        LOGGER.log(Level.FINE, "Sending ready message to server");
         getDelegate().ready();
     }
 
@@ -100,51 +104,42 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         getDelegate().authenticate(id, key);
     }
     
-
     @Override
     public void removeClientLobbyListener(LobbySessionListener clientLobbyListener) {
         listeners.remove(clientLobbyListener);
     }
-
     
-    private class ClientLobbyHandlerImpl implements LobbySessionListener { //TODO implement some kind of listeners
+    private class ClientLobbyHandlerImpl implements LobbySessionListener {
 
         @Override
         public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
-            for (LobbySessionListener listener : listeners) {
-                listener.updateLobby(lobbyName, roomID, numPlayers, maxPlayers);
-            }
+            listeners.forEach(l -> l.updateLobby(lobbyName, roomID, numPlayers, maxPlayers));
         }
 
         @Override
         public void playerJoinedLobby(String name) {
-            LOGGER.fine(name + " join message received.");
-            for (LobbySessionListener listener : listeners) {
-                listener.playerJoinedLobby(name);
-            }
+            LOGGER.log(Level.FINE, "{0} join lobby", name);
+            listeners.forEach(l -> l.playerJoinedLobby(name));
         }
 
         @Override
         public void playerLeftLobby(String name) {
-            for (LobbySessionListener listener : listeners) {
-                listener.playerLeftLobby(name);
-            }
+            LOGGER.log(Level.FINE, "{0} left lobby", name);
+            listeners.forEach(l -> l.playerLeftLobby(name));
         }
 
         @Override
         public void playerReady(String name, boolean ready) {
-            LOGGER.fine("Player : " + name + " is ready.");
-            for (LobbySessionListener listener : listeners) {
-                listener.playerReady(name, ready);
-            }
+            LOGGER.log(Level.FINE, "Player: {0} is ready", name);
+            listeners.forEach(l -> l.playerReady(name, ready));
         }
 
         @Override
         public void allReady(String ip, int port) {
-            LOGGER.fine("Everyone is ready!");
-            for (LobbySessionListener listener : listeners) {
-                listener.allReady(ip, port);
-            }
+            LOGGER.log(Level.FINE, "Everyone is ready");
+            listeners.forEach(l -> l.allReady(ip, port));
         }
+        
     }
+    
 }
