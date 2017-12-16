@@ -11,7 +11,6 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.List;
-import api.models.LobbyRoom;
 import com.jme3.network.MessageConnection;
 import java.util.ArrayList;
 import java.util.HashMap;

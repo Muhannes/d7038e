@@ -5,7 +5,6 @@
  */
 package network.services.lobby;
 
-import api.models.LobbyRoom;
 import java.util.ArrayList;
 import java.util.List;
 

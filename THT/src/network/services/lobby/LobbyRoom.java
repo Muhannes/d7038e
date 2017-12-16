@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api.models;
+package network.services.lobby;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.serializing.Serializable;
