@@ -1,0 +1,18 @@
+Material MyMaterial : Common/MatDefs/Misc/Sky.j3md {
+    MaterialParameters {
+        NormalScale : 1.0 1.0 1.0
+        SphereMap : true
+        Texture : MinBilinearNoMipMaps "Models/Boat/boat.png"
+    }
+    AdditionalRenderState {
+        PointSprite On
+        FaceCull Back
+        AlphaTestFalloff 0.0
+        DepthWrite On
+        ColorWrite On
+        PolyOffset 0.0 0.0
+        DepthTest On
+        Blend Off
+        Wireframe Off
+    }
+}
