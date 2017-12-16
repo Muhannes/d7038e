@@ -97,7 +97,7 @@ public class GameState extends BaseAppState {
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        human = new Human(player);
+        human = new Human(player, app);
         human.initKeys(input);               
 
     }

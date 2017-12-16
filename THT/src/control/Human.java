@@ -5,16 +5,19 @@
  */
 package control;
 
+import com.jme3.app.SimpleApplication;
+import com.jme3.asset.AssetManager;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 
 /**
  *
@@ -28,11 +31,15 @@ public class Human extends AbstractController implements ActionListener{
     
     private final CharacterControl charController;
     private final Spatial self;
+    private final AssetManager asset;
+    private final SimpleApplication app;
     
     private final float movementSpeed = 3.0f;
     
-    public Human(Spatial player){
+    public Human(Spatial player, SimpleApplication app){
         this.self = player;
+        this.app = (SimpleApplication)app;
+        this.asset = app.getAssetManager();
         this.charController = self.getControl(CharacterControl.class);
     }
     
@@ -68,11 +75,25 @@ public class Human extends AbstractController implements ActionListener{
             }else{
                 right = false;
             }
-        
         }
-            
+        if(name.equals("trap")){
+            if(isPressed){
+                createTrap();
+            }
+        }           
     }
 
+    public void createTrap(){
+        Box box = new Box(0.1f,0.1f,0.1f);
+        Geometry geom = new Geometry("Box", box);
+        Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Red);
+        geom.setMaterial(material);
+        geom.setLocalTranslation(self.getLocalTranslation());        
+        app.getRootNode().attachChild(geom);
+    }
+    
+    
     @Override
     public void initKeys(InputManager manager) {
         manager.addMapping("left", new KeyTrigger(KeyInput.KEY_A));
