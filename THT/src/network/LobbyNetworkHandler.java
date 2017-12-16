@@ -105,17 +105,4 @@ public class LobbyNetworkHandler {
         playerServer.start();
     }
     
-    
-    @SuppressWarnings("SleepWhileInLoop")
-    public static void main(String args[]){
-        LobbyNetworkHandler nh = new LobbyNetworkHandler();
-        nh.startServers();
-        while (true){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-        }
-    }
 }
