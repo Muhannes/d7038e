@@ -46,7 +46,7 @@ public class ClientApplication extends SimpleApplication{
         lobbyState.setEnabled(false);
         stateManager.attach(lobbyState);
         
-        GameLobbyScreen gameLobbyScreen = new GameLobbyScreen();
+        GameLobbyState gameLobbyScreen = new GameLobbyState();
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
         

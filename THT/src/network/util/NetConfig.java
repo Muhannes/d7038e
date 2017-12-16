@@ -5,7 +5,6 @@
  */
 package network.util;
 
-import network.service.lobby.server.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
@@ -36,7 +35,6 @@ public class NetConfig {
     public static int CHAT_SERVER_PORT = 8003;
     
     public static void initSerializables(){
-        Serializer.registerClass(LobbyRoom.class);
         Serializer.registerClass(Player.class);
     }
     

@@ -6,7 +6,6 @@
 package network.service.lobby.server;
 
 import com.jme3.network.HostedConnection;
-import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import network.util.ConnectionAttribute;
  *
  * @author truls
  */
-@Serializable
 public class LobbyRoom{
     
     private final List<HostedConnection> players = new ArrayList<>();

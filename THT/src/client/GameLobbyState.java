@@ -24,12 +24,12 @@ import network.service.lobby.LobbySessionListener;
  *
  * @author ted
  */
-public class GameLobbyScreen extends BaseAppState implements 
+public class GameLobbyState extends BaseAppState implements 
         ChatSessionListener, 
         LobbySessionListener,
         GameLobbyGUIListener{
 
-    private static final Logger LOGGER = Logger.getLogger(GameLobbyScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GameLobbyState.class.getName());
     
     private NiftyJmeDisplay niftyDisplay;
     private ClientApplication app;
@@ -44,7 +44,7 @@ public class GameLobbyScreen extends BaseAppState implements
 
     private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
-    GameLobbyScreen() {
+    GameLobbyState() {
         this.gameName = "No name";        
         this.players = new ArrayList<>();
     }
@@ -143,7 +143,7 @@ public class GameLobbyScreen extends BaseAppState implements
     public void allReady(String ip, int port) {
         LOGGER.log(Level.FINE, "Allready. Connectioning to {0}:{1}", new Object[]{ip, port});
         ((ClientApplication)app).connectToGameServer(ip, port);
-        GameLobbyScreen gls = this;
+        GameLobbyState gls = this;
         app.enqueue(() -> {
             gls.setEnabled(false);
             app.getStateManager().getState(SetupState.class).setEnabled(true);
@@ -162,7 +162,7 @@ public class GameLobbyScreen extends BaseAppState implements
             chatService.leavechat(roomID);
         }
         
-        GameLobbyScreen gls = this;
+        GameLobbyState gls = this;
         app.enqueue(() -> {
             gls.setEnabled(false);
             app.getStateManager().getState(LobbyState.class).setEnabled(true);

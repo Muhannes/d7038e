@@ -36,7 +36,7 @@ public class LobbyState extends BaseAppState implements
     
     private ClientChatService clientChatService;
     private ClientLobbyService clientLobbyService;
-    private GameLobbyScreen gameLobbyScreen;
+    private GameLobbyState gameLobbyScreen;
     
     private LobbyGUI gui;
     
@@ -69,7 +69,7 @@ public class LobbyState extends BaseAppState implements
      * Enter a GameLobbyScreen
      * @param gls 
      */
-    public void joinGame(GameLobbyScreen gls){
+    public void joinGame(GameLobbyState gls){
         LOGGER.log(Level.FINE, "Joining game {0}", gls.getName());
         LobbyState ls = this;
         if (clientChatService != null) {
@@ -140,7 +140,7 @@ public class LobbyState extends BaseAppState implements
         List<String> playerNames = clientLobbyService.join(roomID);
         if (playerNames != null) {
             LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
-            GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
+            GameLobbyState gls = app.getStateManager().getState(GameLobbyState.class);
             gls.setName(lobbyName);
             gls.setID(roomID);
             playerNames.forEach(name -> gls.addPlayers(name));
@@ -160,7 +160,7 @@ public class LobbyState extends BaseAppState implements
         if(!lobbyName.isEmpty()){
             int roomID = clientLobbyService.createLobby(lobbyName);
             if (roomID != -1) {
-                GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
+                GameLobbyState gls = app.getStateManager().getState(GameLobbyState.class);
                 gls.addPlayers(ClientLoginService.getAccount().name);
                 gls.setName(lobbyName);
                 gls.setID(roomID);
