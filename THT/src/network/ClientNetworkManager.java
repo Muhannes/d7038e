@@ -40,21 +40,15 @@ public class ClientNetworkManager implements
     
     public void connectToLobbyServer(){
         try{
-            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+            LOGGER.log(Level.INFO, "Trying to connect to lobby server at {0}:{1}", 
                     new Object[]{NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT});
             lobbyClient = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_PLAYER_SERVER_PORT);
             lobbyClient.getServices().addService(new RpcClientService());
             lobbyClient.getServices().addService(new RmiClientService());
-            //lobbyClient.getServices().addService(new ClientChatService());
             lobbyClient.getServices().addService(new ClientLobbyService());
             lobbyClient.getServices().addService(new ClientPingService());
-            System.out.println("services fetched");
-            
-            // Not neded since server will send message to lobbyClient with all serializables.
-            //NetworkUtil.initSerializables();
             
             lobbyClient.start();
-            System.out.println("client Started");
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -64,16 +58,13 @@ public class ClientNetworkManager implements
         try{
             LOGGER.log(Level.INFO, "Trying to connect to game server at {0}:{1}", 
                     new Object[]{ip, port});
-            // TODO: Change to use ip instead!
+            
             gameClient = Network.connectToServer(ip, port);
             gameClient.getServices().addService(new RpcClientService());
             gameClient.getServices().addService(new RmiClientService());
             gameClient.getServices().addService(new ClientGameSetupService());
-            System.out.println("services fetched");
-            
             
             gameClient.start();
-            System.out.println("client Started");
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -81,23 +72,23 @@ public class ClientNetworkManager implements
     
     public void connectToLoginServer(){
         try{
-            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+            LOGGER.log(Level.INFO, "Trying to connect to login server at {0}:{1}", 
                     new Object[]{NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT});
             loginClient = Network.connectToServer(NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT);
             loginClient.getServices().addService(new RpcClientService());
             loginClient.getServices().addService(new RmiClientService()); 
             loginClient.getServices().addService(new ClientLoginService());
-            System.out.println("services fetched");
             
             loginClient.start();
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
     public void connectToChatServer(){
         try{
-            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
+            LOGGER.log(Level.INFO, "Trying to connect to chat"
+                    + "server at {0}:{1}", 
                     new Object[]{NetConfig.CHAT_SERVER_NAME, NetConfig.CHAT_SERVER_PORT});
             chatClient = Network.connectToServer(NetConfig.CHAT_SERVER_NAME, NetConfig.CHAT_SERVER_PORT);
             chatClient.getServices().addService(new RpcClientService());
@@ -110,9 +101,6 @@ public class ClientNetworkManager implements
         }
     }
     
-    /**
-     * TODO: Clean all!
-     */
     public synchronized void cleanUp(){
         if (lobbyClient != null && lobbyClient.isStarted()) {
             lobbyClient.close();
@@ -147,13 +135,6 @@ public class ClientNetworkManager implements
     public ClientGameSetupService getClientGameSetupService(){
         return gameClient.getServices().getService(ClientGameSetupService.class);
     }
-    
-    /**
-     * TODO: remove? this exists in login client service
-     * @return 
-     */
-    public int getGlobalId(){
-        return 0; //client.getId();
-    }
+  
 }
 
