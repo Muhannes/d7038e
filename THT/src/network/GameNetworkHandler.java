@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.handover.ClientHandoverService;
-import network.services.gamesetup.HostedGameSetupService;
+import network.services.gamesetup.server.HostedGameSetupService;
 import network.services.login.LoginListenerService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;

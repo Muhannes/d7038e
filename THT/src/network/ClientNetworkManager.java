@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.client.ClientChatService;
-import network.services.gamesetup.ClientGameSetupService;
+import network.services.gamesetup.client.ClientGameSetupService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.login.ClientLoginService;
 import network.services.ping.ClientPingService;

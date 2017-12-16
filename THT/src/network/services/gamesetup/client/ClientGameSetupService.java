@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.gamesetup;
+package network.services.gamesetup.client;
 
 import api.models.Player;
 import com.jme3.network.MessageConnection;
@@ -13,6 +13,8 @@ import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import network.services.gamesetup.GameSetupSession;
+import network.services.gamesetup.GameSetupSessionListener;
 import network.util.NetConfig;
 
 /**

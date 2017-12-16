@@ -27,7 +27,7 @@ import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.gamesetup.ClientGameSetupService;
+import network.services.gamesetup.client.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
 import network.services.login.Account;
 import network.services.login.ClientLoginService;

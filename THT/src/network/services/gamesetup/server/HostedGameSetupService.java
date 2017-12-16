@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.gamesetup;
+package network.services.gamesetup.server;
 
 import api.models.EntityType;
 import api.models.Player;
@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
+import network.services.gamesetup.GameSetupSession;
+import network.services.gamesetup.GameSetupSessionListener;
+import network.services.gamesetup.PlayerInfoEvent;
 import network.services.login.Account;
 import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
@@ -171,9 +174,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                     readyPlayers.add(globalID);
                 }
                 if (readyPlayers.size() == players.size()) {
-               
-                    EventBus.publish(new StartGameEvent(), StartGameEvent.class);
-
                     //Send start to clients.
                     postAllReady();
                 }
