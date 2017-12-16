@@ -12,7 +12,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -118,25 +117,22 @@ public class SetupState extends BaseAppState implements
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
         world.attachChild(creepyhouse);   
         
-        
         Spatial walls = ((Node)creepyhouse).getChild("walls");        
         ((Node)walls).getChildren().forEach((wall) -> {                    
             RigidBodyControl b = new RigidBodyControl(
-                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
-            wall.addControl(b);        
+                   CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             
-            //Needed
-            wall.getControl(RigidBodyControl.class).setKinematicSpatial(true);
-            wall.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion());
-                        
+            b.setKinematic(true); // This for some reason makes the rigid align with the Mesh...
+            
+            wall.addControl(b);  
+            
             bulletAppState.getPhysicsSpace().add(b);  
         });
         
         Spatial floors = ((Node)creepyhouse).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
-//            RigidBodyControl b = new RigidBodyControl(
-//                    CollisionShapeFactory.createBoxShape(floor), 0); // 0 Mass = static
-            RigidBodyControl b = new RigidBodyControl(0);
+            RigidBodyControl b = new RigidBodyControl(0); // 0 Mass = static
+            
             floor.addControl(b);
 
             bulletAppState.getPhysicsSpace().add(b);
@@ -164,15 +160,15 @@ public class SetupState extends BaseAppState implements
         CharacterControl charControl = new CharacterControl(shape, 1.0f); 
         player.addControl(charControl);
         
-        //CharacterControl charControl = new CharacterControl(CollisionShapeFactory.createBoxShape(player), 1.0f); // TODO: Change mass
-        //player.addControl(charControl);
         if(bulletAppState == null){
             LOGGER.log(Level.SEVERE, "BulletAppState is null");   
             
         }
+        
         if(bulletAppState.getPhysicsSpace() == null){
             LOGGER.log(Level.SEVERE, "physicsSpace is null");
         }
+        
         bulletAppState.getPhysicsSpace().add(charControl);
         
         return player;
