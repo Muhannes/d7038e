@@ -6,7 +6,6 @@
 package client;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.login.LoginGUI;
@@ -16,8 +15,6 @@ import network.services.login.ClientLoginService;
 import network.services.login.LoginSessionListener;
 import gui.login.LoginGUIListener;
 import java.util.concurrent.Callable;
-import network.services.login.Account;
-import network.util.NetConfig;
 
 /**
  * 
@@ -66,14 +63,10 @@ public class LoginState extends BaseAppState implements
         if(loggedIn){
             //((ClientApplication)app).connectToLobbyServer();
             LobbyState lobbyState = app.getStateManager().getState(LobbyState.class);
-            lobbyState.setUsername(username);
             LoginState ls = this;
-            app.enqueue(new Runnable() {
-                @Override
-                public void run() {
-                    ls.setEnabled(false);
-                    lobbyState.setEnabled(true);
-                }
+            app.enqueue(() -> {
+                ls.setEnabled(false);
+                lobbyState.setEnabled(true);
             });
         }
     }

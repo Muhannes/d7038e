@@ -12,7 +12,6 @@ import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.Map;
-import network.services.gamesetup.SetupGameEvent;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
@@ -66,8 +65,6 @@ public class ClientHandoverService extends AbstractClientService {
 
         @Override
         public void startSetup(Map<Integer, String> playerInfo) {
-            // todo : setup, bla blabla
-            System.out.println("StartSetup");
             EventBus.publish(new PlayerInfoEvent(playerInfo), PlayerInfoEvent.class);
             new Thread(new Runnable() { // Is this needed to be run in different thread? weird error if not when tried earlier
                 @Override

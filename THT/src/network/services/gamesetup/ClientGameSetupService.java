@@ -10,14 +10,10 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import network.LobbyNetworkHandler;
-import network.services.chat.ClientChatService;
+import java.util.logging.Logger;
 import network.util.NetConfig;
-import utils.eventbus.EventBus;
 
 /**
  *
@@ -25,7 +21,7 @@ import utils.eventbus.EventBus;
  */
 public class ClientGameSetupService extends AbstractClientService implements GameSetupSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientGameSetupService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientGameSetupService.class.getName());
     
     private List<GameSetupSessionListener> listeners = new ArrayList<>();
     
@@ -46,15 +42,11 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
-        LOGGER.fine("Init ClientGameSetup");
         rmiService = getService(RmiClientService.class);
         if( rmiService == null ) {
-            throw new RuntimeException("ChatClientService requires RMI service");
+            throw new RuntimeException("ClientGameSetupService requires RMI service");
         }
-        
         callback = new GameSetupSessionListenerImpl();
-        System.out.println("Callback : " + callback);
-        // Share the callback with the server
         rmiService.share((byte)channel, callback, GameSetupSessionListener.class);
     }
     
@@ -87,18 +79,12 @@ public class ClientGameSetupService extends AbstractClientService implements Gam
 
         @Override
         public void initPlayer(List<Player> p) {
-            LOGGER.fine("InitPlayer Received! size is: " + p.size());
-            //EventBus.publish(new PlayerInitEvent(p), PlayerInitEvent.class);
             listeners.forEach(l -> l.initPlayer(p));
         }
 
         @Override
         public void startGame() {
-            System.out.println("Sending out startGame! before");
-            //EventBus.publish(new StartGameEvent(), StartGameEvent.class);
             listeners.forEach(l -> l.startGame());
-            System.out.println("Sending out startGame! after");
-            
         }
         
     }

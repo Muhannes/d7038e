@@ -55,7 +55,6 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
         // DO NOT REMOVE SLEEP! I REPEAT, DO NOT REMOVE SLEEP!
         NetConfig.networkDelay(50);
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
-        System.out.println("Sharing HandoverSession");
         rmi.share((byte)channel, gls, HandoverSession.class);
     }
 

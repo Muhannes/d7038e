@@ -11,15 +11,12 @@ import com.jme3.network.Network;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
-import java.rmi.ConnectException;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.ClientLoginService;
-import network.services.login.HostedLoginService;
 import network.services.ping.ClientPingService;
 import network.util.NetConfig;
 
@@ -59,7 +56,7 @@ public class ClientNetworkManager implements
             lobbyClient.start();
             System.out.println("client Started");
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -78,7 +75,7 @@ public class ClientNetworkManager implements
             gameClient.start();
             System.out.println("client Started");
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -106,11 +103,10 @@ public class ClientNetworkManager implements
             chatClient.getServices().addService(new RpcClientService());
             chatClient.getServices().addService(new RmiClientService()); 
             chatClient.getServices().addService(new ClientChatService());
-            System.out.println("Chat services fetched");
             
             chatClient.start();
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     

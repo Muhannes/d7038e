@@ -5,26 +5,18 @@
  */
 package network;
 
-import api.models.LobbyRoom;
-import api.models.Player;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
-import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcClientService;
 import com.jme3.network.service.rpc.RpcHostedService;
-import com.jme3.network.service.serializer.ServerSerializerRegistrationsService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.HostedChatService;
-import network.services.handover.ClientHandoverService;
 import network.services.handover.HostedHandoverService;
 import network.services.lobby.HostedLobbyService;
-import network.services.login.ClientLoginService;
-import network.services.login.HostedLoginService;
 import network.services.login.LoginListenerService;
 import network.services.ping.HostedPingService;
 import network.util.NetConfig;
@@ -42,19 +34,6 @@ public class LobbyNetworkHandler {
     private Server handoverServer;
     
     private Client loginClient;
-    
-    @SuppressWarnings("SleepWhileInLoop")
-    public static void main(String args[]){
-        LobbyNetworkHandler nh = new LobbyNetworkHandler();
-        nh.startServers();
-        while (true){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     public LobbyNetworkHandler(){
         
@@ -79,10 +58,8 @@ public class LobbyNetworkHandler {
             
             // Important to call this afer the playerServer has been created!!!
             
-            //playerServer.start();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             playerServer.close();
         }
     }
@@ -101,8 +78,8 @@ public class LobbyNetworkHandler {
             handoverServer.getServices().addService(new HostedHandoverService());
             
             
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             handoverServer.close();
         }
     }
@@ -119,12 +96,26 @@ public class LobbyNetworkHandler {
             loginClient.start();
             loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
     public void startServers(){
         handoverServer.start();
         playerServer.start();
+    }
+    
+    
+    @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String args[]){
+        LobbyNetworkHandler nh = new LobbyNetworkHandler();
+        nh.startServers();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

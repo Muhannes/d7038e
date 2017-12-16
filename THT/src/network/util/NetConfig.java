@@ -11,12 +11,16 @@ import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author truls
  */
 public class NetConfig {
+    
+    private static final Logger LOGGER = Logger.getLogger(NetConfig.class.getName());
+    
     public static String LOBBY_SERVER_NAME = "localhost";
     public static int LOBBY_PLAYER_SERVER_PORT = 7999;
     public static int LOBBY_HANDOVER_SERVER_PORT = 8000;
@@ -40,7 +44,7 @@ public class NetConfig {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger("").log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -51,7 +55,7 @@ public class NetConfig {
             networkDelay(50);
             delegate = rmi.getRemoteObject(type); 
             if (counter > 10) {
-                throw new RuntimeException("Unable to locate delegate");
+                throw new RuntimeException("Unable to locate delegate for " + type.getName());
             }
             counter++;
         }
@@ -65,7 +69,7 @@ public class NetConfig {
             networkDelay(50);
             callback = rmi.getRemoteObject(type); 
             if (counter > 10) {
-                throw new RuntimeException("Unable to locate callback");
+                throw new RuntimeException("Unable to locate callback for " + type.getName());
             }
             counter++;
         }

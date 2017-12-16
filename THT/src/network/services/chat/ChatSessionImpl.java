@@ -23,7 +23,6 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
     private final RmiHostedService rmi;
     private Account account;
     private boolean authenticated;
-
     
     public ChatSessionImpl(HostedConnection conn, RmiHostedService rmi){
         this.conn = conn;
@@ -50,7 +49,6 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
         if (!authenticated) {
             return;
         }
-        System.out.println("Joined room: " + chat);
         ChatSpace.getChatSpace(chat).add(this);
     }
 
@@ -86,7 +84,6 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
         getCallback().playerLeftChat(name, chat);
     }
     
-    
     private ChatSessionListener getCallback(){
         if (callback == null){
             RmiRegistry rmiRegistry = rmi.getRmiRegistry(conn);
@@ -101,10 +98,8 @@ public class ChatSessionImpl implements ChatSession, ChatSessionListener {
             if (account.isEqual(id, key)) {
                 this.authenticated = true;
                 this.account = account;
-                System.out.println(account.name + " authenticated.");
             }
         }
-        
     }
     
 }

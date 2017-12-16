@@ -30,9 +30,6 @@ public class ClientApplication extends SimpleApplication{
         // Default logger
         Logger.getLogger("").setLevel(Level.INFO);
         
-        // Our loggers, tune the level
-        Logger.getLogger(LoginState.class.getName()).setLevel(Level.INFO);
-        
         // Turning off Niftys verbose logging
         Logger.getLogger("de.lessvoid.nifty").setLevel(Level.SEVERE);
         Logger.getLogger("NiftyInputEventHandlingLog").setLevel(Level.SEVERE);
@@ -41,7 +38,6 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager.connectToLoginServer();
         connectToLobbyServer();
         connectToChatServer();
-        // Create and attach all states. TODO: move to function for cleaner code.
         
         LoginState loginScreen = new LoginState();
         loginScreen.setEnabled(false);
@@ -53,7 +49,6 @@ public class ClientApplication extends SimpleApplication{
         GameLobbyScreen gameLobbyScreen = new GameLobbyScreen();
         gameLobbyScreen.setEnabled(false);
         stateManager.attach(gameLobbyScreen);
-        System.out.println("Given ID : " + clientNetworkManager.getGlobalId());
         
         SetupState setupState = new SetupState();
         setupState.setEnabled(false);
@@ -70,7 +65,6 @@ public class ClientApplication extends SimpleApplication{
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
-
     }
     
     @Override

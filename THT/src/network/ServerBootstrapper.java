@@ -14,6 +14,9 @@ import network.util.NetConfig;
  * @author hannes
  */
 public class ServerBootstrapper {
+    
+    private static final Logger LOGGER = Logger.getLogger(ServerBootstrapper.class.getName());
+    
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){
         LoginNetworkHandler loginNH = new LoginNetworkHandler();
@@ -26,7 +29,7 @@ public class ServerBootstrapper {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }

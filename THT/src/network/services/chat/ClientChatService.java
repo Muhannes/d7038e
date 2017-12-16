@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import network.util.NetConfig;
 
 /**
- *
+ * 
  * @author truls
  */
 public class ClientChatService extends AbstractClientService implements ChatSession{

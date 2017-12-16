@@ -5,14 +5,10 @@
  */
 package client;
 
-import api.models.Entity;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
@@ -102,27 +98,7 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
-        /*
-        Vector3f camDir = camera.getDirection().clone();
-        Vector3f camLeft = camera.getLeft().clone();
-
-        camDir.y = 0;
-        camLeft.y = 0;
         
-        camDir.normalizeLocal();
-        camLeft.normalizeLocal();
-        walkingDirection.set(0,0,0);
-        
-        if(left) walkingDirection.addLocal(camLeft);
-        if(right) walkingDirection.addLocal(camLeft.negate());
-        if(forward) walkingDirection.addLocal(camDir);
-        if(backward) walkingDirection.addLocal(camDir.negate());
-        
-        if(root.getChild("players") != null){ 
-            walkingDirection.multLocal(40f).multLocal(tpf);
-            player.getController().setWalkDirection(walkingDirection);
-        }
-        */
     }
     
 }

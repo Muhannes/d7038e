@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.handover.ClientHandoverService;
 import network.services.gamesetup.HostedGameSetupService;
-import network.services.login.HostedLoginService;
 import network.services.login.LoginListenerService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
@@ -28,27 +27,12 @@ import static network.util.NetConfig.initSerializables;
  */
 public class GameNetworkHandler {
     
-    @SuppressWarnings("SleepWhileInLoop")
-    public static void main(String args[]){
-        GameNetworkHandler gnh = new GameNetworkHandler();
-        gnh.startServer();
-        gnh.connectToLobbyServer();
-        gnh.connectToLoginServer();
-        while (true){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     private static final Logger LOGGER = Logger.getLogger(GameNetworkHandler.class.getName());
     
     private Server server;
     private Client lobbyClient;
     private Client loginClient;
-    
     
     public GameNetworkHandler(){
         
@@ -68,8 +52,8 @@ public class GameNetworkHandler {
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedGameSetupService());
             
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             server.close();
         }
     }
@@ -83,13 +67,12 @@ public class GameNetworkHandler {
             lobbyClient.getServices().addService(new RpcClientService());
             lobbyClient.getServices().addService(new RmiClientService()); 
             lobbyClient.getServices().addService(new ClientHandoverService());
-            System.out.println("services fetched");
             
             lobbyClient.start();
             
             getClientHandoverService().joinLobby();
         }catch(IOException ex){
-            ex.printStackTrace();
+               LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -105,7 +88,7 @@ public class GameNetworkHandler {
             loginClient.start();
             loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
         }catch(IOException ex){
-            ex.printStackTrace();
+               LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -122,5 +105,20 @@ public class GameNetworkHandler {
    public void startServer(){
        server.start();
    }
+   
+   @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String args[]){
+        GameNetworkHandler gnh = new GameNetworkHandler();
+        gnh.startServer();
+        gnh.connectToLobbyServer();
+        gnh.connectToLoginServer();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+               LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     
 }
