@@ -9,6 +9,8 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
@@ -16,15 +18,19 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import network.services.login.ClientLoginService;
 
 /**
  *
  * @author ted
  */
 public class GameState extends BaseAppState {
-    
+    private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private SimpleApplication app;
     private NiftyJmeDisplay niftyDisplay; 
     private Nifty nifty;
@@ -36,19 +42,18 @@ public class GameState extends BaseAppState {
     
     
     private Spatial player;
-    private int id;
+    private Spatial playerSpatial;
     private boolean left = false, right = false, forward = false, backward = false;
-    private final Vector3f walkingDirection = Vector3f.ZERO;
+    private Vector3f walkingDirection = Vector3f.ZERO;
     private ChaseCamera chaseCamera;
     private Camera camera;
-    
-    public GameState(int entityId){
-        this.id = entityId;
-    }
+    private Human human;
     
     
     @Override
     protected void initialize(Application app) {
+        
+        
         this.app = (SimpleApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -76,19 +81,25 @@ public class GameState extends BaseAppState {
         this.input = app.getInputManager();
         this.camera = app.getCamera();
         
-        
-        System.out.println("This screens id is : " + this.id + "\nChildren of root:\n" + root.getChildren());
         Node playerNode = (Node) root.getChild("players");
-        System.out.println("Players : " + playerNode.getChildren().size());
-        for(int i = 0; i < playerNode.getChildren().size(); i++){
-            System.out.println(playerNode.getChild(i).getName());
-            if(("player" + id).equals(playerNode.getChild(i).getName())){
-                System.out.println("I'm playerNode id: " + "player"+id);
-                chaseCamera = new ChaseCamera(camera, root.getChild("player" + id), input);
-            }
-
+        player = playerNode.getChild("player#" + ClientLoginService.getAccount().id);
+        if(player == null){
+            LOGGER.log(Level.SEVERE, "player is null");
+        }
+        if(camera == null){
+            LOGGER.log(Level.SEVERE, "chaseCamera is null");
+        }
+        if(input == null){
+            LOGGER.log(Level.SEVERE, "inputmanager is null");
         }
         
+        chaseCamera = new ChaseCamera(camera, player, input);
+        if(chaseCamera == null){
+            LOGGER.log(Level.SEVERE, "chaseCamera is null");
+        }
+        human = new Human(player);
+        human.initKeys(input);               
+
     }
 
     @Override
@@ -98,7 +109,6 @@ public class GameState extends BaseAppState {
     
     @Override
     public void update(float tpf){
-        
     }
     
 }

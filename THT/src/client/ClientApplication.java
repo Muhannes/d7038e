@@ -54,14 +54,14 @@ public class ClientApplication extends SimpleApplication{
         setupState.setEnabled(false);
         stateManager.attach(setupState);
         
-        GameState gameState = new GameState(clientNetworkManager.getGlobalId());
+        GameState gameState = new GameState();
         gameState.setEnabled(false);
         stateManager.attach(gameState);
         
         // Start app at login Screen
         loginScreen.setEnabled(true);
         
-        flyCam.setEnabled(true);
+        flyCam.setEnabled(false);
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
