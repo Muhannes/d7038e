@@ -13,7 +13,7 @@ import network.ClientNetworkManager;
 import network.services.chat.client.ClientChatService;
 import network.services.gamesetup.client.ClientGameSetupService;
 import network.services.lobby.client.ClientLobbyService;
-import network.services.login.ClientLoginService;
+import network.services.login.client.ClientLoginService;
 
 /**
  *

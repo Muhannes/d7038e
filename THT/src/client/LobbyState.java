@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import network.services.chat.client.ClientChatService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.login.Account;
-import network.services.login.ClientLoginService;
+import network.services.login.client.ClientLoginService;
 import network.services.lobby.LobbySessionListener;
 
 /**

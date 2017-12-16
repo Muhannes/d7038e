@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.login;
+package network.services.login.client;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -13,6 +13,9 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import network.services.login.Account;
+import network.services.login.LoginSession;
+import network.services.login.LoginSessionListener;
 import network.util.NetConfig;
 
 /**

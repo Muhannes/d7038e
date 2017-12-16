@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.login;
+package network.services.login.server;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import network.services.lobby.server.HostedLobbyService;
+import network.services.login.LoginSession;
+import network.services.login.LoginSessionListener;
 import network.util.NetConfig;
 
 /**

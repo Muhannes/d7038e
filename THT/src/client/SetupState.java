@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import network.services.gamesetup.client.ClientGameSetupService;
 import network.services.gamesetup.GameSetupSessionListener;
 import network.services.login.Account;
-import network.services.login.ClientLoginService;
+import network.services.login.client.ClientLoginService;
 
 /**
  * This state is used to set up the game
