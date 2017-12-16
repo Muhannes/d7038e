@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.ClientChatService;
+import network.services.chat.client.ClientChatService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.login.Account;
 import network.services.login.ClientLoginService;

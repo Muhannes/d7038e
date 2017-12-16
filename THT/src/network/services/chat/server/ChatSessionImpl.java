@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.chat;
+package network.services.chat.server;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import network.services.chat.ChatSession;
+import network.services.chat.ChatSessionListener;
 import network.services.login.Account;
 import network.services.login.LoginListenerService;
 import network.util.NetConfig;

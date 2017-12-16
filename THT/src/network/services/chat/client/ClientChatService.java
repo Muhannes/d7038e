@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.chat;
+package network.services.chat.client;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -12,6 +12,8 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import network.services.chat.ChatSession;
+import network.services.chat.ChatSessionListener;
 import network.util.NetConfig;
 
 /**

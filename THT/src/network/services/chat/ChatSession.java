@@ -15,9 +15,9 @@ public interface ChatSession {
     
     /**
      * Authenticate the client to the chat server
-     * @param id
-     * @param key
-     * @param name 
+     * @param id Client's global id
+     * @param key Client's key to verify itself
+     * @param name Client's name
      */
     @Asynchronous
     void authenticate(int id, String key, String name);

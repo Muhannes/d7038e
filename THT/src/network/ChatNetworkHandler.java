@@ -15,7 +15,7 @@ import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.HostedChatService;
+import network.services.chat.server.HostedChatService;
 import network.services.login.LoginListenerService;
 import network.util.NetConfig;
 

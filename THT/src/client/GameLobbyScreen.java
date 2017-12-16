@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ChatSessionListener;
-import network.services.chat.ChatSpace;
-import network.services.chat.ClientChatService;
+import network.services.chat.server.ChatSpace;
+import network.services.chat.client.ClientChatService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.lobby.LobbySessionListener;
 

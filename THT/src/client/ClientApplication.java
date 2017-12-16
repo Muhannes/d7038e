@@ -10,7 +10,7 @@ import com.jme3.app.SimpleApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
-import network.services.chat.ClientChatService;
+import network.services.chat.client.ClientChatService;
 import network.services.gamesetup.ClientGameSetupService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.login.ClientLoginService;
