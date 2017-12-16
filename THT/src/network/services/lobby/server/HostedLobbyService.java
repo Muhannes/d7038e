@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.lobby;
+package network.services.lobby.server;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.service.AbstractHostedConnectionService;
@@ -22,6 +22,8 @@ import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
+import network.services.lobby.LobbySessionListener;
+import network.services.lobby.LobbySession;
 
 /**
  *
@@ -35,7 +37,6 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     
     private LobbyHolder lobbyHolder;
     private final List<HostedConnection> nonLobbyPlayers = new ArrayList<>();
-    
     
     private RmiHostedService rmiService;
     // Used to sync with client and send data
@@ -64,35 +65,35 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
     public void startHostingOnConnection(HostedConnection connection) {
         nonLobbyPlayers.add(connection);
         NetConfig.networkDelay(30);
-        LobbyManagerImpl lobbyManager = new LobbyManagerImpl(connection);
+        LobbySessionImpl lobbyManager = new LobbySessionImpl(connection);
         connection.setAttribute(LOBBY_SERVICE, lobbyManager);
         
         // Share the session as an RMI resource to the client
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-        rmi.share((byte)channel, lobbyManager, LobbyManager.class);
+        rmi.share((byte)channel, lobbyManager, LobbySession.class);
     }
     
-    private ClientLobbyListener getCallback(HostedConnection connection){
+    private LobbySessionListener getCallback(HostedConnection connection){
         RmiRegistry rmi = rmiService.getRmiRegistry(connection);
-        return NetConfig.getCallback(rmi, ClientLobbyListener.class);
+        return NetConfig.getCallback(rmi, LobbySessionListener.class);
     }
 
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
-        LobbyManagerImpl lobbyManagerImpl = connection.getAttribute(LOBBY_SERVICE);
+        LobbySessionImpl lobbyManagerImpl = connection.getAttribute(LOBBY_SERVICE);
         lobbyManagerImpl.leave();
         nonLobbyPlayers.remove(connection);
         
     }
     
-    private class LobbyManagerImpl implements LobbyManager{
+    private class LobbySessionImpl implements LobbySession{
         
         private HostedConnection connection;
         private LobbyRoom lobbyRoom;
         private boolean authenticated = false;
         private Account thisAccount;
         
-        public LobbyManagerImpl(HostedConnection connection){
+        LobbySessionImpl(HostedConnection connection){
             this.connection = connection;
         }
         
@@ -180,7 +181,7 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
                     int id =ids.get(i);
                     playerInfo.put(id, name);
                 }
-                List<ClientLobbyListener> callbacks = new ArrayList<>();
+                List<LobbySessionListener> callbacks = new ArrayList<>();
                 LOGGER.info("players in room: " + players.size());
                 for (HostedConnection player : players) {
                     // Send out to each player in room that all are ready.

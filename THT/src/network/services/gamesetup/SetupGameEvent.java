@@ -7,8 +7,8 @@ package network.services.gamesetup;
 
 import java.util.List;
 import java.util.Map;
-import network.services.lobby.ClientLobbyListener;
 import utils.eventbus.Event;
+import network.services.lobby.LobbySessionListener;
 
 /**
  *
@@ -16,9 +16,9 @@ import utils.eventbus.Event;
  */
 public class SetupGameEvent extends Event{
     private Map<Integer, String> lobbyPlayers;
-    private List<ClientLobbyListener> callbacks;
+    private List<LobbySessionListener> callbacks;
 
-    public SetupGameEvent(Map<Integer, String> lobbyPlayers, List<ClientLobbyListener> callbacks) {
+    public SetupGameEvent(Map<Integer, String> lobbyPlayers, List<LobbySessionListener> callbacks) {
         this.lobbyPlayers = lobbyPlayers;
         this.callbacks = callbacks;
     }
@@ -27,7 +27,7 @@ public class SetupGameEvent extends Event{
         return lobbyPlayers;
     }
     
-    public List<ClientLobbyListener> getCallbacks(){
+    public List<LobbySessionListener> getCallbacks(){
         return callbacks;
     }
     

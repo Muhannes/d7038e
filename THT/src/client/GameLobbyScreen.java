@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 import network.services.chat.ChatSessionListener;
 import network.services.chat.ChatSpace;
 import network.services.chat.ClientChatService;
-import network.services.lobby.ClientLobbyListener;
-import network.services.lobby.ClientLobbyService;
+import network.services.lobby.client.ClientLobbyService;
+import network.services.lobby.LobbySessionListener;
 
 /**
  *
@@ -26,7 +26,7 @@ import network.services.lobby.ClientLobbyService;
  */
 public class GameLobbyScreen extends BaseAppState implements 
         ChatSessionListener, 
-        ClientLobbyListener,
+        LobbySessionListener,
         GameLobbyGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(GameLobbyScreen.class.getName());

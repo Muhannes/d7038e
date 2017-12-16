@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author truls
  */
-public interface LobbyManager {
+public interface LobbySession {
     
     void authenticate(int id, String key);
     

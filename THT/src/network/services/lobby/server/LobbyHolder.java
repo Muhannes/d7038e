@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.lobby;
+package network.services.lobby.server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,21 +15,19 @@ import java.util.List;
 public class LobbyHolder{
     private final List<LobbyRoom> lobbyRooms = new ArrayList();
 
-    public LobbyHolder() {
-        //addLobbyRoom(new LobbyRoom());//must be atleast one lobby room.
-    }
+    LobbyHolder() {}
     
-    public synchronized final boolean addLobbyRoom(LobbyRoom lobbyRoom){
+    synchronized final boolean addLobbyRoom(LobbyRoom lobbyRoom){
         // TODO: Check if ok here? so the check will be synchronized too?
         lobbyRooms.add(lobbyRoom);
         return true;
     }
     
-    public synchronized List<LobbyRoom> getRooms(){
+    synchronized List<LobbyRoom> getRooms(){
         return lobbyRooms;
     }
     
-    public synchronized LobbyRoom getLobbyRoom(int id){
+    synchronized LobbyRoom getLobbyRoom(int id){
         for (LobbyRoom lobbyRoom : lobbyRooms) {
             if (lobbyRoom.getID() == id) {
                 return lobbyRoom;
@@ -38,7 +36,7 @@ public class LobbyHolder{
         return null;
     }
     
-    public synchronized final boolean removeLobbyRoom(String RoomName){
+    synchronized final boolean removeLobbyRoom(String RoomName){
         for(LobbyRoom lr : lobbyRooms){
             lobbyRooms.remove(lr);
             return true;

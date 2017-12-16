@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import network.ClientNetworkManager;
 import network.services.chat.ClientChatService;
 import network.services.gamesetup.ClientGameSetupService;
-import network.services.lobby.ClientLobbyService;
+import network.services.lobby.client.ClientLobbyService;
 import network.services.login.ClientLoginService;
 
 /**

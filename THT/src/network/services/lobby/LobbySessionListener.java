@@ -11,7 +11,7 @@ import com.jme3.network.service.rmi.Asynchronous;
  *
  * @author hannes
  */
-public interface ClientLobbyListener {
+public interface LobbySessionListener {
     @Asynchronous
     void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers);
     

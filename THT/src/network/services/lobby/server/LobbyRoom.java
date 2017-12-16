@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.lobby;
+package network.services.lobby.server;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.serializing.Serializable;
@@ -28,35 +28,35 @@ public class LobbyRoom{
     private static int idCounter = 0;
     private static final int MAX_PLAYERS = 10;
 
-    public LobbyRoom() {
+    LobbyRoom() {
         roomID = idCounter;
         roomName = "Lobby" + roomID;
         idCounter++;
     }
     
-    public LobbyRoom(String name){
+    LobbyRoom(String name){
         roomID = idCounter;
         roomName = name;
         idCounter++;
     }
     
-    public synchronized int getID(){
+    synchronized int getID(){
         return roomID;
     }
     
-    public synchronized String getName(){
+    synchronized String getName(){
         return roomName;
     }
     
-    public synchronized int getMaxPlayers(){
+    synchronized int getMaxPlayers(){
         return MAX_PLAYERS;
     }
     
-    public synchronized int getNumPlayers(){
+    synchronized int getNumPlayers(){
         return players.size();
     }
     
-    public synchronized List<String> getPlayerNames(){
+    synchronized List<String> getPlayerNames(){
         List<String> names = new ArrayList<>();
         for (HostedConnection player : players) {
             names.add(((Account)player.getAttribute(ConnectionAttribute.ACCOUNT)).name);
@@ -64,7 +64,7 @@ public class LobbyRoom{
         return names;
     }
     
-    public synchronized boolean addPlayer(HostedConnection p){
+    synchronized boolean addPlayer(HostedConnection p){
         if (canJoin()) {
             players.add(p);
             playersReady.put(p.getId(), Boolean.FALSE);
@@ -73,7 +73,7 @@ public class LobbyRoom{
         return false;
     }
     
-    public synchronized boolean removePlayer(HostedConnection p){
+    synchronized boolean removePlayer(HostedConnection p){
         boolean removed = players.remove(p);
         if (removed) {
             playersReady.remove(p.getId());
@@ -87,16 +87,16 @@ public class LobbyRoom{
      * @param playerID
      * @return 
      */
-    public synchronized boolean setPlayerReady(int playerID){
+    synchronized boolean setPlayerReady(int playerID){
         playersReady.put(playerID, Boolean.TRUE);
         return !playersReady.containsValue(false);
     }
     
-    public synchronized List<HostedConnection> getPlayers(){
+    synchronized List<HostedConnection> getPlayers(){
         return players;
     }
     
-    public synchronized List<Integer> getPlayerIDs(){
+    synchronized List<Integer> getPlayerIDs(){
         List<Integer> ids = new ArrayList<>();
         for(HostedConnection p : players){
             ids.add(((Account)p.getAttribute(ConnectionAttribute.ACCOUNT)).id);
@@ -104,7 +104,7 @@ public class LobbyRoom{
         return ids;
     }
     
-    public synchronized boolean canJoin(){
+    synchronized boolean canJoin(){
         return players.size() < MAX_PLAYERS;
     }
 

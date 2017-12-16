@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
-import network.services.lobby.ClientLobbyListener;
-import network.services.lobby.ClientLobbyService;
+import network.services.lobby.client.ClientLobbyService;
 import network.services.login.Account;
 import network.services.login.ClientLoginService;
+import network.services.lobby.LobbySessionListener;
 
 /**
  *
@@ -26,7 +26,7 @@ import network.services.login.ClientLoginService;
  */
 public class LobbyState extends BaseAppState implements 
         LobbyGUIListener,
-        ClientLobbyListener{
+        LobbySessionListener{
 
     private static final Logger LOGGER = Logger.getLogger(LobbyState.class.getName());
     

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.lobby;
+package network.services.lobby.client;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -14,18 +14,20 @@ import java.util.List;
 import java.util.Map;
 import com.sun.istack.internal.logging.Logger;
 import network.util.NetConfig;
+import network.services.lobby.LobbySessionListener;
+import network.services.lobby.LobbySession;
 
 /**
  *
  * @author truls
  */
-public class ClientLobbyService extends AbstractClientService implements ClientLobbyEmitter, LobbyManager{
+public class ClientLobbyService extends AbstractClientService implements ClientLobbyEmitter, LobbySession{
     private static final Logger LOGGER = Logger.getLogger(ClientLobbyService.class);
-    private List<ClientLobbyListener> listeners = new ArrayList<>();
+    private List<LobbySessionListener> listeners = new ArrayList<>();
     
-    private ClientLobbyListener callback;
+    private LobbySessionListener callback;
     
-    private LobbyManager delegate;
+    private LobbySession delegate;
     // Handle to a server side object
     
     private RmiClientService rmiService;
@@ -47,18 +49,18 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         }
         
         // Share the callback with the server
-        rmiService.share((byte)channel, callback, ClientLobbyListener.class);
+        rmiService.share((byte)channel, callback, LobbySessionListener.class);
     }
     
-    private LobbyManager getDelegate(){
+    private LobbySession getDelegate(){
         if(delegate == null){
-            delegate = NetConfig.getDelegate(rmiService, LobbyManager.class);
+            delegate = NetConfig.getDelegate(rmiService, LobbySession.class);
         }
         return delegate;
     }
 
     @Override
-    public void addClientLobbyListener(ClientLobbyListener clientLobbyListener) {
+    public void addClientLobbyListener(LobbySessionListener clientLobbyListener) {
         listeners.add(clientLobbyListener);
     }
 
@@ -100,16 +102,16 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     
 
     @Override
-    public void removeClientLobbyListener(ClientLobbyListener clientLobbyListener) {
+    public void removeClientLobbyListener(LobbySessionListener clientLobbyListener) {
         listeners.remove(clientLobbyListener);
     }
 
     
-    private class ClientLobbyHandlerImpl implements ClientLobbyListener { //TODO implement some kind of listeners
+    private class ClientLobbyHandlerImpl implements LobbySessionListener { //TODO implement some kind of listeners
 
         @Override
         public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
-            for (ClientLobbyListener listener : listeners) {
+            for (LobbySessionListener listener : listeners) {
                 listener.updateLobby(lobbyName, roomID, numPlayers, maxPlayers);
             }
         }
@@ -117,14 +119,14 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         @Override
         public void playerJoinedLobby(String name) {
             LOGGER.fine(name + " join message received.");
-            for (ClientLobbyListener listener : listeners) {
+            for (LobbySessionListener listener : listeners) {
                 listener.playerJoinedLobby(name);
             }
         }
 
         @Override
         public void playerLeftLobby(String name) {
-            for (ClientLobbyListener listener : listeners) {
+            for (LobbySessionListener listener : listeners) {
                 listener.playerLeftLobby(name);
             }
         }
@@ -132,7 +134,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         @Override
         public void playerReady(String name, boolean ready) {
             LOGGER.fine("Player : " + name + " is ready.");
-            for (ClientLobbyListener listener : listeners) {
+            for (LobbySessionListener listener : listeners) {
                 listener.playerReady(name, ready);
             }
         }
@@ -140,7 +142,7 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         @Override
         public void allReady(String ip, int port) {
             LOGGER.fine("Everyone is ready!");
-            for (ClientLobbyListener listener : listeners) {
+            for (LobbySessionListener listener : listeners) {
                 listener.allReady(ip, port);
             }
         }

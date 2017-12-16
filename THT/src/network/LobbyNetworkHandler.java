@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.handover.HostedHandoverService;
-import network.services.lobby.HostedLobbyService;
+import network.services.lobby.server.HostedLobbyService;
 import network.services.login.LoginListenerService;
 import network.services.ping.HostedPingService;
 import network.util.NetConfig;

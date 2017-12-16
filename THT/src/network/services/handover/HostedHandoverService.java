@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import network.services.gamesetup.SetupGameEvent;
-import network.services.lobby.ClientLobbyListener;
 import network.util.NetConfig;
 import utils.eventbus.Event;
 import utils.eventbus.EventBus;
 import utils.eventbus.EventListener;
+import network.services.lobby.LobbySessionListener;
 
 /**
  *
@@ -77,8 +77,8 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
                 GameServer gameServer = gameServers.remove(0);
                 LOGGER.info("Sending setup to game server");
                 gameServer.gameCallback.startSetup(setupGameEvent.getPlayers());
-                List<ClientLobbyListener> callbacks = setupGameEvent.getCallbacks();
-                for (ClientLobbyListener callback : callbacks) {
+                List<LobbySessionListener> callbacks = setupGameEvent.getCallbacks();
+                for (LobbySessionListener callback : callbacks) {
                     callback.allReady(gameServer.ipAddress, gameServer.port);
                 }
                 LOGGER.info("All ready command sent out to clients");

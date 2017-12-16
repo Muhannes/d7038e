@@ -5,7 +5,7 @@
  */
 package network.util;
 
-import network.services.lobby.LobbyRoom;
+import network.services.lobby.server.LobbyRoom;
 import api.models.Player;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.network.service.rmi.RmiClientService;

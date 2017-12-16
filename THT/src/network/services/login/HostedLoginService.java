@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import network.services.lobby.HostedLobbyService;
+import network.services.lobby.server.HostedLobbyService;
 import network.util.NetConfig;
 
 /**
