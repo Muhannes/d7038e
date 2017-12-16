@@ -5,18 +5,13 @@
  */
 package network;
 
-import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
-import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiHostedService;
-import com.jme3.network.service.rpc.RpcClientService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.gamesetup.HostedGameSetupService;
-import network.services.handover.ClientHandoverService;
 import network.services.login.HostedLoginService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
@@ -32,7 +27,6 @@ public class LoginNetworkHandler {
     private Server server;
     
     public LoginNetworkHandler(){
-        
         Logger.getLogger("").setLevel(Level.INFO);
         initSerializables();
         initLoginServer();
@@ -50,19 +44,16 @@ public class LoginNetworkHandler {
             server.getServices().addService(new HostedLoginService());
             
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             server.close();
         }
     }
-    
-
     
     public synchronized void cleanUp(){
         if (server != null && server.isRunning()) {
             server.close();
         }
     }
-   
    
    public void startServer(){
        server.start();

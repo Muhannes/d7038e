@@ -12,9 +12,9 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcClientService;
 import com.jme3.network.service.rpc.RpcHostedService;
-import com.sun.istack.internal.logging.Logger;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.services.chat.HostedChatService;
 import network.services.login.LoginListenerService;
 import network.util.NetConfig;
@@ -25,20 +25,7 @@ import network.util.NetConfig;
  */
 public class ChatNetworkHandler {
     
-    @SuppressWarnings("SleepWhileInLoop")
-    public static void main(String args[]){
-        ChatNetworkHandler cnt = new ChatNetworkHandler();
-        cnt.startServer();
-        cnt.connectToLoginServer();
-        while (true){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                java.util.logging.Logger.getLogger(LobbyNetworkHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-    private static final Logger LOGGER = Logger.getLogger(ChatNetworkHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(ChatNetworkHandler.class.getName());
     private Client loginClient;
     private Server server;
 
@@ -57,8 +44,8 @@ public class ChatNetworkHandler {
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedChatService());
             
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             server.close();
         }
     }
@@ -79,7 +66,21 @@ public class ChatNetworkHandler {
             loginClient.start();
             loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
         }catch(IOException ex){
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @SuppressWarnings("SleepWhileInLoop")
+    public static void main(String args[]){
+        ChatNetworkHandler cnt = new ChatNetworkHandler();
+        cnt.startServer();
+        cnt.connectToLoginServer();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
         }
     }
     

@@ -12,7 +12,6 @@ import gui.lobby.LobbyGUI;
 import gui.lobby.LobbyGUIListener;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ClientChatService;
@@ -20,7 +19,6 @@ import network.services.lobby.ClientLobbyListener;
 import network.services.lobby.ClientLobbyService;
 import network.services.login.Account;
 import network.services.login.ClientLoginService;
-import network.util.NetConfig;
 
 /**
  *
@@ -31,6 +29,7 @@ public class LobbyState extends BaseAppState implements
         ClientLobbyListener{
 
     private static final Logger LOGGER = Logger.getLogger(LobbyState.class.getName());
+    
     private NiftyJmeDisplay niftyDisplay;
     private ClientApplication app;
     private Map<String, Integer> rooms;
@@ -40,8 +39,6 @@ public class LobbyState extends BaseAppState implements
     private GameLobbyScreen gameLobbyScreen;
     
     private LobbyGUI gui;
-    
-    private String username = null;
     
     private boolean lobbyAuthenticated = false;
     private boolean chatAuthenticated = false;
@@ -142,11 +139,10 @@ public class LobbyState extends BaseAppState implements
         int roomID = rooms.get(lobbyName);
         List<String> playerNames = clientLobbyService.join(roomID);
         if (playerNames != null) {
-            
+            LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
             GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
             gls.setName(lobbyName);
             gls.setID(roomID);
-            LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
             playerNames.forEach(name -> gls.addPlayers(name));
             joinGame(gls);
         }
@@ -165,7 +161,7 @@ public class LobbyState extends BaseAppState implements
             int roomID = clientLobbyService.createLobby(lobbyName);
             if (roomID != -1) {
                 GameLobbyScreen gls = app.getStateManager().getState(GameLobbyScreen.class);
-                gls.addPlayers(username);
+                gls.addPlayers(ClientLoginService.getAccount().name);
                 gls.setName(lobbyName);
                 gls.setID(roomID);
                 joinGame(gls);
@@ -176,10 +172,6 @@ public class LobbyState extends BaseAppState implements
             //TODO: Let server check name and return false if name is ""
             LOGGER.log(Level.INFO, "Must have a name!");
         }
-    }
-    
-    public void setUsername(String username){
-        this.username = username;
     }
 
     @Override

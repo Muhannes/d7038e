@@ -38,7 +38,6 @@ public class Human extends AbstractController implements ActionListener{
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        System.out.println("New action");
         if(name.equals("jump")){ 
             charController.jump();
         }

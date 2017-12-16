@@ -15,16 +15,14 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
-import network.services.lobby.ClientLobbyListener;
 import network.services.login.Account;
-import network.services.login.HostedLoginService;
 import network.services.login.LoginListenerService;
 import network.util.ConnectionAttribute;
 import network.util.NetConfig;
@@ -38,7 +36,7 @@ import utils.eventbus.EventListener;
  */
 public class HostedGameSetupService extends AbstractHostedConnectionService implements EventListener {
     
-    private static final Logger LOGGER = Logger.getLogger(HostedGameSetupService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedGameSetupService.class.getName());
     
     private RmiHostedService rmiHostedService;
     private int channel;
@@ -82,7 +80,6 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
         rmi.share((byte)channel, session, GameSetupSession.class);
         // Create an object that the client can reach
-        
     }
 
     @Override
@@ -100,7 +97,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         for (Integer id : expectedPlayers.keySet()) {
             players.add(new Player(EntityType.Human, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), id));
         }
-        LOGGER.info("AMount of players in game: " + players.size());
+        LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
         int monsterID = RANDOM.nextInt(players.size());
         players.get(monsterID).setType(EntityType.Monster);
         
@@ -119,10 +116,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if (T == PlayerInfoEvent.class) {
             PlayerInfoEvent playerInfoEvent = (PlayerInfoEvent) event;
-            
-            System.out.println("PlayerInfoEvent received!");
             setupGame(playerInfoEvent.playerInfo);
-            
             initialized = true;
             LOGGER.fine("Game Setup Service is initialized");
         }
@@ -134,9 +128,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     }
     
     private void postAllReady(){
-        System.out.println("postAllReady before");
         sessions.forEach(s -> getCallback(s.connection).startGame());
-        System.out.println("postAllReady after");
         
     }
     

@@ -12,7 +12,6 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import network.util.NetConfig;
 
 /**
@@ -88,7 +87,6 @@ public class LoginListenerService extends AbstractClientService{
         public void notifyLogin(boolean loggedIn, String key, int id, String name) {
             if (loggedIn) {
                 LOGGER.info("New Account added: " + name);
-                System.out.println("new account");
                 accounts.add(new Account(name, id, key));
             }
         }

@@ -8,7 +8,6 @@ package api.models;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

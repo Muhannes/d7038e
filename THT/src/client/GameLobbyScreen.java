@@ -12,7 +12,6 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.gamelobby.GameLobbyGUI;
 import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.services.chat.ChatSessionListener;
@@ -31,13 +30,14 @@ public class GameLobbyScreen extends BaseAppState implements
         GameLobbyGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(GameLobbyScreen.class.getName());
+    
     private NiftyJmeDisplay niftyDisplay;
     private ClientApplication app;
     private String gameName;
     private ArrayList<String> players;
     LobbyState lobbyScreen;
-    private ClientChatService ccs;
-    private ClientLobbyService cls;
+    private ClientChatService chatService;
+    private ClientLobbyService lobbyService;
     private int roomID;
     
     private GameLobbyGUI gui;
@@ -45,15 +45,12 @@ public class GameLobbyScreen extends BaseAppState implements
     private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
     GameLobbyScreen() {
-        this.lobbyScreen = lobbyScreen;
         this.gameName = "No name";        
         this.players = new ArrayList<>();
     }
     
     @Override
-    public void initialize(Application app){
-        LOGGER.log(Level.INFO, "Initializing LoginScreen");
-        //super.initialize(stateManager, app);        
+    public void initialize(Application app){        
         this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -63,7 +60,7 @@ public class GameLobbyScreen extends BaseAppState implements
 
     @Override
     public void cleanup(Application app){
-        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+        
     }
 
     public void addPlayers(String name){
@@ -118,7 +115,6 @@ public class GameLobbyScreen extends BaseAppState implements
      */
     @Override
     public void playerLeftChat(String name, int chat) {
-        //Player left from room.
         newMessage(name + " Left the chat!", chat);
     }
 
@@ -145,54 +141,45 @@ public class GameLobbyScreen extends BaseAppState implements
     
     @Override
     public void allReady(String ip, int port) {
-        LOGGER.fine("allReady method in GameLobbyScreen");
-        // Connect to GameServer with (ip:port)!
+        LOGGER.log(Level.FINE, "Allready. Connectioning to {0}:{1}", new Object[]{ip, port});
         ((ClientApplication)app).connectToGameServer(ip, port);
-        System.out.println("Done connecting");
         GameLobbyScreen gls = this;
-        app.enqueue(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("New runnable for enabling setupstate");
-                gls.setEnabled(false);
-                app.getStateManager().getState(SetupState.class).setEnabled(true);
-            }
+        app.enqueue(() -> {
+            gls.setEnabled(false);
+            app.getStateManager().getState(SetupState.class).setEnabled(true);
         });
     }
 
     @Override
     public void onReady() {
-        cls.ready();
+        lobbyService.ready();
     }
 
     @Override
     public void onReturnToLobby() {
-        cls.leave();
-        if (ccs != null) {
-            ccs.leavechat(roomID);
+        lobbyService.leave();
+        if (chatService != null) {
+            chatService.leavechat(roomID);
         }
         
         GameLobbyScreen gls = this;
-        app.enqueue(new Runnable() {
-            @Override
-            public void run() {
-                gls.setEnabled(false);
-                app.getStateManager().getState(LobbyState.class).setEnabled(true);
-            }
+        app.enqueue(() -> {
+            gls.setEnabled(false);
+            app.getStateManager().getState(LobbyState.class).setEnabled(true);
         });
     }
 
     @Override
     public void onQuitGame() {
-        cls.leave();
+        lobbyService.leave();
         app.getStateManager().detach(this);
         app.stop();
     }
 
     @Override
     public void onSendMessage(String message) {
-        if (ccs != null) {
-            ccs.sendMessage(message, roomID);
+        if (chatService != null) {
+            chatService.sendMessage(message, roomID);
         }
         
     }
@@ -200,20 +187,19 @@ public class GameLobbyScreen extends BaseAppState implements
     @Override
     protected void onEnable() {
         try {
-            ccs = app.getClientChatService();
-            ccs.addChatSessionListener(this);
+            chatService = app.getClientChatService();
+            chatService.addChatSessionListener(this);
         } catch (Exception e) {
-            LOGGER.warning("Chat is offline");
+            LOGGER.log(Level.WARNING, "Chat service is offline");
         }
-        cls = app.getClientLobbyService();
+        lobbyService = app.getClientLobbyService();
         gui = new GameLobbyGUI(niftyDisplay);
         
         gui.addGameLobbyGUIListener(this);
         
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
-        // attach the Nifty display to the gui view port as a processor
-        cls.addClientLobbyListener(this);
+        lobbyService.addClientLobbyListener(this);
         
         for (String player : players) {
             playerJoinedLobby(player);
@@ -224,10 +210,10 @@ public class GameLobbyScreen extends BaseAppState implements
     protected void onDisable() {
         players.clear();
         gui.clearChat();
-        if (ccs != null) {
-            ccs.removeChatSessionListener(this);
+        if (chatService != null) {
+            chatService.removeChatSessionListener(this);
         }
-        cls.removeClientLobbyListener(this);
+        lobbyService.removeClientLobbyListener(this);
         gui.removeGameLobbyGUIListener(this);
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
