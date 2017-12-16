@@ -13,6 +13,11 @@ import com.jme3.network.service.rmi.Asynchronous;
  */
 public interface PingSessionListener {
     
+    /**
+     * This is called by the server to notify the ping to 
+     * the client.
+     * @param ms Ping in miliseconds
+     */
     @Asynchronous
     void notifyPing(int ms);
     

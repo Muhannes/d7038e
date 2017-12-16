@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.ping;
+package network.services.ping.client;
 
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
@@ -13,6 +13,8 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import network.services.ping.PingSession;
+import network.services.ping.PingSessionListener;
 
 /**
  *

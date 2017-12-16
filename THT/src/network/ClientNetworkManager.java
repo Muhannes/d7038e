@@ -17,7 +17,7 @@ import network.services.chat.client.ClientChatService;
 import network.services.gamesetup.client.ClientGameSetupService;
 import network.services.lobby.client.ClientLobbyService;
 import network.services.login.client.ClientLoginService;
-import network.services.ping.ClientPingService;
+import network.services.ping.client.ClientPingService;
 import network.util.NetConfig;
 
 /**

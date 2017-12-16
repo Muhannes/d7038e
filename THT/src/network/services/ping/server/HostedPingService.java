@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.services.ping;
+package network.services.ping.server;
 
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -16,6 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import network.services.ping.PingSession;
+import network.services.ping.PingSessionListener;
 import network.util.NetConfig;
 
 /**

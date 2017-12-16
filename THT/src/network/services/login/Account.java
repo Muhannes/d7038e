@@ -10,6 +10,7 @@ package network.services.login;
  * @author hannes
  */
 public class Account {
+    
     public final String name;
     public final int id;
     public final String key;
@@ -23,4 +24,5 @@ public class Account {
     public boolean isEqual(int id, String key){
         return this.id == id && (this.key == null ? key == null : this.key.equals(key));
     }
+    
 }

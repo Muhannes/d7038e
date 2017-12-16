@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import network.services.handover.HostedHandoverService;
 import network.services.lobby.server.HostedLobbyService;
 import network.services.login.LoginListenerService;
-import network.services.ping.HostedPingService;
+import network.services.ping.server.HostedPingService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
 

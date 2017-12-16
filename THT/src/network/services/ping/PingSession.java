@@ -13,6 +13,10 @@ import com.jme3.network.service.rmi.Asynchronous;
  */
 public interface PingSession {
     
+    /**
+     * A client will call back on this method 
+     * which will let the server calculate the ping
+     */
     @Asynchronous
     void reply(); 
     
