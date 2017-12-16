@@ -27,10 +27,10 @@ import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.gamesetup.client.ClientGameSetupService;
-import network.services.gamesetup.GameSetupSessionListener;
-import network.services.login.Account;
-import network.services.login.client.ClientLoginService;
+import network.service.gamesetup.client.ClientGameSetupService;
+import network.service.gamesetup.GameSetupSessionListener;
+import network.service.login.Account;
+import network.service.login.client.ClientLoginService;
 
 /**
  * This state is used to set up the game

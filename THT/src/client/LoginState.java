@@ -11,8 +11,8 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.login.LoginGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.login.client.ClientLoginService;
-import network.services.login.LoginSessionListener;
+import network.service.login.client.ClientLoginService;
+import network.service.login.LoginSessionListener;
 import gui.login.LoginGUIListener;
 import java.util.concurrent.Callable;
 

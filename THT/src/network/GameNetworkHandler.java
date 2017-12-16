@@ -15,9 +15,9 @@ import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.handover.ClientHandoverService;
-import network.services.gamesetup.server.HostedGameSetupService;
-import network.services.login.LoginListenerService;
+import network.service.handover.ClientHandoverService;
+import network.service.gamesetup.server.HostedGameSetupService;
+import network.service.login.LoginListenerService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
 

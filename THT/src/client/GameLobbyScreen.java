@@ -14,11 +14,11 @@ import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.ChatSessionListener;
-import network.services.chat.server.ChatSpace;
-import network.services.chat.client.ClientChatService;
-import network.services.lobby.client.ClientLobbyService;
-import network.services.lobby.LobbySessionListener;
+import network.service.chat.ChatSessionListener;
+import network.service.chat.server.ChatSpace;
+import network.service.chat.client.ClientChatService;
+import network.service.lobby.client.ClientLobbyService;
+import network.service.lobby.LobbySessionListener;
 
 /**
  *

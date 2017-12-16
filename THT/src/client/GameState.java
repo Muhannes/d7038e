@@ -23,7 +23,7 @@ import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.login.client.ClientLoginService;
+import network.service.login.client.ClientLoginService;
 
 /**
  *

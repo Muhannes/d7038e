@@ -12,7 +12,7 @@ import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.login.server.HostedLoginService;
+import network.service.login.server.HostedLoginService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
 

@@ -13,11 +13,11 @@ import com.jme3.network.service.rpc.RpcClientService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.client.ClientChatService;
-import network.services.gamesetup.client.ClientGameSetupService;
-import network.services.lobby.client.ClientLobbyService;
-import network.services.login.client.ClientLoginService;
-import network.services.ping.client.ClientPingService;
+import network.service.chat.client.ClientChatService;
+import network.service.gamesetup.client.ClientGameSetupService;
+import network.service.lobby.client.ClientLobbyService;
+import network.service.login.client.ClientLoginService;
+import network.service.ping.client.ClientPingService;
 import network.util.NetConfig;
 
 /**

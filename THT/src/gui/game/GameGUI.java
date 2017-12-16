@@ -11,7 +11,7 @@ import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import network.services.ping.PingSessionListener;
+import network.service.ping.PingSessionListener;
 
 /**
  *

@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import network.services.chat.client.ClientChatService;
-import network.services.lobby.client.ClientLobbyService;
-import network.services.login.Account;
-import network.services.login.client.ClientLoginService;
-import network.services.lobby.LobbySessionListener;
+import network.service.chat.client.ClientChatService;
+import network.service.lobby.client.ClientLobbyService;
+import network.service.login.Account;
+import network.service.login.client.ClientLoginService;
+import network.service.lobby.LobbySessionListener;
 
 /**
  *
