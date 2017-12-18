@@ -1,0 +1,10 @@
+Material My Material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        VertexLighting : true
+        DiffuseMap : Textures/dirt.jpg
+        Diffuse : 1.0 1.0 1.0 1.0
+        Ambient : 1.0 1.0 1.0 1.0
+     }
+    AdditionalRenderState {
+    }
+}

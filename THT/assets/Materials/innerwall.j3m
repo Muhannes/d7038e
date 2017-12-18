@@ -1,6 +1,8 @@
 Material My Material : Common/MatDefs/Light/Lighting.j3md {
      MaterialParameters {
-        DiffuseMap : Textures/dark_wall.jpg
+        DiffuseMap : Repeat Textures/creepy_wall.jpg
+        VertexLighting : true
+        SeparateTexCoord : true
      }
     AdditionalRenderState {
     }
