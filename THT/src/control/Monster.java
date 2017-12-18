@@ -19,12 +19,9 @@ public class Monster extends AbstractController implements ActionListener{
 
     private Jump jump;
     
-    
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if(name.equals("Jump")){
-            jump.execute(entity);
-        }
+
     }
 
     @Override

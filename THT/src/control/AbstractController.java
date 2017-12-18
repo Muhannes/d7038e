@@ -5,8 +5,8 @@
  */
 package control;
 
-import api.models.Entity;
 import com.jme3.input.InputManager;
+import com.jme3.scene.Spatial;
 
 /**
  *
@@ -14,9 +14,9 @@ import com.jme3.input.InputManager;
  */
 public abstract class AbstractController {
     
-    Entity entity;
+    protected Spatial entity;
     
-    public void setEntity(Entity entity){
+    public void setEntity(Spatial entity){
         this.entity = entity;
     }
     

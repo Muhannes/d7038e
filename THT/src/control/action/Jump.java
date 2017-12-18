@@ -5,7 +5,6 @@
  */
 package control.action;
 
-import api.models.Entity;
 import control.Command;
 
 /**
@@ -15,8 +14,6 @@ import control.Command;
 public class Jump implements Command{
 
     @Override
-    public void execute(Entity entity) {
-        System.out.println("Jumping");
-        entity.getController().jump();
+    public void execute(String id) {
     }
 }
