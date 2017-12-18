@@ -5,7 +5,6 @@
  */
 package control.action;
 
-import api.models.Entity;
 import control.Command;
 
 /**
@@ -15,7 +14,7 @@ import control.Command;
 public class Decoy implements Command {
 
     @Override
-    public void execute(Entity entity) {
+    public void execute(String id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

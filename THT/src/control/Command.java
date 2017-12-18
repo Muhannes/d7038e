@@ -5,14 +5,12 @@
  */
 package control;
 
-import api.models.Entity;
-
 /**
  *
  * @author ted
  */
 public interface Command {
     
-    void execute(Entity entity);
+    void execute(String id);
     
 }

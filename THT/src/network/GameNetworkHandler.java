@@ -106,19 +106,6 @@ public class GameNetworkHandler {
        server.start();
    }
    
-   @SuppressWarnings("SleepWhileInLoop")
-    public static void main(String args[]){
-        GameNetworkHandler gnh = new GameNetworkHandler();
-        gnh.startServer();
-        gnh.connectToLobbyServer();
-        gnh.connectToLoginServer();
-        while (true){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-               LOGGER.log(Level.SEVERE, null, ex);
-            }
-        }
-    }
+   
     
 }
