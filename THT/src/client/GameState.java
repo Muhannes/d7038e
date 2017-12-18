@@ -24,12 +24,13 @@ import gui.game.GameGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.login.client.ClientLoginService;
+import network.service.movement.MovementSessionListener;
 
 /**
  *
  * @author ted
  */
-public class GameState extends BaseAppState {
+public class GameState extends BaseAppState implements MovementSessionListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private SimpleApplication app;
     private NiftyJmeDisplay niftyDisplay; 
@@ -129,6 +130,21 @@ public class GameState extends BaseAppState {
             walkingDirection.multLocal(3f).multLocal(tpf);
             player.getControl(CharacterControl.class).setWalkDirection(walkingDirection);
         }
+    }
+
+    @Override
+    public void newMessage(Vector3f location, int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void playerJoinedMovement(String name, int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void playerLeftMovement(String name, int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

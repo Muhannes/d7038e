@@ -145,7 +145,7 @@ public class SetupState extends BaseAppState implements
     private Spatial createPlayer(String name, Vector3f position){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        Box mesh = new Box(0.2f, 0.4f, 0.2f);
+        Box mesh = new Box(0.2f, 0.4f, 0.2f); //Change to model 
         Geometry player = new Geometry(name, mesh);
         
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
