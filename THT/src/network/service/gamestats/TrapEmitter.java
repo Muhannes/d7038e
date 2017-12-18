@@ -5,12 +5,10 @@
  */
 package network.service.gamestats;
 
-import control.TrapType;
-
 /**
  *
  * @author hannes
  */
-public interface GameStatsSession {
-    void layTrap(TrapType trap, Vector3f pos);
+public interface TrapEmitter {
+    void addTrapListener(TrapListener trapListener);
 }

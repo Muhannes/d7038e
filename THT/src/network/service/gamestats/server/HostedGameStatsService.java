@@ -5,6 +5,7 @@
  */
 package network.service.gamestats.server;
 
+import com.jme3.math.Vector3f;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractHostedConnectionService;
@@ -12,19 +13,29 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
+import control.TrapType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionListener;
+import network.service.gamestats.PlayerStats;
+import network.service.gamestats.TrapEmitter;
+import network.service.gamestats.TrapListener;
+import network.service.login.Account;
+import network.util.ConnectionAttribute;
 
 /**
  *
  * @author truls
  */
-public class HostedGameStatsService extends AbstractHostedConnectionService{
+public class HostedGameStatsService extends AbstractHostedConnectionService implements TrapEmitter{
 
     private static final Logger LOGGER = Logger.getLogger(HostedGameStatsService.class);
     
     private static final String GAME_STATS_SERVICE = "game_stats_service";
+    
+    private final List<TrapListener> trapListeners = new ArrayList<>();
     
     private RmiHostedService rmiHostedService;
     
@@ -56,7 +67,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService{
         
         // The newly connected client will be represented by this object on
         // the server side
-        GameStatsSessionImpl session = new GameStatsSessionImpl(connection, callback);
+        GameStatsSessionImpl session = new GameStatsSessionImpl(connection);
         
         connection.setAttribute(GAME_STATS_SERVICE, session);
         
@@ -79,24 +90,37 @@ public class HostedGameStatsService extends AbstractHostedConnectionService{
         return callback;
     }
     
-    private class GameStatsSessionImpl implements GameStatsSession, GameStatsSessionListener {
+    private void notifyTrapListeners(int id, TrapType type){
+        for (TrapListener trapListener : trapListeners) {
+            trapListener.notifyTrapEvent(id, type);
+        }
+    }
+    
+    private void addTrapToWorld(TrapType trap, Vector3f pos){
         
-        private HostedConnection connection;
+    }
+
+    @Override
+    public void addTrapListener(TrapListener trapListener) {
+        trapListeners.add(trapListener);
+    }
+    
+    private class GameStatsSessionImpl implements GameStatsSession {
+        
+        private final HostedConnection connection;
         private GameStatsSessionListener callback;
+        private PlayerStats stats;
         
-        public GameStatsSessionImpl(HostedConnection connection, GameStatsSessionListener callback){
+        public GameStatsSessionImpl(HostedConnection connection){
             this.connection = connection;
-            this.callback = callback;
         }
 
         @Override
-        public void notifyPlayerKilled(String victim, String killer) {
-            callback.notifyPlayerKilled(victim, killer);
-        }
-
-        @Override
-        public void notifyPlayerEscaped(String name) {
-            callback.notifyPlayerEscaped(name);
+        public void layTrap(TrapType trap, Vector3f pos) {
+            Account account = connection.getAttribute(ConnectionAttribute.ACCOUNT);
+            if (stats.decreaseTraps(trap) && account != null) { // Player has enough traps left
+                addTrapToWorld(trap, pos);
+            }
         }
     
     } 

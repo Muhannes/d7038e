@@ -106,6 +106,7 @@ public class SetupState extends BaseAppState implements
 
     @Override
     public void startGame() {
+        System.out.println("Changing to gamestate!");
         SetupState ss = this;
         app.enqueue(() -> {
             ss.setEnabled(false);
