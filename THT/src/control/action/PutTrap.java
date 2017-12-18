@@ -5,7 +5,6 @@
  */
 package control.action;
 
-import api.models.Entity;
 import control.Command;
 
 /**
@@ -15,7 +14,7 @@ import control.Command;
 public class PutTrap implements Command{
 
     @Override
-    public void execute(Entity entity) {
+    public void execute(String id) {
     }
     
     
