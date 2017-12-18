@@ -14,6 +14,7 @@ import network.service.chat.client.ClientChatService;
 import network.service.gamesetup.client.ClientGameSetupService;
 import network.service.lobby.client.ClientLobbyService;
 import network.service.login.client.ClientLoginService;
+import network.service.movement.client.ClientMovementService;
 
 /**
  *
@@ -102,6 +103,10 @@ public class ClientApplication extends SimpleApplication{
     
     public ClientChatService getClientChatService(){
         return clientNetworkManager.getClientChatService();
+    }
+    
+    public ClientMovementService getClientMovementService(){
+        return clientNetworkManager.getClientMovementService();
     }
     
     public static void main(String[] args){

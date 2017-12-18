@@ -11,8 +11,10 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
@@ -21,10 +23,14 @@ import com.jme3.scene.Spatial;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.login.client.ClientLoginService;
 import network.service.movement.MovementSessionListener;
+import network.service.movement.PlayerMovement;
+import network.service.movement.client.ClientMovementService;
 
 /**
  *
@@ -32,9 +38,10 @@ import network.service.movement.MovementSessionListener;
  */
 public class GameState extends BaseAppState implements MovementSessionListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
-    private SimpleApplication app;
+    private ClientApplication app;
     private NiftyJmeDisplay niftyDisplay; 
     private Nifty nifty;
+    private ClientMovementService clientMovementService;
     
     private Node root;
     private AssetManager asset;
@@ -49,13 +56,14 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private ChaseCamera chaseCamera;
     private Camera camera;
     private Human human;
+    private int id;
     
     
     @Override
     protected void initialize(Application app) {
         
         
-        this.app = (SimpleApplication) app;
+        this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
         app.getAssetManager(), app.getInputManager(), 
@@ -81,9 +89,10 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
+        this.clientMovementService = app.getClientMovementService();
         
         Node playerNode = (Node) root.getChild("players");
-        player = playerNode.getChild("player#" + ClientLoginService.getAccount().id);
+        player = playerNode.getChild(""+ClientLoginService.getAccount().id);
         if(player == null){
             LOGGER.log(Level.SEVERE, "player is null");
         }
@@ -108,6 +117,11 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         app.stop();
     }
     
+    private void sendToServer(Vector3f location, Quaternion rotation){        
+//        PlayerMovement pm = new PlayerMovement(player.getName(), location, rotation);
+//        clientMovementService.sendMessage(pm);
+    }
+    
     @Override
     public void update(float tpf){
         
@@ -122,10 +136,22 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         
         walkingDirection.set(0,0,0);
         
-        if(human.left) walkingDirection.addLocal(camLeft);
-        if(human.right) walkingDirection.addLocal(camLeft.negate());
-        if(human.forward) walkingDirection.addLocal(camDir);
-        if(human.backward) walkingDirection.addLocal(camDir.negate());
+        if(human.left){
+            walkingDirection.addLocal(camLeft);
+            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+        }
+        if(human.right){
+            walkingDirection.addLocal(camLeft.negate());
+            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+        }
+        if(human.forward){
+            walkingDirection.addLocal(camDir);
+            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+        }
+        if(human.backward){
+            walkingDirection.addLocal(camDir.negate());
+            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+        }
         if(player != null){
             walkingDirection.multLocal(3f).multLocal(tpf);
             player.getControl(CharacterControl.class).setWalkDirection(walkingDirection);
@@ -133,18 +159,25 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     }
 
     @Override
-    public void newMessage(Vector3f location, int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void newMessage(List<PlayerMovement> playerMovements) {
+        app.enqueue(() -> {
+            convergePlayers(playerMovements);
+        });
     }
+   
+    
+    private void convergePlayers(List<PlayerMovement> playerMovements){
+     
+        Node players = (Node) root.getChild("players");
+        for(PlayerMovement newPlayerInfo : playerMovements){
+            Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
+            Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
+            Quaternion newRotation = newPlayerInfo.rotation;
+            playerNode.setLocalRotation(newRotation);
+            playerNode.getControl(CharacterControl.class).setWalkDirection(newDirection);
 
-    @Override
-    public void playerJoinedMovement(String name, int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void playerLeftMovement(String name, int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //TODO: If the player is too far away from the action direction, do snap.
+        }
     }
     
 }

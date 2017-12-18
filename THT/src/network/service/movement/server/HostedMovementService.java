@@ -12,8 +12,13 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import network.service.login.Account;
 import network.service.movement.MovementSession;
+import network.service.movement.MovementSessionListener;
+import network.service.movement.PlayerMovement;
 import network.util.NetConfig;
 
 /**
@@ -27,18 +32,19 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     private static final String MOVEMENT = "MOVEMENT";
     
     private RmiHostedService rmiHostedService;
+    private List<MovementSessionImpl> players = new ArrayList<>();
+    private List<PlayerMovement> movements = new ArrayList<>();
+    
     private int channel;
     private int playerId;
-
+    
     public HostedMovementService(){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
-        MovementSpace.initDefualtMovementSpaces();
     }
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
         
-        MovementSpace space = MovementSpace.getMovementSpace(playerId);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("MovementHostedService requires an RMI service.");
@@ -53,7 +59,8 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         
         // The newly connected client will be represented by this object on
         // the server side
-        MovementSessionImpl player = new MovementSessionImpl(connection, rmiHostedService);
+        MovementSessionImpl player = new MovementSessionImpl(connection);
+        players.add(player);
         
         connection.setAttribute(MOVEMENT, player);
         
@@ -65,7 +72,39 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     @Override
     public void stopHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
-        MovementSpace.removeFromAll((MovementSessionImpl)connection.getAttribute(MOVEMENT));
     }
     
+    private void broadcast(){
+        players.forEach(p -> p.newMessage(movements));
+    }
+    
+    private class MovementSessionImpl implements MovementSession, 
+        MovementSessionListener{
+
+        private final HostedConnection conn;
+        private MovementSessionListener callback;
+
+        MovementSessionImpl(HostedConnection conn){
+            this.conn = conn;
+        }
+
+        private MovementSessionListener getCallback(){
+            if (callback == null){
+                RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(conn);
+                callback =  NetConfig.getCallback(rmiRegistry, MovementSessionListener.class);
+            }
+            return callback;
+        }
+
+        @Override
+        public void sendMessage(PlayerMovement playerMovement) {
+            //Update info in tree for the server.
+            
+        }
+
+        @Override
+        public void newMessage(List<PlayerMovement> playerMovements) {
+            getCallback().newMessage(playerMovements);
+        }
+    }
 }

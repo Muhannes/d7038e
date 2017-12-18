@@ -5,16 +5,10 @@
  */
 package network.service.movement;
 
-import com.jme3.network.service.rmi.Asynchronous;
-import java.util.List;
-
 /**
  *
  * @author ted
  */
-public interface MovementSessionListener {
-    
-    @Asynchronous
-    void newMessage(List<PlayerMovement> playerMovements);
+public class MovementSessionEmitter {
     
 }

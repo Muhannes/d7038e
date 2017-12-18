@@ -17,6 +17,7 @@ import network.service.chat.client.ClientChatService;
 import network.service.gamesetup.client.ClientGameSetupService;
 import network.service.lobby.client.ClientLobbyService;
 import network.service.login.client.ClientLoginService;
+import network.service.movement.client.ClientMovementService;
 import network.service.ping.client.ClientPingService;
 import network.util.NetConfig;
 
@@ -63,6 +64,7 @@ public class ClientNetworkManager implements
             gameClient.getServices().addService(new RpcClientService());
             gameClient.getServices().addService(new RmiClientService());
             gameClient.getServices().addService(new ClientGameSetupService());
+            gameClient.getServices().addService(new ClientMovementService());
             
             gameClient.start();
         }catch(IOException ex){
@@ -134,6 +136,10 @@ public class ClientNetworkManager implements
     
     public ClientGameSetupService getClientGameSetupService(){
         return gameClient.getServices().getService(ClientGameSetupService.class);
+    }
+    
+    public ClientMovementService getClientMovementService(){
+        return gameClient.getServices().getService(ClientMovementService.class);
     }
   
 }

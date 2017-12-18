@@ -5,7 +5,6 @@
  */
 package network.service.movement;
 
-import com.jme3.math.Vector3f;
 import com.jme3.network.service.rmi.Asynchronous;
 
 /**
@@ -15,12 +14,6 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface MovementSession {
     
     @Asynchronous
-    void sendMessage(Vector3f location, int id);
+    void sendMessage(PlayerMovement playerMovement);
     
-    @Asynchronous
-    void joinedMovement(int id);
-    
-    @Asynchronous
-    void leftMovement(int id);
-
 }

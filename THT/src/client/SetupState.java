@@ -97,7 +97,7 @@ public class SetupState extends BaseAppState implements
         world.attachChild(players);
         
         listOfPlayers.forEach(p -> {
-            players.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
+            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition()));
         });
         
         // Tell server we are ready
