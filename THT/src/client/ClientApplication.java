@@ -7,6 +7,7 @@ package client;
 
 import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
+import com.jme3.bullet.BulletAppState;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
@@ -57,6 +58,11 @@ public class ClientApplication extends SimpleApplication{
         GameState gameState = new GameState();
         gameState.setEnabled(false);
         stateManager.attach(gameState);
+        
+        //Bullet physics for players, walls, objects
+        BulletAppState bulletAppState = new BulletAppState();
+        bulletAppState.setDebugEnabled(true);  
+        stateManager.attach(bulletAppState);
         
         // Start app at login Screen
         loginScreen.setEnabled(true);

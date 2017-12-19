@@ -55,6 +55,8 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         world = new Node("world");
         this.app.getRootNode().attachChild(world);
+        bulletAppState = app.getStateManager().getState(BulletAppState.class);
+        
     }
 
     @Override
@@ -74,11 +76,6 @@ public class SetupState extends BaseAppState implements
         
         Account acc = ClientLoginService.getAccount();
         gameSetupService.join(acc.id, acc.key, acc.name);
-            
-        //Bullet physics for players, walls, objects
-        bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);  
-        app.getStateManager().attach(bulletAppState);
         
         loadStaticGeometry();       
     }
