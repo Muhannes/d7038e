@@ -76,7 +76,6 @@ public class ClientMovementService extends AbstractClientService implements Move
             listeners.forEach(l -> l.newMessage(playerMovements));
         }
 
-
     }
 
 }

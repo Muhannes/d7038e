@@ -7,6 +7,8 @@ package network;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.system.JmeContext;
 import java.util.ArrayList;
@@ -14,64 +16,50 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.movement.MovementSession;
+import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
+import network.service.movement.server.HostedMovementService;
 
 /**
- *
  * @author hannes
  */
-public class GameServer extends SimpleApplication implements MovementSession {
+public class GameServer extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
     private final List<PlayerMovement> movements = new ArrayList<>();
     
+    
+    private HostedMovementService hostedMovementService;
+    
     private static MovementSession movementSession;
+    private GameNetworkHandler gnh;
     
     private Node playersNode;
     
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){
         GameServer gameServer = new GameServer();
-        GameNetworkHandler gnh = new GameNetworkHandler(movementSession);
-        gnh.startServer();
-        gnh.connectToLobbyServer();
-        gnh.connectToLoginServer();
+        
         gameServer.start(JmeContext.Type.Headless);
+        
         
     }
     
-    public static void sendOutMovements(){
-        //Send out movements everything 10ms 
-        LOGGER.log(Level.INFO, "Sending out to clients");                    
-        
-        new Runnable(){
-            @Override
-            public void run() {
-                try {                    
-                    Thread.sleep(100);                    
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                }
-            }            
-        }.run();
-        
-    }
     
     @Override
     public void simpleInitApp() {
         // Do intialization here.
         playersNode = (Node) this.rootNode.getChild("players");
+        gnh = new GameNetworkHandler();
+        
+        gnh.startServer();
+        gnh.connectToLobbyServer();
+        gnh.connectToLoginServer();
+        
+
     }
 
-    @Override
-    public void sendMessage(PlayerMovement playerMovement) {
-        System.out.println("Receiving playermovement in GameServer");
-        playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-        playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-        
-        movements.add(playerMovement);
-    }
+    
     
 }

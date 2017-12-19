@@ -36,15 +36,15 @@ public class GameNetworkHandler {
     private Client lobbyClient;
     private Client loginClient;
     
-    public GameNetworkHandler(MovementSession movementSession){
+    public GameNetworkHandler(){
         
         Logger.getLogger("").setLevel(Level.INFO);
         initSerializables();
-        initGameServer(movementSession);
+        initGameServer();
     }
     
     @SuppressWarnings("CallToPrintStackTrace")
-    private void initGameServer(MovementSession session){
+    private void initGameServer(){
         try {
             LOGGER.log(Level.INFO, "Starting server at port: {0}", Integer.toString(NetConfig.GAME_SERVER_PORT));
             // create and start the server
@@ -53,7 +53,7 @@ public class GameNetworkHandler {
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedGameSetupService());
-            server.getServices().addService(new HostedMovementService(session));
+            server.getServices().addService(new HostedMovementService());
             
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -103,6 +103,10 @@ public class GameNetworkHandler {
     
    public ClientHandoverService getClientHandoverService(){
        return lobbyClient.getServices().getService(ClientHandoverService.class);
+   }
+   
+   public HostedMovementService getHostedMovementService(){
+       return server.getServices().getService(HostedMovementService.class);
    }
    
    public void startServer(){
