@@ -5,7 +5,8 @@
  */
 package network.service.gamestats;
 
-import control.TrapType;
+import com.jme3.math.Vector3f;
+import control.trap.TrapType;
 
 /**
  *

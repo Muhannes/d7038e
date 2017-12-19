@@ -6,7 +6,7 @@
 package network.service.gamestats;
 
 import api.models.EntityType;
-import control.TrapType;
+import control.trap.TrapType;
 
 /**
  *

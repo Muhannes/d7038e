@@ -153,7 +153,6 @@ public class SetupState extends BaseAppState implements
         mat.setColor("Color", ColorRGBA.Blue);
         player.setMaterial(mat);
         player.setLocalTranslation(new Vector3f(-5.5f,5f, -9.5f));
-        
         BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();

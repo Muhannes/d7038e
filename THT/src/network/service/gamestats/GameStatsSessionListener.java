@@ -5,6 +5,8 @@
  */
 package network.service.gamestats;
 
+import control.trap.TrapType;
+
 /**
  *
  * @author hannes
@@ -14,5 +16,7 @@ public interface GameStatsSessionListener {
     void notifyPlayerKilled(String victim, String killer);
     
     void notifyPlayerEscaped(String name);
+    
+    void notifyPlayerTrapped(int playerID, TrapType trapType);
 
 }

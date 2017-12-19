@@ -10,6 +10,7 @@ import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
+import control.trap.TrapType;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import network.service.gamestats.GameStatsSession;
@@ -71,6 +72,11 @@ public class ClientGameStatsService extends AbstractClientService{
         public void notifyPlayerEscaped(String name) {
             LOGGER.log(Level.FINE, "Player escaped. Name: {0}", name);
             listeners.forEach(l -> l.notifyPlayerEscaped(name));
+        }
+
+        @Override
+        public void notifyPlayerTrapped(int playerID, TrapType trapType) {
+            // TODO: Execute the correct trap effect 
         }
     }
 }

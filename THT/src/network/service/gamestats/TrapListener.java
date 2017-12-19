@@ -5,7 +5,7 @@
  */
 package network.service.gamestats;
 
-import control.TrapType;
+import control.trap.TrapType;
 
 /**
  *

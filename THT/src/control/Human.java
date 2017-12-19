@@ -83,6 +83,9 @@ public class Human extends AbstractController implements ActionListener{
         }           
     }
 
+    /**
+     * TODO: Use the new Trap objects
+     */
     public void createTrap(){
         Box box = new Box(0.1f,0.1f,0.1f);
         Geometry geom = new Geometry("Box", box);
