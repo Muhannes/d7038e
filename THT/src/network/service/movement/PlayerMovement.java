@@ -20,6 +20,9 @@ public class PlayerMovement {
     public Vector3f direction;
     public Quaternion rotation;
     
+    public PlayerMovement(){
+    }
+    
     public PlayerMovement(String id, Vector3f direction, Quaternion rotation){
         this.id = id;
         this.direction = direction;

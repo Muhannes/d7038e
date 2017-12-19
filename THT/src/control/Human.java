@@ -34,7 +34,7 @@ public class Human extends AbstractController implements ActionListener{
     private final AssetManager asset;
     private final SimpleApplication app;
     
-    private final float movementSpeed = 3.0f;
+    public final float movementSpeed = 3.0f;
     
     public Human(Spatial player, SimpleApplication app){
         this.self = player;

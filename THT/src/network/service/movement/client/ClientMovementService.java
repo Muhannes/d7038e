@@ -28,9 +28,9 @@ public class ClientMovementService extends AbstractClientService implements Move
 
     private static final Logger LOGGER = Logger.getLogger(ClientMovementService.class);
 
-    private MovementSessionListener callback = new MovementSessionCallback();
+    private final MovementSessionListener callback = new MovementSessionCallback();
 
-    private ArrayList<MovementSessionListener> listeners = new ArrayList<>();
+    private final ArrayList<MovementSessionListener> listeners = new ArrayList<>();
             
     private MovementSession delegate;
     
@@ -65,6 +65,7 @@ public class ClientMovementService extends AbstractClientService implements Move
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
         LOGGER.log(Level.INFO, "Sending playerMovement message");
+        System.out.println("New movement" + playerMovement.direction);
         getDelegate().sendMessage(playerMovement);
     }
 

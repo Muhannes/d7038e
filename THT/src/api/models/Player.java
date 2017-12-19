@@ -20,8 +20,7 @@ public class Player{
     private Quaternion rotation;
     private int id;
     
-    public Player(){
-        
+    public Player(){        
     }
 
     public Player(EntityType type, Vector3f position, Quaternion rotation, int id) {

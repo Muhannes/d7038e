@@ -11,6 +11,7 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.service.movement.PlayerMovement;
 
 /**
  *
@@ -36,6 +37,7 @@ public class NetConfig {
     
     public static void initSerializables(){
         Serializer.registerClass(Player.class);
+        Serializer.registerClass(PlayerMovement.class);
     }
     
     public static void networkDelay(int ms){
@@ -64,7 +66,7 @@ public class NetConfig {
         T callback = rmi.getRemoteObject(type);
         int counter = 0;
         while (callback == null){
-            networkDelay(50);
+            networkDelay(100);
             callback = rmi.getRemoteObject(type); 
             if (counter > 10) {
                 throw new RuntimeException("Unable to locate callback for " + type.getName());

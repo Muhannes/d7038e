@@ -117,9 +117,9 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         app.stop();
     }
     
-    private void sendToServer(Vector3f location, Quaternion rotation){        
-//        PlayerMovement pm = new PlayerMovement(player.getName(), location, rotation);
-//        clientMovementService.sendMessage(pm);
+    private void sendToServer(Vector3f location, Quaternion rotation){   
+        PlayerMovement pm = new PlayerMovement(player.getName(), location, rotation);
+        clientMovementService.sendMessage(pm);
     }
     
     @Override
@@ -153,11 +153,14 @@ public class GameState extends BaseAppState implements MovementSessionListener{
             sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
         }
         if(player != null){
-            walkingDirection.multLocal(3f).multLocal(tpf);
+            walkingDirection.multLocal(human.movementSpeed).multLocal(tpf);
             player.getControl(CharacterControl.class).setWalkDirection(walkingDirection);
         }
     }
 
+    public void youAreTrapped(){
+        walkingDirection.multLocal(human.movementSpeed/2);
+    }
     @Override
     public void newMessage(List<PlayerMovement> playerMovements) {
         app.enqueue(() -> {

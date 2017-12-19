@@ -35,16 +35,18 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     private List<MovementSessionImpl> players = new ArrayList<>();
     private List<PlayerMovement> movements = new ArrayList<>();
     
+    private MovementSession session;
     private int channel;
     private int playerId;
     
-    public HostedMovementService(){
+    public HostedMovementService(MovementSession session){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
+        this.session = session;
     }
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        
+        setAutoHost(false);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("MovementHostedService requires an RMI service.");
@@ -66,7 +68,8 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         
         // Now we expose this object such that the client can get hold of it
         RmiRegistry rmi = rmiHostedService.getRmiRegistry(connection);
-        rmi.share((byte)channel, player, MovementSession.class);
+        rmiHostedService.shareGlobal(session, MovementSession.class);
+        //rmi.share((byte)channel, player, MovementSession.class);
     }
 
     @Override
@@ -74,12 +77,11 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
     }
     
-    private void broadcast(){
+    private void broadcast(List<PlayerMovement> movements){
         players.forEach(p -> p.newMessage(movements));
     }
     
-    private class MovementSessionImpl implements MovementSession, 
-        MovementSessionListener{
+    private class MovementSessionImpl implements MovementSessionListener{
 
         private final HostedConnection conn;
         private MovementSessionListener callback;
@@ -94,12 +96,6 @@ public class HostedMovementService extends AbstractHostedConnectionService {
                 callback =  NetConfig.getCallback(rmiRegistry, MovementSessionListener.class);
             }
             return callback;
-        }
-
-        @Override
-        public void sendMessage(PlayerMovement playerMovement) {
-            //Update info in tree for the server.
-            
         }
 
         @Override
