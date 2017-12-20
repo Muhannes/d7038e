@@ -109,6 +109,10 @@ public class GameNetworkHandler {
        return server.getServices().getService(HostedMovementService.class);
    }
    
+   public HostedGameSetupService getHostedGameSetupService(){
+       return server.getServices().getService(HostedGameSetupService.class);
+   }
+   
    public void startServer(){
        server.start();
    }

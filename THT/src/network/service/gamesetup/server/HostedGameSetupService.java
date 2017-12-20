@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
+import network.service.gamesetup.AllReadyEmitter;
+import network.service.gamesetup.AllReadyListener;
 import network.service.gamesetup.GameSetupSession;
 import network.service.gamesetup.GameSetupSessionListener;
 import network.service.gamesetup.PlayerInfoEvent;
@@ -43,7 +45,7 @@ import utils.eventbus.EventListener;
  *
  * @author hannes
  */
-public class HostedGameSetupService extends AbstractHostedConnectionService implements EventListener {
+public class HostedGameSetupService extends AbstractHostedConnectionService implements AllReadyEmitter{
     
     private static final Logger LOGGER = Logger.getLogger(HostedGameSetupService.class.getName());
     
@@ -52,14 +54,18 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private static final Random RANDOM = new Random();
     private GameSetupSessionImpl session;
     
+    private final List<AllReadyListener> readyListeners = new ArrayList<>();
     private final Map<Integer, String> expectedPlayers = new HashMap<>();
     private final List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
     private final List<GameSetupSessionImpl> sessions = new ArrayList<>();
     
     private boolean initialized = false;
+    private List<GameSetupSessionListener> listeners = new ArrayList<>();
     
     private final List<Vector3f> positions = new ArrayList<>();
+    
+    private Node playersNode;
     
     public HostedGameSetupService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
@@ -69,16 +75,24 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         this.channel = channel;
     }
     
-    
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        EventBus.subscribe(this);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("HostedSetupService requires an RMI service.");
         }   
-        createdWorld(asset, bulletAppState);
+        
+        //createWorld(asset, bulletAppState);
+        
+    }
+    
+    public void addGameSetupSessionListener(GameSetupSessionListener listener){
+        listeners.add(listener);
+    }
+    
+    public void removeGameSetupSessionListener(GameSetupSessionListener listener){
+        listeners.remove(listener);
     }
     
     @Override
@@ -115,19 +129,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
     }
     
-    /*
-    private Player getPlayerByID(int id){
-        for (Player player : players) {
-            if (player.getID() == id) {
-                return player;
-            }
-        }
-        return null;
-    }
-    */
-    
-    public void createdWorld(AssetManager asset, BulletAppState bulletAppState){
-        Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
+    public void createWorld(AssetManager assetManager, BulletAppState bulletAppState){
+        Spatial creepyhouse = assetManager.loadModel("Scenes/creepyhouse.j3o");
         
         if (bulletAppState != null) {
             WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
@@ -135,10 +138,11 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             LOGGER.severe("bulletAppState Was null when initializing world");
         }
 
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");        
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
         playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
     }
     
+    /*
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
         if (T == PlayerInfoEvent.class) {
@@ -147,7 +151,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             initialized = true;
             LOGGER.fine("Game Setup Service is initialized");
         }
-    }
+    }*/
     
     private GameSetupSessionListener getCallback(HostedConnection connection){
         LOGGER.log(Level.SEVERE, "hostedConnection " + connection  + "\n rmi " + rmiHostedService.getRmiRegistry(connection));
@@ -156,8 +160,14 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     }
     
     private void postAllReady(){
+        readyListeners.forEach(l -> l.notifyAllReady());
         sessions.forEach(s -> getCallback(s.connection).startGame());
         
+    }
+
+    @Override
+    public void addListener(AllReadyListener listener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     private class GameSetupSessionImpl implements GameSetupSession {

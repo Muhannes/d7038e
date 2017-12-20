@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
+import network.service.gamesetup.server.HostedGameSetupService;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -66,7 +67,17 @@ public class GameServer extends SimpleApplication{
         
         // Start app at login Screen
         waitingState.setEnabled(true);
+        
     }
-
     
+    public HostedGameSetupService getHostedGameSetupService(){
+        return gnh.getHostedGameSetupService();
+    }
+    
+    public void ready(){
+        this.enqueue(() -> {
+            this.getStateManager().getState(SetupState.class).setEnabled(false);
+            this.getStateManager().getState(PlayState.class).setEnabled(true);
+        });
+    }
 }
