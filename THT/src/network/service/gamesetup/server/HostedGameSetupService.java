@@ -105,7 +105,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         players.get(monsterID).setType(EntityType.Monster);
         
     }
-
+    
+    /*
     private Player getPlayerByID(int id){
         for (Player player : players) {
             if (player.getID() == id) {
@@ -114,6 +115,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         }
         return null;
     }
+    */
     
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {
@@ -126,6 +128,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     }
     
     private GameSetupSessionListener getCallback(HostedConnection connection){
+        LOGGER.log(Level.SEVERE, "hostedConnection " + connection  + "\n rmi " + rmiHostedService.getRmiRegistry(connection));
         return NetConfig.getCallback(rmiHostedService.
                         getRmiRegistry(connection), GameSetupSessionListener.class);
     }

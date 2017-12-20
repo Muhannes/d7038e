@@ -123,6 +123,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     }
     
     public void setPlayersNode(Node playersNode){
+        LOGGER.log(Level.SEVERE, playersNode.getName());
         this.playersNode = playersNode;
     }
     

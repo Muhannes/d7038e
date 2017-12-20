@@ -50,6 +50,7 @@ public class ClientMovementService extends AbstractClientService implements Move
             throw new RuntimeException("ChatClientService requires RMI service");
         }        
         // Share the callback with the server
+        LOGGER.log(Level.SEVERE, "callBack : " + callback);
         rmiService.share((byte)channel, callback, MovementSessionListener.class);
     }
     
