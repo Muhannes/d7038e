@@ -7,6 +7,9 @@ package network.service.gamesetup.server;
 
 import api.models.EntityType;
 import api.models.Player;
+import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.material.Material;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.HostedConnection;
@@ -15,6 +18,9 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import control.WorldCreator;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +68,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     public HostedGameSetupService(int channel){
         this.channel = channel;
     }
+    
+    
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
@@ -69,7 +77,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("HostedSetupService requires an RMI service.");
-        }    
+        }   
+        createdWorld(asset, bulletAppState);
     }
     
     @Override
@@ -116,6 +125,19 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         return null;
     }
     */
+    
+    public void createdWorld(AssetManager asset, BulletAppState bulletAppState){
+        Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
+        
+        if (bulletAppState != null) {
+            WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
+        } else {
+            LOGGER.severe("bulletAppState Was null when initializing world");
+        }
+
+        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");        
+        playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
+    }
     
     @Override
     public void notifyEvent(Event event, Class<? extends Event> T) {

@@ -5,6 +5,8 @@
  */
 package network.service.movement.server;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -19,7 +21,7 @@ import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import network.GameServer;
+import network.gameserver.GameServer;
 import network.service.login.Account;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
@@ -41,6 +43,8 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     private List<PlayerMovement> movements = new ArrayList<>();
     
     private Node playersNode;
+    private AssetManager asset;
+    private BulletAppState bulletAppState;
     
     private List<String> updateMovements = new ArrayList<>();
 //    private MovementSession session;
@@ -59,7 +63,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         if( rmiHostedService == null ) {
             throw new RuntimeException("MovementHostedService requires an RMI service.");
         }    
- 
+        
     }
     
     @Override
@@ -125,6 +129,14 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     public void setPlayersNode(Node playersNode){
         LOGGER.log(Level.SEVERE, playersNode.getName());
         this.playersNode = playersNode;
+    }
+    
+    public void setBulletAppState(BulletAppState bullet){
+        this.bulletAppState = bullet;
+    }
+    
+    public void setAssetManager(AssetManager asset){
+        this.asset = asset;
     }
     
     private class MovementSessionImpl implements MovementSession{

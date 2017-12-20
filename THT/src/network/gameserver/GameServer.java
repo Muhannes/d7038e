@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network;
+package network.gameserver;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.GameNetworkHandler;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -27,15 +29,8 @@ public class GameServer extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
-    private final List<PlayerMovement> movements = new ArrayList<>();
-    
-    
-    private HostedMovementService hostedMovementService;
-    
-    private static MovementSession movementSession;
     private GameNetworkHandler gnh;
     
-    private Node playersNode;
     
     @SuppressWarnings("SleepWhileInLoop")
     public static void main(String args[]){
@@ -43,25 +38,34 @@ public class GameServer extends SimpleApplication{
         
         gameServer.start(JmeContext.Type.Headless);
         
-        
     }
-    
     
     @Override
     public void simpleInitApp() {
         // Do intialization here.
-        playersNode = new Node("players");
-        this.rootNode.attachChild(playersNode);
-        
         gnh = new GameNetworkHandler();
         
         gnh.startServer();
         gnh.connectToLobbyServer();
         gnh.connectToLoginServer();
         
-        gnh.getHostedMovementService().setPlayersNode(playersNode);
         
-
+        PlayState playState = new PlayState();
+        playState.setEnabled(false);
+        this.stateManager.attach(playState);
+        SetupState setupState = new SetupState();
+        setupState.setEnabled(false);
+        this.stateManager.attach(setupState);
+        WaitingState waitingState = new WaitingState();
+        waitingState.setEnabled(false);
+        this.stateManager.attach(waitingState);
+        
+        BulletAppState bulletAppState = new BulletAppState();
+        bulletAppState.setDebugEnabled(true);  
+        stateManager.attach(bulletAppState);
+        
+        // Start app at login Screen
+        waitingState.setEnabled(true);
     }
 
     
