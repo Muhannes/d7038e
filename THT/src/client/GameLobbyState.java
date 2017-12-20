@@ -127,27 +127,35 @@ public class GameLobbyState extends BaseAppState implements
 
     @Override
     public void playerJoinedLobby(String name) {
-        gui.addPlayer(name);
+        app.enqueue(() -> {
+            gui.addPlayer(name);
+        });
     }
 
     @Override
     public void playerLeftLobby(String name) { 
-        gui.removePlayer(name);
+        app.enqueue(() -> {
+            gui.removePlayer(name);
+        });
     }
     
     @Override
     public void playerReady(String name, boolean ready) {
-        //TODO: display readyness
-        newMessage(name + " is ready!", GLOBAL_CHAT);
+        app.enqueue(() -> {
+            if(ready){
+                gui.addChatMessage(name + " is ready!");
+            }else{
+                gui.addChatMessage(name + "is not ready");
+            }
+        });
     }
     
     @Override
     public void allReady(String ip, int port) {
-        LOGGER.log(Level.FINE, "Allready. Connectioning to {0}:{1}", new Object[]{ip, port});
-        ((ClientApplication)app).connectToGameServer(ip, port);
-        GameLobbyState gls = this;
+        LOGGER.log(Level.FINE, "Connectioning to game server at {0}:{1}", new Object[]{ip, port});
         app.enqueue(() -> {
-            gls.setEnabled(false);
+            ((ClientApplication)app).connectToGameServer(ip, port);
+            this.setEnabled(false);
             app.getStateManager().getState(SetupState.class).setEnabled(true);
         });
     }
