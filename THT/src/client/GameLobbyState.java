@@ -94,7 +94,9 @@ public class GameLobbyState extends BaseAppState implements
      */
     @Override
     public void newMessage(String message, int chat) {
-        gui.addChatMessage(message);
+        app.enqueue(() -> {
+            gui.addChatMessage(message);
+        });
     }
 
     /**
