@@ -23,6 +23,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import control.WorldCreator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,77 +106,25 @@ public class SetupState extends BaseAppState implements
     private void loadStaticGeometry(){   
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
         world.attachChild(creepyhouse);   
-        
-        Spatial walls = ((Node)creepyhouse).getChild("walls");        
-        ((Node)walls).getChildren().forEach((wall) -> {                    
-            RigidBodyControl b = new RigidBodyControl(
-                   CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
-            
-            b.setKinematic(true); // This for some reason makes the rigid align with the Mesh...
-            
-            wall.addControl(b);  
-            
-            bulletAppState.getPhysicsSpace().add(b);  
-        });
-        
-        Spatial floors = ((Node)creepyhouse).getChild("floor");
-        ((Node)floors).getChildren().forEach((floor) -> {
-            RigidBodyControl b = new RigidBodyControl(0); // 0 Mass = static
-            
-            floor.addControl(b);
-
-            bulletAppState.getPhysicsSpace().add(b);
-        });
-        
-        LOGGER.log(Level.INFO, "Number of walls: {0}, Number of floors: {1}", 
-                new Object[]{((Node)walls).getChildren().size(), ((Node)floors).getChildren().size()});
+        if (bulletAppState != null) {
+            WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
+        } else {
+            LOGGER.severe("bulletAppState Was null when initializing world");
+        }
     }
     
     private void createPlayers(List<Player> listOfPlayers){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         
-        Node players = new Node("players");
+        
+        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        
+        Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, mat);
         
         world.attachChild(players);
         
-        listOfPlayers.forEach(p -> {
-            players.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
-        });
-        
         // Tell server we are ready
         gameSetupService.ready();
-    }
-    
-    private Spatial createPlayer(String name, Vector3f position){
-        LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
-        
-        Box mesh = new Box(0.2f, 0.4f, 0.2f); //Change to model 
-        Geometry player = new Geometry(name, mesh);
-        
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        player.setMaterial(mat);
-        player.setLocalTranslation(new Vector3f(-5.5f,5f, -9.5f));
-        
-        BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
-        float radius = boundingBox.getXExtent();
-        float height = boundingBox.getYExtent();
-        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);                
-        CharacterControl charControl = new CharacterControl(shape, 1.0f); 
-        player.addControl(charControl);
-        
-        if(bulletAppState == null){
-            LOGGER.log(Level.SEVERE, "BulletAppState is null");   
-            
-        }
-        
-        if(bulletAppState.getPhysicsSpace() == null){
-            LOGGER.log(Level.SEVERE, "physicsSpace is null");
-        }
-        
-        bulletAppState.getPhysicsSpace().add(charControl);
-        
-        return player;
     }
     
 }
