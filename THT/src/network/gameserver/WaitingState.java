@@ -31,6 +31,7 @@ public class WaitingState extends BaseAppState implements HandoverSessionListene
     @Override
     protected void onEnable() {
         app.getNetworkHandler().connectToLobbyServer();
+        app.getNetworkHandler().getClientHandoverService().addListener(this);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class WaitingState extends BaseAppState implements HandoverSessionListene
     @Override
     public void startSetup(Map<Integer, String> playerInfo) {
         SetupState ss = app.getStateManager().getState(SetupState.class);
-        //ss.setPlayerInfo(playerInfo);
+        ss.setPlayerInfo(playerInfo);
         this.setEnabled(false);
         app.enqueue(new Runnable() {
             @Override

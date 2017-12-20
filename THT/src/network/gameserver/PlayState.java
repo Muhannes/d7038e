@@ -26,7 +26,7 @@ public class PlayState extends BaseAppState{
 
     @Override
     protected void onEnable() {
-        
+        System.out.println("Playstate enabled!");
     }
 
     @Override

@@ -7,14 +7,7 @@ package network.gameserver;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.CharacterControl;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.system.JmeContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
 import network.service.gamesetup.server.HostedGameSetupService;
@@ -68,16 +61,9 @@ public class GameServer extends SimpleApplication{
     public GameNetworkHandler getNetworkHandler(){
         return gnh;
     }
-
     
     public HostedGameSetupService getHostedGameSetupService(){
         return gnh.getHostedGameSetupService();
     }
     
-    public void ready(){
-        this.enqueue(() -> {
-            this.getStateManager().getState(SetupState.class).setEnabled(false);
-            this.getStateManager().getState(PlayState.class).setEnabled(true);
-        });
-    }
 }

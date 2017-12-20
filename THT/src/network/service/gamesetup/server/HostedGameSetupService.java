@@ -51,12 +51,11 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     private RmiHostedService rmiHostedService;
     private int channel;
-    private static final Random RANDOM = new Random();
     private GameSetupSessionImpl session;
     
     private final List<AllReadyListener> readyListeners = new ArrayList<>();
     private final Map<Integer, String> expectedPlayers = new HashMap<>();
-    private final List<Player> players = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
     private final List<GameSetupSessionImpl> sessions = new ArrayList<>();
     
@@ -87,6 +86,11 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
     }
     
+    public void setInitialized(List<Player> playerInitInfo){
+        players = playerInitInfo;
+        initialized = true;
+    }
+    
     public void addGameSetupSessionListener(GameSetupSessionListener listener){
         listeners.add(listener);
     }
@@ -114,20 +118,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         // Nothing
     }
     
-    /**
-     * When expected players are received, run this.
-     * Creates Player objects for each participant.
-     */
-    private void setupGame(Map<Integer, String> expectedPlayers){
-        Random random = new Random();
-        for (Integer id : expectedPlayers.keySet()) {
-            players.add(new Player(EntityType.Human, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), id));
-        }
-        LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
-        int monsterID = RANDOM.nextInt(players.size());
-        players.get(monsterID).setType(EntityType.Monster);
-        
-    }
+    
     
     public void createWorld(AssetManager assetManager, BulletAppState bulletAppState){
         Spatial creepyhouse = assetManager.loadModel("Scenes/creepyhouse.j3o");
@@ -142,19 +133,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
     }
     
-    /*
-    @Override
-    public void notifyEvent(Event event, Class<? extends Event> T) {
-        if (T == PlayerInfoEvent.class) {
-            PlayerInfoEvent playerInfoEvent = (PlayerInfoEvent) event;
-            setupGame(playerInfoEvent.playerInfo);
-            initialized = true;
-            LOGGER.fine("Game Setup Service is initialized");
-        }
-    }*/
-    
     private GameSetupSessionListener getCallback(HostedConnection connection){
-        LOGGER.log(Level.SEVERE, "hostedConnection " + connection  + "\n rmi " + rmiHostedService.getRmiRegistry(connection));
+        LOGGER.log(Level.INFO, "hostedConnection {0}\n rmi {1}", new Object[]{connection, rmiHostedService.getRmiRegistry(connection)});
         return NetConfig.getCallback(rmiHostedService.
                         getRmiRegistry(connection), GameSetupSessionListener.class);
     }
@@ -187,6 +167,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 if (account.isEqual(globalID, key)) {
                     authenticated = true;
                     connection.setAttribute(ConnectionAttribute.ACCOUNT, account);
+                    LOGGER.log(Level.INFO, "{0} was authenticated.", globalID);
                     break;
                 }
             }
@@ -198,7 +179,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 getCallback(connection).initPlayer(players);
                 joined = true;
             } else {
-                LOGGER.warning("Join failed, was not initialized, authenticated or has already joined!");
+                LOGGER.log(Level.WARNING, "Join failed, was not initialized, authenticated or has already joined!\ninit: {0}", initialized);
             }
         }
 

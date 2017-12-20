@@ -5,6 +5,7 @@
  */
 package network.gameserver;
 
+import api.models.EntityType;
 import api.models.Player;
 import client.GameState;
 import com.jme3.app.Application;
@@ -12,11 +13,15 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.material.Material;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import control.WorldCreator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamesetup.AllReadyListener;
@@ -31,6 +36,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
 
     private static final Logger LOGGER = Logger.getLogger(client.SetupState.class.getName());
     
+    private static final Random RANDOM = new Random();
     private Node world;
     
     private AssetManager asset;
@@ -38,6 +44,8 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private BulletAppState bulletAppState;
     
     private GameServer app;
+    
+    
     
     private Map<Integer, String> playerInfo;
     
@@ -61,10 +69,15 @@ public class SetupState extends BaseAppState implements AllReadyListener{
 
     @Override
     protected void onEnable() {
+        LOGGER.info("SETUP STATE ENABLED");
         hostedGameSetupService = app.getHostedGameSetupService();
         asset = app.getAssetManager();
-
+        hostedGameSetupService.addListener(this);
+        
+        List<Player> playerInits = createPlayerInitInfo(playerInfo);
+        hostedGameSetupService.setInitialized(playerInits);
         loadStaticGeometry();
+        createPlayers(playerInits);
     }
 
     public void setPlayerInfo(Map<Integer, String> playerInfo){
@@ -81,14 +94,6 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         app.enqueue(() -> {
             createPlayers(listOfPlayers);
         });
-    }
-
-    public void startGame() {
-        SetupState ss = this;
-        app.enqueue(() -> {
-            ss.setEnabled(false);
-            app.getStateManager().getState(GameState.class).setEnabled(true);
-        });         
     }
     
     private void loadStaticGeometry(){   
@@ -111,9 +116,35 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         world.attachChild(players);
         
     }
+    
+    /**
+     * When expected players are received, run this.
+     * Creates Player objects for each participant.
+     */
+    private List<Player> createPlayerInitInfo(Map<Integer, String> expectedPlayers){
+        List<Player> players = new ArrayList<>();
+        Random random = new Random();
+        for (Integer id : expectedPlayers.keySet()) {
+            players.add(new Player(EntityType.Human, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), id));
+        }
+        LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
+        int monsterID = RANDOM.nextInt(players.size());
+        players.get(monsterID).setType(EntityType.Monster);
+        return players;
+        
+    }
+
+    public void startGame() {
+        SetupState ss = this;
+        app.enqueue(() -> {
+            ss.setEnabled(false);
+            app.getStateManager().getState(GameState.class).setEnabled(true);
+        });         
+    }
 
     @Override
     public void notifyAllReady() {
+        startGame();
     }
     
     

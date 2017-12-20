@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
-import network.service.login.Account;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
