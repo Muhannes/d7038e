@@ -54,7 +54,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        setAutoHost(false);
+        //setAutoHost(false);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("MovementHostedService requires an RMI service.");
@@ -86,7 +86,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
     }
     
     public void broadcast(List<PlayerMovement> movements){
-        //players.forEach(p -> p.newMessage(movements));
+        players.forEach(p -> p.getCallback().newMessage(movements));
     }
     
     public void sendOutMovements(){
@@ -106,12 +106,13 @@ public class HostedMovementService extends AbstractHostedConnectionService {
                         //Create PlayerMovements
                         //Send out to clients
                         for(String id : updateMovements){
+                            Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                             Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
                             Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
                             //do same for location
-                            PlayerMovement pm = new PlayerMovement(id, direction, rotation);
+                            PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
                             movements.add(pm);
-                        }        
+                        }
                         broadcast(movements);
                         //TODO: Clear movements
                     }                    
@@ -119,6 +120,10 @@ public class HostedMovementService extends AbstractHostedConnectionService {
             }            
         }.run();
         
+    }
+    
+    public void setPlayersNode(Node playersNode){
+        this.playersNode = playersNode;
     }
     
     private class MovementSessionImpl implements MovementSession{
@@ -141,12 +146,12 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
             System.out.println("Receiving playermovement in GameServer");
+            playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
             playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
             playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
             //TODO location
             updateMovements.add(playerMovement.id);        
         }
-
         
     }
 }

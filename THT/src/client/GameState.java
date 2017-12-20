@@ -117,8 +117,8 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         app.stop();
     }
     
-    private void sendToServer(Vector3f location, Quaternion rotation){   
-        PlayerMovement pm = new PlayerMovement(player.getName(), location, rotation);
+    private void sendToServer(Vector3f location, Vector3f direction, Quaternion rotation){   
+        PlayerMovement pm = new PlayerMovement(player.getName(), location, direction, rotation);
         clientMovementService.sendMessage(pm);
     }
     
@@ -138,19 +138,19 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         
         if(human.left){
             walkingDirection.addLocal(camLeft);
-            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+            sendToServer(player.getLocalTranslation(), player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
         }
         if(human.right){
             walkingDirection.addLocal(camLeft.negate());
-            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+            sendToServer(player.getLocalTranslation(), player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
         }
         if(human.forward){
             walkingDirection.addLocal(camDir);
-            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+            sendToServer(player.getLocalTranslation(), player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
         }
         if(human.backward){
             walkingDirection.addLocal(camDir.negate());
-            sendToServer(player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
+            sendToServer(player.getLocalTranslation(), player.getControl(CharacterControl.class).getWalkDirection(), player.getLocalRotation());
         }
         if(player != null){
             walkingDirection.multLocal(human.movementSpeed).multLocal(tpf);
@@ -159,8 +159,8 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     }
 
     public void youAreTrapped(){
-        walkingDirection.multLocal(human.movementSpeed/2);
     }
+    
     @Override
     public void newMessage(List<PlayerMovement> playerMovements) {
         app.enqueue(() -> {
@@ -174,8 +174,10 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         Node players = (Node) root.getChild("players");
         for(PlayerMovement newPlayerInfo : playerMovements){
             Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
+            Vector3f newLocation = newPlayerInfo.location;
             Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
             Quaternion newRotation = newPlayerInfo.rotation;
+            playerNode.setLocalTranslation(newLocation);
             playerNode.setLocalRotation(newRotation);
             playerNode.getControl(CharacterControl.class).setWalkDirection(newDirection);
 

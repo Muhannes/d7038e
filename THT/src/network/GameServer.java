@@ -50,16 +50,19 @@ public class GameServer extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         // Do intialization here.
-        playersNode = (Node) this.rootNode.getChild("players");
+        playersNode = new Node("players");
+        this.rootNode.attachChild(playersNode);
+        
         gnh = new GameNetworkHandler();
         
         gnh.startServer();
         gnh.connectToLobbyServer();
         gnh.connectToLoginServer();
         
+        gnh.getHostedMovementService().setPlayersNode(playersNode);
+        
 
     }
 
-    
     
 }
