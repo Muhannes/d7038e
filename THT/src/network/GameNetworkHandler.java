@@ -95,10 +95,14 @@ public class GameNetworkHandler {
         }
     }
     
-    public synchronized void cleanUp(){
+    public void disconnectFromLobbyServer(){
         if (lobbyClient != null && lobbyClient.isStarted()) {
             lobbyClient.close();
         }
+    }
+    
+    public synchronized void cleanUp(){
+        disconnectFromLobbyServer();
     }
     
    public ClientHandoverService getClientHandoverService(){

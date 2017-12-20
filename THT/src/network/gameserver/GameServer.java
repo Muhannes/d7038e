@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
-import network.service.movement.MovementSession;
-import network.service.movement.MovementSessionListener;
-import network.service.movement.PlayerMovement;
-import network.service.movement.server.HostedMovementService;
 
 /**
  * @author hannes
@@ -46,7 +42,6 @@ public class GameServer extends SimpleApplication{
         gnh = new GameNetworkHandler();
         
         gnh.startServer();
-        gnh.connectToLobbyServer();
         gnh.connectToLoginServer();
         
         
@@ -66,6 +61,10 @@ public class GameServer extends SimpleApplication{
         
         // Start app at login Screen
         waitingState.setEnabled(true);
+    }
+    
+    public GameNetworkHandler getNetworkHandler(){
+        return gnh;
     }
 
     

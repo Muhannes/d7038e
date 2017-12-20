@@ -11,6 +11,8 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
@@ -19,8 +21,9 @@ import utils.eventbus.EventBus;
  *
  * @author hannes
  */
-public class ClientHandoverService extends AbstractClientService {
+public class ClientHandoverService extends AbstractClientService implements HandoverSessionEmitter{
 
+    private final List<HandoverSessionListener> listeners = new ArrayList<>();
     
     private HandoverSession delegate;
     // Handle to a server side object
@@ -59,23 +62,20 @@ public class ClientHandoverService extends AbstractClientService {
         }
         return delegate;
     }
+
+    @Override
+    public void addListener(HandoverSessionListener handoverSessionListener) {
+        listeners.add(handoverSessionListener);
+    }
     
     
     private class GameLobbySessionListenerImpl implements HandoverSessionListener {
 
         @Override
         public void startSetup(Map<Integer, String> playerInfo) {
-            EventBus.publish(new PlayerInfoEvent(playerInfo), PlayerInfoEvent.class);
-            new Thread(new Runnable() { // Is this needed to be run in different thread? weird error if not when tried earlier
-                @Override
-                public void run() {
-                    Client client = getClient();
-                    if (client.isConnected()) {
-                        client.close();
-                    }
-                    
-                }
-            }).start();
+            for (HandoverSessionListener listener : listeners) {
+                listener.startSetup(playerInfo);
+            }
         }
         
     }

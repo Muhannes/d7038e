@@ -7,31 +7,48 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import java.util.Map;
+import network.service.handover.HandoverSessionListener;
 
 /**
  *
  * @author ted
  */
-public class WaitingState extends BaseAppState{
+public class WaitingState extends BaseAppState implements HandoverSessionListener{
 
+    private GameServer app;
+    
     @Override
     protected void initialize(Application app) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.app = (GameServer) app;
     }
 
     @Override
     protected void cleanup(Application app) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: Cleanup!
     }
 
     @Override
     protected void onEnable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        app.getNetworkHandler().connectToLobbyServer();
     }
 
     @Override
     protected void onDisable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        app.getNetworkHandler().disconnectFromLobbyServer();
+    }
+
+    @Override
+    public void startSetup(Map<Integer, String> playerInfo) {
+        SetupState ss = app.getStateManager().getState(SetupState.class);
+        //ss.setPlayerInfo(playerInfo);
+        this.setEnabled(false);
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                ss.setEnabled(true);
+            }
+        });
     }
     
 }

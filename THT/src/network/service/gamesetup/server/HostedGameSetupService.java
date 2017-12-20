@@ -78,7 +78,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         if( rmiHostedService == null ) {
             throw new RuntimeException("HostedSetupService requires an RMI service.");
         }   
-        createdWorld(asset, bulletAppState);
+        //createdWorld(asset, bulletAppState);
     }
     
     @Override
@@ -135,8 +135,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             LOGGER.severe("bulletAppState Was null when initializing world");
         }
 
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");        
-        playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
+        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");        
+        //playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
     }
     
     @Override
