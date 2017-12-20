@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
+import network.service.gamesetup.server.HostedGameSetupService;
 
 /**
  * @author hannes
@@ -61,6 +62,7 @@ public class GameServer extends SimpleApplication{
         
         // Start app at login Screen
         waitingState.setEnabled(true);
+        
     }
     
     public GameNetworkHandler getNetworkHandler(){
@@ -68,4 +70,14 @@ public class GameServer extends SimpleApplication{
     }
 
     
+    public HostedGameSetupService getHostedGameSetupService(){
+        return gnh.getHostedGameSetupService();
+    }
+    
+    public void ready(){
+        this.enqueue(() -> {
+            this.getStateManager().getState(SetupState.class).setEnabled(false);
+            this.getStateManager().getState(PlayState.class).setEnabled(true);
+        });
+    }
 }
