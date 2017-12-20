@@ -164,6 +164,10 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         }
         return false;
     }
+    
+    private void notifyPlayerTrapped(int playerID, TrapType trapType){
+        
+    }
 
     
     private class GameStatsSessionImpl implements GameStatsSession {
