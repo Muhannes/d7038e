@@ -55,6 +55,8 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         world = new Node("world");
         this.app.getRootNode().attachChild(world);
+        bulletAppState = app.getStateManager().getState(BulletAppState.class);
+        
     }
 
     @Override
@@ -74,11 +76,6 @@ public class SetupState extends BaseAppState implements
         
         Account acc = ClientLoginService.getAccount();
         gameSetupService.join(acc.id, acc.key, acc.name);
-            
-        //Bullet physics for players, walls, objects
-        bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);  
-        app.getStateManager().attach(bulletAppState);
         
         loadStaticGeometry();       
     }
@@ -90,18 +87,10 @@ public class SetupState extends BaseAppState implements
 
     @Override
     public void initPlayer(List<Player> listOfPlayers) {
-        LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         
-        Node players = new Node("players");
-        
-        world.attachChild(players);
-        
-        listOfPlayers.forEach(p -> {
-            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition()));
+        app.enqueue(() -> {
+            createPlayers(listOfPlayers);
         });
-        
-        // Tell server we are ready
-        gameSetupService.ready();
     }
 
     @Override
@@ -140,6 +129,21 @@ public class SetupState extends BaseAppState implements
         
         LOGGER.log(Level.INFO, "Number of walls: {0}, Number of floors: {1}", 
                 new Object[]{((Node)walls).getChildren().size(), ((Node)floors).getChildren().size()});
+    }
+    
+    private void createPlayers(List<Player> listOfPlayers){
+        LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
+        
+        Node players = new Node("players");
+        
+        world.attachChild(players);
+        
+        listOfPlayers.forEach(p -> {
+            players.attachChild(createPlayer("player#"+Integer.toString(p.getID()), p.getPosition()));
+        });
+        
+        // Tell server we are ready
+        gameSetupService.ready();
     }
     
     private Spatial createPlayer(String name, Vector3f position){
