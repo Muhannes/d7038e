@@ -191,7 +191,6 @@ public class GameLobbyState extends BaseAppState implements
         if (chatService != null) {
             chatService.sendMessage(message, roomID);
         }
-        
     }
 
     @Override
