@@ -96,11 +96,14 @@ public class LobbyState extends BaseAppState implements
     public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
         LOGGER.log(Level.INFO, "Lobby room udpated. Name: {0}, id: {1}, Players: {2}, "
                 + "Max-players: {3}", new Object[]{lobbyName, roomID, numPlayers, maxPlayers});
-        if(rooms.containsKey(lobbyName)){
-            return;
-        }
-        rooms.put(lobbyName, roomID);
-        gui.addLobbyRoom(lobbyName);
+        app.enqueue(() -> {
+            if(rooms.containsKey(lobbyName)){
+                return;
+            }
+            rooms.put(lobbyName, roomID);
+            gui.addLobbyRoom(lobbyName);
+        });
+        
     }
 
     @Override
