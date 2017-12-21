@@ -117,7 +117,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         app.stop();
     }
     
-    private void sendToServer(Vector3f location, Vector3f direction, Vector3f rotation){   
+    private void sendToServer(Vector3f location, Vector3f direction, Quaternion rotation){         
         PlayerMovement pm = new PlayerMovement(player.getName(), location, direction, rotation);
         clientMovementService.sendMessage(pm);
     }
@@ -138,27 +138,48 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         
         if(human.left){
             walkingDirection.addLocal(camLeft);
+
+            Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
+
+            player.rotate(rotation.x, rotation.y, rotation.z);
+
             sendToServer(player.getLocalTranslation(), 
-                    player.getControl(CharacterControl.class).getWalkDirection(), 
-                    player.getControl(CharacterControl.class).getViewDirection());
+                    player.getControl(CharacterControl.class).getWalkDirection(),
+                    player.getLocalRotation());
+                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(human.right){
             walkingDirection.addLocal(camLeft.negate());
+
+            Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
+            player.rotate(rotation.x, rotation.y, rotation.z);
+
             sendToServer(player.getLocalTranslation(), 
-                    player.getControl(CharacterControl.class).getWalkDirection(), 
-                    player.getControl(CharacterControl.class).getViewDirection());
+                    player.getControl(CharacterControl.class).getWalkDirection(),
+                    player.getLocalRotation());
+                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(human.forward){
             walkingDirection.addLocal(camDir);
+
+            Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
+            player.rotate(rotation.x, rotation.y, rotation.z);
+
             sendToServer(player.getLocalTranslation(), 
-                    player.getControl(CharacterControl.class).getWalkDirection(), 
-                    player.getControl(CharacterControl.class).getViewDirection());
+                    player.getControl(CharacterControl.class).getWalkDirection(),
+                    player.getLocalRotation());
+                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(human.backward){
             walkingDirection.addLocal(camDir.negate());
+
+            Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
+            player.rotate(rotation.x, rotation.y, rotation.z);
+
             sendToServer(player.getLocalTranslation(), 
-                    player.getControl(CharacterControl.class).getWalkDirection(), 
-                    player.getControl(CharacterControl.class).getViewDirection());
+                    player.getControl(CharacterControl.class).getWalkDirection(),
+                    player.getLocalRotation());
+                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(player != null){
             walkingDirection.multLocal(human.movementSpeed).multLocal(tpf);
@@ -184,11 +205,10 @@ public class GameState extends BaseAppState implements MovementSessionListener{
             Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
             Vector3f newLocation = newPlayerInfo.location;
             Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
-            Vector3f newRotation = newPlayerInfo.rotation;
-            //Quaternion newRotation = newPlayerInfo.rotation;
+            Quaternion newRotation = newPlayerInfo.rotation;
             
             playerNode.setLocalTranslation(newLocation);
-            //playerNode.setLocalRotation(newRotation);
+            playerNode.setLocalRotation(newRotation);
             playerNode.getControl(CharacterControl.class).setViewDirection(newLocation);
             playerNode.getControl(CharacterControl.class).setWalkDirection(newDirection);
 

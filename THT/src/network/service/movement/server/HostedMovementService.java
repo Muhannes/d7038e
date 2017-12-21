@@ -8,6 +8,7 @@ package network.service.movement.server;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -125,8 +126,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                         for(String id : updatedPlayers){
                             Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                             Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
-                            Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
-                            //Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
+                            Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
                             
                             //do same for location
                             PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);

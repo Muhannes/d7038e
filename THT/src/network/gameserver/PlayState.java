@@ -54,7 +54,6 @@ public class PlayState extends BaseAppState implements MovementSession{
 
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
-        System.out.println("Receiving playermovement in GameServer");
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
         }else {
@@ -63,8 +62,7 @@ public class PlayState extends BaseAppState implements MovementSession{
                 public void run() {
                     playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
                     playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-                    //playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-                    playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
+                    playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }
             });
