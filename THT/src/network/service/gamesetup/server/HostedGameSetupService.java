@@ -140,8 +140,8 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 */    
     private GameSetupSessionListener getCallback(HostedConnection connection){
         LOGGER.log(Level.INFO, "hostedConnection {0}\n rmi {1}", new Object[]{connection, rmiHostedService.getRmiRegistry(connection)});
-        return NetConfig.getCallback(rmiHostedService.
-                        getRmiRegistry(connection), GameSetupSessionListener.class);
+        return NetConfig.getCallback(rmiHostedService.getRmiRegistry(connection),
+                GameSetupSessionListener.class);
     }
     
     private void postAllReady(){

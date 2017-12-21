@@ -8,7 +8,6 @@ package network.service.movement.server;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.movement.MovementSession;
+import network.service.movement.MovementSessionEmitter;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
 import network.util.NetConfig;
@@ -31,21 +31,23 @@ import network.util.NetConfig;
  *
  * @author ted
  */
-public class HostedMovementService extends AbstractHostedConnectionService {
+public class HostedMovementService extends AbstractHostedConnectionService implements MovementSessionEmitter {
     
     private static final Logger LOGGER = Logger.getLogger(HostedMovementService.class);
 
     private static final String MOVEMENT = "MOVEMENT";
     
+    
+    private final List<MovementSession> movementListeners = new ArrayList<>();
+    
     private RmiHostedService rmiHostedService;
     private List<MovementSessionImpl> players = new ArrayList<>();
     private List<PlayerMovement> movements = new ArrayList<>();
     
-    private Node playersNode;
     private AssetManager asset;
     private BulletAppState bulletAppState;
     
-    private List<String> updateMovements = new ArrayList<>();
+    private List<String> updatedPlayers = new ArrayList<>();
 //    private MovementSession session;
     private int channel;
     private int playerId;
@@ -61,8 +63,13 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("MovementHostedService requires an RMI service.");
-        }    
-        
+        }
+    }
+    
+    public void playerUpdated(String id){
+        if (!updatedPlayers.contains(id)) {
+            updatedPlayers.add(id);
+        }
     }
     
     @Override
@@ -88,11 +95,18 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
     }
     
+    
+    
+    /**
+     * Sends out updates to all players
+     * TODO: Filter based on location, i.e. only send to those that need the info
+     * @param movements 
+     */
     public void broadcast(List<PlayerMovement> movements){
         players.forEach(p -> p.getCallback().newMessage(movements));
     }
     
-    public void sendOutMovements(){
+    public void sendOutMovements(Node playersNode){
         //Send out movements everything 10ms 
         LOGGER.log(Level.INFO, "Sending out to clients");                    
         
@@ -108,7 +122,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
                         //Fetch info from tree (only for the id)
                         //Create PlayerMovements
                         //Send out to clients
-                        for(String id : updateMovements){
+                        for(String id : updatedPlayers){
                             Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                             Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
                             Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
@@ -126,6 +140,16 @@ public class HostedMovementService extends AbstractHostedConnectionService {
             }            
         }.run();
         
+    }
+
+    @Override
+    public void addListener(MovementSession movementSession) {
+        movementListeners.add(movementSession);
+    }
+
+    @Override
+    public void removeListener(MovementSession movementSession) {
+        movementListeners.remove(movementSession);
     }
     
     private class MovementSessionImpl implements MovementSession{
@@ -147,13 +171,7 @@ public class HostedMovementService extends AbstractHostedConnectionService {
 
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
-            System.out.println("Receiving playermovement in GameServer");
-
-            playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
-            playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-            //playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-            playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
-            updateMovements.add(playerMovement.id);        
+            movementListeners.forEach(l -> l.sendMessage(playerMovement));
         }
         
     }

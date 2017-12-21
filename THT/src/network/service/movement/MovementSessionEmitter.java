@@ -9,6 +9,7 @@ package network.service.movement;
  *
  * @author ted
  */
-public class MovementSessionEmitter {
-    
+public interface MovementSessionEmitter {
+    void addListener(MovementSession movementSession);
+    void removeListener(MovementSession movementSession);
 }
