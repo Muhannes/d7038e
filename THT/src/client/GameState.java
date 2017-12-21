@@ -94,6 +94,7 @@ public class GameState extends BaseAppState {
         }
         
         chaseCamera = new ChaseCamera(camera, player, input);
+        chaseCamera.setMaxDistance(15);
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
