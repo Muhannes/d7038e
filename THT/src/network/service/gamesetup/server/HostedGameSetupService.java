@@ -52,20 +52,19 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     private RmiHostedService rmiHostedService;
     private int channel;
     private GameSetupSessionImpl session;
+    private boolean initialized = false;    
+    private Node playersNode;
+//    private BulletAppState bulletAppState;
+//    private AssetManager assetManager;
     
     private final List<AllReadyListener> readyListeners = new ArrayList<>();
     private final Map<Integer, String> expectedPlayers = new HashMap<>();
     private List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
-    private final List<GameSetupSessionImpl> sessions = new ArrayList<>();
-    
-    private boolean initialized = false;
-    private List<GameSetupSessionListener> listeners = new ArrayList<>();
-    
+    private final List<GameSetupSessionImpl> sessions = new ArrayList<>();    
+    private final List<GameSetupSessionListener> listeners = new ArrayList<>();
     private final List<Vector3f> positions = new ArrayList<>();
-    
-    private Node playersNode;
-    
+
     public HostedGameSetupService(){
         this(MessageConnection.CHANNEL_DEFAULT_RELIABLE);
     }
@@ -74,15 +73,14 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         this.channel = channel;
     }
     
-
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("HostedSetupService requires an RMI service.");
-        }   
-
-        //createWorld(asset, bulletAppState);
+        }
+        
+//        createWorld(assetManager, bulletAppState);
         
     }
     
@@ -90,7 +88,16 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         players = playerInitInfo;
         initialized = true;
     }
+
+/*    
+    public void setAssetManager(AssetManager assetManager){
+        this.assetManager = assetManager;
+    }
     
+    public void setBulletAppState(BulletAppState bulletAppState){
+        this.bulletAppState = bulletAppState;
+    }
+*/    
     public void addGameSetupSessionListener(GameSetupSessionListener listener){
         listeners.add(listener);
     }
@@ -118,9 +125,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         // Nothing
     }
     
-    
-    
-    public void createWorld(AssetManager assetManager, BulletAppState bulletAppState){
+/*    public void createWorld(AssetManager assetManager, BulletAppState bulletAppState){
         Spatial creepyhouse = assetManager.loadModel("Scenes/creepyhouse.j3o");
         
         if (bulletAppState != null) {
@@ -132,7 +137,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
         playersNode = WorldCreator.createPlayers(players, bulletAppState, mat);
     }
-    
+*/    
     private GameSetupSessionListener getCallback(HostedConnection connection){
         LOGGER.log(Level.INFO, "hostedConnection {0}\n rmi {1}", new Object[]{connection, rmiHostedService.getRmiRegistry(connection)});
         return NetConfig.getCallback(rmiHostedService.
@@ -141,13 +146,12 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     private void postAllReady(){
         readyListeners.forEach(l -> l.notifyAllReady());
-        sessions.forEach(s -> getCallback(s.connection).startGame());
-        
+        sessions.forEach(s -> getCallback(s.connection).startGame());    
     }
 
     @Override
     public void addListener(AllReadyListener listener) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        readyListeners.add(listener);
     }
     
     private class GameSetupSessionImpl implements GameSetupSession {

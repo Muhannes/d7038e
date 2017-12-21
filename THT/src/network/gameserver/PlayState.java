@@ -14,8 +14,11 @@ import com.jme3.app.state.BaseAppState;
  */
 public class PlayState extends BaseAppState{
 
+    private GameServer app;
+
     @Override
     protected void initialize(Application app) {
+        this.app = (GameServer) app;
         
     }
 

@@ -19,12 +19,13 @@ public class PlayerMovement {
     public String id;
     public Vector3f location;
     public Vector3f direction;
-    public Quaternion rotation;
+    public Vector3f rotation;
+    //public Quaternion rotation;
     
     public PlayerMovement(){
     }
     
-    public PlayerMovement(String id, Vector3f location, Vector3f direction, Quaternion rotation){
+    public PlayerMovement(String id, Vector3f location, Vector3f direction, Vector3f rotation){
         this.id = id;
         this.location = location;
         this.direction = direction;

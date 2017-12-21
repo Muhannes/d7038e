@@ -69,7 +69,7 @@ public class ClientMovementService extends AbstractClientService implements Move
         System.out.println("New movement for id : " + playerMovement.id + "\n Direction :" + playerMovement.direction + "\nLocation:" + playerMovement.location + "\nRotation :" + playerMovement.rotation);
         getDelegate().sendMessage(playerMovement);
     }
-
+    
     private class MovementSessionCallback implements MovementSessionListener{
 
         @Override

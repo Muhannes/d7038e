@@ -19,7 +19,7 @@ public class GameServer extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
-    private GameNetworkHandler gnh;
+    public GameNetworkHandler gnh;
     
     
     @SuppressWarnings("SleepWhileInLoop")
@@ -39,15 +39,17 @@ public class GameServer extends SimpleApplication{
         gnh.connectToLoginServer();
         
         
-        PlayState playState = new PlayState();
-        playState.setEnabled(false);
-        this.stateManager.attach(playState);
-        SetupState setupState = new SetupState();
-        setupState.setEnabled(false);
-        this.stateManager.attach(setupState);
         WaitingState waitingState = new WaitingState();
         waitingState.setEnabled(false);
         this.stateManager.attach(waitingState);
+
+        SetupState setupState = new SetupState();
+        setupState.setEnabled(false);
+        this.stateManager.attach(setupState);
+
+        PlayState playState = new PlayState();
+        playState.setEnabled(false);
+        this.stateManager.attach(playState);
         
         BulletAppState bulletAppState = new BulletAppState();
         bulletAppState.setDebugEnabled(true);  

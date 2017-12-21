@@ -7,7 +7,6 @@ package network.gameserver;
 
 import api.models.EntityType;
 import api.models.Player;
-import client.GameState;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
@@ -25,8 +24,9 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamesetup.AllReadyListener;
-import network.service.gamesetup.GameSetupSession;
+import network.service.gamesetup.GameSetupSessionListener;
 import network.service.gamesetup.server.HostedGameSetupService;
+import network.service.movement.server.HostedMovementService;
 
 /**
  *
@@ -37,24 +37,20 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private static final Logger LOGGER = Logger.getLogger(client.SetupState.class.getName());
     
     private static final Random RANDOM = new Random();
-    private Node world;
-    
+
+    private Node world;    
     private AssetManager asset;
-    
     private BulletAppState bulletAppState;
-    
     private GameServer app;
-    
-    
-    
     private Map<Integer, String> playerInfo;
-    
     private HostedGameSetupService hostedGameSetupService;
+    private HostedMovementService hostedMovementService;
     
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;  
         world = new Node("world");
+        LOGGER.log(Level.INFO, "world node : " + world);
         this.app.getRootNode().attachChild(world);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
@@ -76,6 +72,8 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         
         List<Player> playerInits = createPlayerInitInfo(playerInfo);
         hostedGameSetupService.setInitialized(playerInits);
+//        hostedGameSetupService.setAssetManager(asset);
+//        hostedGameSetupService.setBulletAppState(bulletAppState);
         loadStaticGeometry();
         createPlayers(playerInits);
     }
@@ -113,8 +111,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         
         Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, mat);
         
-        world.attachChild(players);
-        
+        world.attachChild(players);        
     }
     
     /**
@@ -138,7 +135,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         SetupState ss = this;
         app.enqueue(() -> {
             ss.setEnabled(false);
-            app.getStateManager().getState(GameState.class).setEnabled(true);
+            app.getStateManager().getState(PlayState.class).setEnabled(true);
         });         
     }
 
@@ -146,6 +143,5 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     public void notifyAllReady() {
         startGame();
     }
-    
     
 }

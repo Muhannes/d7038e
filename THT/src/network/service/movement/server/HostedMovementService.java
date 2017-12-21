@@ -105,37 +105,27 @@ public class HostedMovementService extends AbstractHostedConnectionService {
                     } catch (InterruptedException ex) {
                         java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                     } finally {
-                        //TODO: Fetch info from tree (only for the id)
+                        //Fetch info from tree (only for the id)
                         //Create PlayerMovements
                         //Send out to clients
                         for(String id : updateMovements){
                             Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                             Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
-                            Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
+                            Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
+                            //Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
+                            
                             //do same for location
                             PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
                             movements.add(pm);
                         }
                         broadcast(movements);
-                        //TODO: Clear movements
+                        //Clear movements
+                        movements.clear();
                     }                    
                 }
             }            
         }.run();
         
-    }
-    
-    public void setPlayersNode(Node playersNode){
-        LOGGER.log(Level.SEVERE, playersNode.getName());
-        this.playersNode = playersNode;
-    }
-    
-    public void setBulletAppState(BulletAppState bullet){
-        this.bulletAppState = bullet;
-    }
-    
-    public void setAssetManager(AssetManager asset){
-        this.asset = asset;
     }
     
     private class MovementSessionImpl implements MovementSession{
@@ -158,10 +148,11 @@ public class HostedMovementService extends AbstractHostedConnectionService {
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
             System.out.println("Receiving playermovement in GameServer");
+
             playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
             playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-            playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-            //TODO location
+            //playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
+            playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
             updateMovements.add(playerMovement.id);        
         }
         

@@ -31,7 +31,6 @@ public class NetConfig {
     public static String LOGIN_SERVER_NAME = "localhost";
     public static int LOGIN_SERVER_PORT = 8002;
     
-    
     public static String CHAT_SERVER_NAME = "localhost";
     public static int CHAT_SERVER_PORT = 8003;
     
@@ -54,7 +53,7 @@ public class NetConfig {
         while (delegate == null){
             networkDelay(50);
             delegate = rmi.getRemoteObject(type); 
-            if (counter > 10) {
+            if (counter > 30) { //default 10
                 throw new RuntimeException("Unable to locate delegate for " + type.getName());
             }
             counter++;
@@ -66,9 +65,9 @@ public class NetConfig {
         T callback = rmi.getRemoteObject(type);
         int counter = 0;
         while (callback == null){
-            networkDelay(100);
+            networkDelay(50);
             callback = rmi.getRemoteObject(type); 
-            if (counter > 10) {
+            if (counter > 30) {
                 throw new RuntimeException("Unable to locate callback for " + type.getName());
             }
             counter++;
