@@ -139,48 +139,39 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         
         if(human.left){
             walkingDirection.addLocal(camLeft);
-
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
-
-            player.rotate(rotation.x, rotation.y, rotation.z);
+            player.rotate(rotation.x, 0.0f, rotation.z);
 
             sendToServer(player.getLocalTranslation(), 
                     player.getControl(CharacterControl.class).getWalkDirection(),
                     player.getLocalRotation());
-                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(human.right){
             walkingDirection.addLocal(camLeft.negate());
-
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
-            player.rotate(rotation.x, rotation.y, rotation.z);
+            player.rotate(rotation.x, 0.0f, rotation.z);
 
             sendToServer(player.getLocalTranslation(), 
                     player.getControl(CharacterControl.class).getWalkDirection(),
                     player.getLocalRotation());
-                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(human.forward){
             walkingDirection.addLocal(camDir);
-
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
-            player.rotate(rotation.x, rotation.y, rotation.z);
+            player.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
 
             sendToServer(player.getLocalTranslation(), 
                     player.getControl(CharacterControl.class).getWalkDirection(),
-                    player.getLocalRotation());
-                    //player.getControl(CharacterControl.class).getViewDirection());
+                    player.getLocalRotation()); 
         }
         if(human.backward){
             walkingDirection.addLocal(camDir.negate());
-
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
-            player.rotate(rotation.x, rotation.y, rotation.z);
+            player.rotate(rotation.x, 0.0f, rotation.z);
 
             sendToServer(player.getLocalTranslation(), 
                     player.getControl(CharacterControl.class).getWalkDirection(),
                     player.getLocalRotation());
-                    //player.getControl(CharacterControl.class).getViewDirection());
         }
         if(player != null){
             walkingDirection.multLocal(human.movementSpeed).multLocal(tpf);

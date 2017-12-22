@@ -8,6 +8,7 @@ package network.service.movement;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.serializing.Serializable;
+import com.jme3.scene.Geometry;
 
 /**
  *
@@ -30,4 +31,5 @@ public class PlayerMovement {
         this.direction = direction;
         this.rotation = rotation;
     }
+   
 }

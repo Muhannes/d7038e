@@ -47,7 +47,7 @@ public class WorldCreator {
     public static Spatial createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Material material){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        Box mesh = new Box(0.2f, 0.4f, 0.1f); //Change to model 
+        Box mesh = new Box(0.2f, 0.4f, 0.4f); //Change to model 
         Geometry player = new Geometry(name, mesh);
         
         material.setColor("Color", ColorRGBA.Blue);
