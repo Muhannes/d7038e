@@ -179,9 +179,14 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
             if (initialized && !joined && authenticated) {
                 LOGGER.info("Join received by id: " + globalID);
                 this.globalID = globalID;
-                // TODO: Add security to make sure no one takes another ones id!
-                getCallback(connection).initPlayer(players);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getCallback(connection).initPlayer(players);
+                    }
+                }).start();
                 joined = true;
+                LOGGER.info("Player info sent to id: " + globalID);
             } else {
                 LOGGER.log(Level.WARNING, "Join failed, was not initialized, authenticated or has already joined!\ninit: {0}", initialized);
             }

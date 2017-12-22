@@ -8,6 +8,7 @@ package control;
 import api.models.Player;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -47,7 +48,7 @@ public class WorldCreator {
     public static Spatial createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Material material){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        Box mesh = new Box(0.2f, 0.4f, 0.4f); //Change to model 
+        Box mesh = new Box(0.2f, 0.4f, 0.2f); //Change to model 
         Geometry player = new Geometry(name, mesh);
         
         material.setColor("Color", ColorRGBA.Blue);
@@ -57,8 +58,11 @@ public class WorldCreator {
         BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
-        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);                
-        CharacterControl charControl = new CharacterControl(shape, 1.0f); 
+        float width = boundingBox.getZExtent();
+        BoxCollisionShape boxShape = new BoxCollisionShape(new Vector3f(radius, height, width));
+        CharacterControl charControl = new CharacterControl(boxShape, 1.0f);
+//        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);                
+//        CharacterControl charControl = new CharacterControl(shape, 1.0f); 
         player.addControl(charControl);
         
         if(bulletAppState == null){

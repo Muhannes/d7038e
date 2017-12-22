@@ -43,6 +43,8 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private Nifty nifty;
     private ClientMovementService clientMovementService;
     
+    private MovementSessionListener listener;
+    
     private Node root;
     private AssetManager asset;
     private InputManager input;
@@ -61,7 +63,6 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     
     @Override
     protected void initialize(Application app) {
-        
         
         this.app = (ClientApplication) app;
         
@@ -84,12 +85,14 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     }
 
     @Override
-    protected void onEnable() {        
+    protected void onEnable() {     
+        listener = this;
         this.root = app.getRootNode();
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
         this.clientMovementService = app.getClientMovementService();
+        this.clientMovementService.addListener(listener);
         
         Node playerNode = (Node) root.getChild("players");
         player = playerNode.getChild(""+ClientLoginService.getAccount().id);
@@ -136,8 +139,14 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         camLeft.normalizeLocal();
         
         walkingDirection.set(0,0,0);
-        
+                        
         if(human.left){
+
+        }
+        if(human.right){
+            
+        }        
+        if(human.strafeLeft){
             walkingDirection.addLocal(camLeft);
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z);
@@ -146,7 +155,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                     player.getControl(CharacterControl.class).getWalkDirection(),
                     player.getLocalRotation());
         }
-        if(human.right){
+        if(human.strafeRight){
             walkingDirection.addLocal(camLeft.negate());
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z);
@@ -184,6 +193,9 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     
     @Override
     public void newMessage(List<PlayerMovement> playerMovements) {
+        
+        System.out.println("Got new movement update from server");
+        
         app.enqueue(() -> {
             convergePlayers(playerMovements);
         });

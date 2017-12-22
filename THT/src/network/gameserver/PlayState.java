@@ -44,7 +44,7 @@ public class PlayState extends BaseAppState implements MovementSession{
             LOGGER.severe("playersNode was null");
         }
         hostedMovementService.addListener(this);
-        
+        hostedMovementService.sendOutMovements(playersNode);
     }
 
     @Override
@@ -54,6 +54,9 @@ public class PlayState extends BaseAppState implements MovementSession{
 
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
+        
+        System.out.println("Got new playerMovement in playState"); 
+        
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
         }else {

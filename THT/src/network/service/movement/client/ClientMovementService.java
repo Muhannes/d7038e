@@ -66,14 +66,18 @@ public class ClientMovementService extends AbstractClientService implements Move
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
         LOGGER.log(Level.INFO, "Sending playerMovement message");
-        System.out.println("New movement for id : " + playerMovement.id + "\n Direction :" + playerMovement.direction + "\nLocation:" + playerMovement.location + "\nRotation :" + playerMovement.rotation);
         getDelegate().sendMessage(playerMovement);
+    }
+    
+    public void addListener(MovementSessionListener newListener){
+        listeners.add(newListener);
     }
     
     private class MovementSessionCallback implements MovementSessionListener{
 
         @Override
         public void newMessage(List<PlayerMovement> playerMovements) { //Are these all the new movements that server broadcasted out?
+            LOGGER.info("Movements received from server.\nSize of listeners : " + listeners.size());
             listeners.forEach(l -> l.newMessage(playerMovements)); 
         }
 

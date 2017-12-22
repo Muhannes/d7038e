@@ -27,7 +27,7 @@ public class Human extends AbstractController implements ActionListener{
 
     private Jump jump;
     
-    public Boolean forward = false, backward = false, left = false, right = false;
+    public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     
     private final CharacterControl charController;
     private final Spatial self;
@@ -77,6 +77,20 @@ public class Human extends AbstractController implements ActionListener{
                 right = false;
             }
         }
+        if(name.equals("strafeLeft")){
+            if(isPressed){
+                strafeLeft = true;
+            }else{
+                strafeLeft = false;
+            }
+        }
+        if(name.equals("strafeRight")){
+            if(isPressed){
+                strafeRight = true;
+            }else{
+                strafeRight = false;
+            }
+        }
         if(name.equals("trap")){
             if(isPressed){
                 createTrap();
@@ -97,14 +111,16 @@ public class Human extends AbstractController implements ActionListener{
     
     @Override
     public void initKeys(InputManager manager) {
-        manager.addMapping("left", new KeyTrigger(KeyInput.KEY_A));
+        manager.addMapping("left", new KeyTrigger(KeyInput.KEY_Q));
         manager.addMapping("forward", new KeyTrigger(KeyInput.KEY_W));
         manager.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
-        manager.addMapping("right", new KeyTrigger(KeyInput.KEY_D));
+        manager.addMapping("right", new KeyTrigger(KeyInput.KEY_E));
+        manager.addMapping("strafeLeft", new KeyTrigger(KeyInput.KEY_A));
+        manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_D));        
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
         manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
-        manager.addListener(this, "left", "right", "forward", "backward", "jump", "trap");
+        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
     }
     
 }

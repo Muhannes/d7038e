@@ -72,8 +72,6 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         
         List<Player> playerInits = createPlayerInitInfo(playerInfo);
         hostedGameSetupService.setInitialized(playerInits);
-//        hostedGameSetupService.setAssetManager(asset);
-//        hostedGameSetupService.setBulletAppState(bulletAppState);
         loadStaticGeometry();
         createPlayers(playerInits);
     }
@@ -84,7 +82,6 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     
     @Override
     protected void onDisable() {
-//        hostedGameSetupService.removeGameSetupSessionListener(this);
     }
 
     public void initPlayer(List<Player> listOfPlayers) {
