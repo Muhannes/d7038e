@@ -109,36 +109,41 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     public void sendOutMovements(Node playersNode){
         //Send out movements everything 10ms 
         LOGGER.log(Level.INFO, "Sending out to clients");                    
-        
-        new Runnable(){
-            @Override
-            public void run() {
-                while(true){
-                    try {                    
-                        Thread.sleep(100);                    
-                    } catch (InterruptedException ex) {
-                        java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                    } finally {
-                        //Fetch info from tree (only for the id)
-                        //Create PlayerMovements
-                        //Send out to clients
-                        for(String id : updatedPlayers){
-                            Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
-                            Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
-                            Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
-                            //Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
-                            
-                            //do same for location
-                            PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
-                            movements.add(pm);
-                        }
-                        broadcast(movements);
-                        //Clear movements
-                        movements.clear();
-                    }                    
-                }
-            }            
-        }.run();
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    while(true){
+                        try {                    
+                            Thread.sleep(100);                    
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {
+                            //Fetch info from tree (only for the id)
+                            //Create PlayerMovements
+                            //Send out to clients
+                            for(String id : updatedPlayers){
+                                LOGGER.info("Sending movement regarding id: " + id);
+                                Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
+                                Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
+                                Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
+                                //Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
+
+                                //do same for location
+                                PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
+                                movements.add(pm);
+                            }
+                            if (!movements.isEmpty()) {
+                                broadcast(movements);
+                                //Clear movements
+                                movements.clear();
+                                updatedPlayers.clear();
+                            }
+                        }                    
+                    }
+                }            
+            }
+        ).start();
         
     }
 

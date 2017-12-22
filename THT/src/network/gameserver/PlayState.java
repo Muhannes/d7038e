@@ -44,7 +44,7 @@ public class PlayState extends BaseAppState implements MovementSession{
             LOGGER.severe("playersNode was null");
         }
         hostedMovementService.addListener(this);
-        
+        hostedMovementService.sendOutMovements(playersNode);
     }
 
     @Override

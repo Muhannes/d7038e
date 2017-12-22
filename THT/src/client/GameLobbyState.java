@@ -152,9 +152,9 @@ public class GameLobbyState extends BaseAppState implements
     
     @Override
     public void allReady(String ip, int port) {
-        LOGGER.log(Level.FINE, "Connectioning to game server at {0}:{1}", new Object[]{ip, port});
+        LOGGER.log(Level.FINE, "Connecting to game server at {0}:{1}", new Object[]{ip, port});
+        ((ClientApplication)app).connectToGameServer(ip, port);
         app.enqueue(() -> {
-            ((ClientApplication)app).connectToGameServer(ip, port);
             this.setEnabled(false);
             app.getStateManager().getState(SetupState.class).setEnabled(true);
         });

@@ -76,6 +76,7 @@ public class SetupState extends BaseAppState implements
         gameSetupService.addGameSetupSessionListener(this);
         
         Account acc = ClientLoginService.getAccount();
+        LOGGER.info("Sending join to server...");
         gameSetupService.join(acc.id, acc.key, acc.name);
         
         loadStaticGeometry();       

@@ -74,6 +74,7 @@ public class ClientMovementService extends AbstractClientService implements Move
 
         @Override
         public void newMessage(List<PlayerMovement> playerMovements) { //Are these all the new movements that server broadcasted out?
+            LOGGER.info("Movements received from server.");
             listeners.forEach(l -> l.newMessage(playerMovements)); 
         }
 
