@@ -28,7 +28,7 @@ public class Human extends AbstractController implements ActionListener{
     private Jump jump;
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
-    
+    public Boolean stopped = true;
     private final CharacterControl charController;
     private final Spatial self;
     private final AssetManager asset;
@@ -90,7 +90,13 @@ public class Human extends AbstractController implements ActionListener{
             }else{
                 strafeRight = false;
             }
+        } 
+        if(!forward && !backward && !strafeLeft && !strafeRight && !left && !right){
+            stopped = true;
+        } else {
+            stopped = false;
         }
+        
         if(name.equals("trap")){
             if(isPressed){
                 createTrap();

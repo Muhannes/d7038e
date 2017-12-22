@@ -96,15 +96,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         LOGGER.log(Level.INFO, "Chat service stopped: Client id: {0}", connection.getId());
     }
     
-    
-    
     /**
      * Sends out updates to all players
      * TODO: Filter based on location, i.e. only send to those that need the info
      * @param movements 
      */
     public void broadcast(List<PlayerMovement> movements){
-        players.forEach(p -> p.getCallback().newMessage(movements));
+        players.forEach(p -> p.getCallback().newMessage(movements));        
     }
     
     public void sendOutMovements(Node playersNode){

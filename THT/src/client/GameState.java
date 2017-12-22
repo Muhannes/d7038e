@@ -50,7 +50,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private InputManager input;
     private GameGUI game;
     
-    
+    private Boolean sentStop = false;
     private Spatial player;
     private Spatial playerSpatial;
     private boolean left = false, right = false, forward = false, backward = false;
@@ -122,6 +122,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     }
     
     private void sendToServer(Vector3f location, Vector3f direction, Quaternion rotation){         
+        System.out.println("Sending new direction : " + direction);
         PlayerMovement pm = new PlayerMovement(player.getName(), location, direction, rotation);
         clientMovementService.sendMessage(pm);
     }
@@ -147,6 +148,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
             
         }        
         if(human.strafeLeft){
+            sentStop = false;
             walkingDirection.addLocal(camLeft);
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z);
@@ -156,6 +158,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                     player.getLocalRotation());
         }
         if(human.strafeRight){
+            sentStop = false;
             walkingDirection.addLocal(camLeft.negate());
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z);
@@ -165,6 +168,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                     player.getLocalRotation());
         }
         if(human.forward){
+            sentStop = false;
             walkingDirection.addLocal(camDir);
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
@@ -174,6 +178,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                     player.getLocalRotation()); 
         }
         if(human.backward){
+            sentStop = false;
             walkingDirection.addLocal(camDir.negate());
             Vector3f rotation = player.getControl(CharacterControl.class).getWalkDirection();
             player.rotate(rotation.x, 0.0f, rotation.z);
@@ -182,6 +187,11 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                     player.getControl(CharacterControl.class).getWalkDirection(),
                     player.getLocalRotation());
         }
+        if(human.stopped && !sentStop){
+            sentStop = true;
+            sendToServer(player.getLocalTranslation(), new Vector3f(), player.getLocalRotation());            
+        }
+        
         if(player != null){
             walkingDirection.multLocal(human.movementSpeed).multLocal(tpf);
             player.getControl(CharacterControl.class).setWalkDirection(walkingDirection);
@@ -192,31 +202,37 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     }
     
     @Override
-    public void newMessage(List<PlayerMovement> playerMovements) {
-        
-        System.out.println("Got new movement update from server");
-        
+    public void newMessage(List<PlayerMovement> playerMovements) {        
         app.enqueue(() -> {
             convergePlayers(playerMovements);
         });
     }
-   
     
     private void convergePlayers(List<PlayerMovement> playerMovements){
      
         Node players = (Node) root.getChild("players");
         for(PlayerMovement newPlayerInfo : playerMovements){
-            Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
-            Vector3f newLocation = newPlayerInfo.location;
-            Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
-            Quaternion newRotation = newPlayerInfo.rotation;
-            
-            playerNode.setLocalTranslation(newLocation);
-            playerNode.setLocalRotation(newRotation);
-            playerNode.getControl(CharacterControl.class).setViewDirection(newLocation);
-            playerNode.getControl(CharacterControl.class).setWalkDirection(newDirection);
-
-            //TODO: If the player is too far away from the action direction, do snap.
+            if(newPlayerInfo.id != player.getName()){
+                Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
+                Vector3f newLocation = newPlayerInfo.location;
+                Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
+                Quaternion newRotation = newPlayerInfo.rotation;
+                Vector3f tmpDir = new Vector3f();
+                if(newDirection.equals(tmpDir)){
+                    System.out.println("Player stopped");
+                    playerNode.setLocalTranslation(newLocation);
+                    playerNode.setLocalRotation(newRotation);
+                    playerNode.getControl(CharacterControl.class).setViewDirection(newLocation);
+                    playerNode.getControl(CharacterControl.class).setWalkDirection(tmpDir);
+                }else{
+                    playerNode.setLocalTranslation(newLocation);
+                    playerNode.setLocalRotation(newRotation);
+                    playerNode.getControl(CharacterControl.class).setViewDirection(newLocation);
+                    playerNode.getControl(CharacterControl.class).setWalkDirection(newDirection);
+                }
+                //TODO: If the player is too far away from the action direction, do snap.
+                
+            }
         }
     }
     

@@ -55,7 +55,7 @@ public class PlayState extends BaseAppState implements MovementSession{
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
         
-        System.out.println("Got new playerMovement in playState"); 
+        System.out.println("New playerMovement received : " + playerMovement.direction); 
         
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
@@ -70,8 +70,5 @@ public class PlayState extends BaseAppState implements MovementSession{
                 }
             });
         }
-                    
-            
     }
-    
 }
