@@ -107,7 +107,8 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         }
         
         chaseCamera = new ChaseCamera(camera, player, input);
-        chaseCamera.setMaxDistance(15);
+        chaseCamera.setMaxDistance(12);
+        
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
