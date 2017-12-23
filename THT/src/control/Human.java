@@ -15,8 +15,8 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 
 /**
@@ -30,13 +30,13 @@ public class Human extends AbstractController implements ActionListener{
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
     private final CharacterControl charController;
-    private final Spatial self;
+    private final Entity self;
     private final AssetManager asset;
     private final SimpleApplication app;
     
     public final float movementSpeed = 3.0f;
     
-    public Human(Spatial player, SimpleApplication app){
+    public Human(Entity player, SimpleApplication app){
         this.self = player;
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
@@ -45,13 +45,15 @@ public class Human extends AbstractController implements ActionListener{
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        
+        Vector3f camDir = camera.getDirection().clone();
+        Vector3f camLeft = camera.getLeft().clone();
         if(name.equals("jump")){ 
             charController.jump();
         }
         if(name.equals("forward")){
             if(isPressed){
                 forward = true;
+                self.getWalkDirection().addLocal(Vector3f.ZERO)
             }else{
                 forward = false;
             }
@@ -125,7 +127,6 @@ public class Human extends AbstractController implements ActionListener{
         manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_D));        
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
         manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        
         manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
     }
     

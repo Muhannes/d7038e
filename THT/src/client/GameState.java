@@ -20,6 +20,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import control.Entity;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
@@ -51,7 +52,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private GameGUI game;
     
     private Boolean sentStop = false;
-    private Spatial player;
+    private Entity player;
     private Spatial playerSpatial;
     private boolean left = false, right = false, forward = false, backward = false;
     private Vector3f walkingDirection = Vector3f.ZERO;
@@ -95,7 +96,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         this.clientMovementService.addListener(listener);
         
         Node playerNode = (Node) root.getChild("players");
-        player = playerNode.getChild(""+ClientLoginService.getAccount().id);
+        player = (Entity) playerNode.getChild(""+ClientLoginService.getAccount().id);
         if(player == null){
             LOGGER.log(Level.SEVERE, "player is null");
         }
@@ -212,8 +213,20 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private void convergePlayers(List<PlayerMovement> playerMovements){
      
         Node players = (Node) root.getChild("players");
+        for (PlayerMovement playerMovement : playerMovements) {
+            if (playerMovement.id.equals(player.getName())) { // This player
+                LOGGER.log(Level.INFO, "Converging self: {0}", playerMovement.id);
+                player.convergeSnap(playerMovement.location, player.getWalkDirection());
+            } else { // Other entity, converge
+                LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
+                Entity entity = (Entity) players.getChild(playerMovement.id);
+                entity.convergeSnap(playerMovement.location, playerMovement.direction);
+            }
+        }
+        
+        /*
         for(PlayerMovement newPlayerInfo : playerMovements){
-            if(newPlayerInfo.id != player.getName()){
+            if(!newPlayerInfo.id.equals(player.getName())){
                 Spatial playerNode = (Spatial) players.getChild(newPlayerInfo.id);
                 Vector3f newLocation = newPlayerInfo.location;
                 Vector3f newDirection = newPlayerInfo.direction.subtract(playerNode.getControl(CharacterControl.class).getWalkDirection());
@@ -235,6 +248,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                 
             }
         }
+        */
     }
     
 }
