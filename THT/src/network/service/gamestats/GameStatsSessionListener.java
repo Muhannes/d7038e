@@ -5,6 +5,8 @@
  */
 package network.service.gamestats;
 
+import com.jme3.math.Vector3f;
+
 /**
  *
  * @author hannes
@@ -14,5 +16,9 @@ public interface GameStatsSessionListener {
     void notifyPlayerKilled(String victim, String killer);
     
     void notifyPlayerEscaped(String name);
+    
+    void notifyTrapPlaced(String id, Vector3f newTrap);
+    
+    void notifyTrapTriggered(String id);
 
 }

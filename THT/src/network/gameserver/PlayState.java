@@ -8,7 +8,9 @@ package network.gameserver;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.movement.MovementSession;
 import network.service.movement.PlayerMovement;
@@ -23,6 +25,7 @@ public class PlayState extends BaseAppState implements MovementSession{
     private static final Logger LOGGER = Logger.getLogger(PlayState.class.getName());
     private GameServer app;
     private Node playersNode;
+    private Node root;
     private HostedMovementService hostedMovementService;
 
     @Override
@@ -40,10 +43,13 @@ public class PlayState extends BaseAppState implements MovementSession{
         LOGGER.info("Playstate enabled!");
         hostedMovementService = app.getHostedMovementService();
         playersNode = (Node) app.getRootNode().getChild("playersNode");
-        if (playersNode == null) {
-            LOGGER.severe("playersNode was null");
+        root = (Node) app.getRootNode();
+        
+        if (playersNode == null || root == null) {
+            LOGGER.severe("root or playersNode is null");
         }
-        hostedMovementService.addListener(this);
+        hostedMovementService.addListener(this);        
+
         hostedMovementService.sendOutMovements(playersNode);
     }
 
@@ -71,4 +77,5 @@ public class PlayState extends BaseAppState implements MovementSession{
             });
         }
     }
+
 }

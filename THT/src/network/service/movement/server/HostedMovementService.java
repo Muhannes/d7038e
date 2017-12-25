@@ -38,7 +38,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
     private static final String MOVEMENT = "MOVEMENT";
     
-    
     private final List<MovementSession> movementListeners = new ArrayList<>();
     
     private RmiHostedService rmiHostedService;
