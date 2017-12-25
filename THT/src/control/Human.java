@@ -12,10 +12,12 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
@@ -23,7 +25,7 @@ import com.jme3.scene.shape.Box;
  *
  * @author ted
  */
-public class Human extends AbstractController implements ActionListener{
+public class Human extends AbstractController implements ActionListener, AnalogListener{
 
     private Jump jump;
     
@@ -33,6 +35,7 @@ public class Human extends AbstractController implements ActionListener{
     private final Entity self;
     private final AssetManager asset;
     private final SimpleApplication app;
+    private Camera camera;
     
     public final float movementSpeed = 3.0f;
     
@@ -41,6 +44,7 @@ public class Human extends AbstractController implements ActionListener{
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
         this.charController = self.getControl(CharacterControl.class);
+        this.camera = app.getCamera();
     }
     
     @Override
@@ -53,7 +57,7 @@ public class Human extends AbstractController implements ActionListener{
         if(name.equals("forward")){
             if(isPressed){
                 forward = true;
-                self.getWalkDirection().addLocal(Vector3f.ZERO)
+                self.getWalkDirection().addLocal(camDir);
             }else{
                 forward = false;
             }
@@ -63,20 +67,6 @@ public class Human extends AbstractController implements ActionListener{
                 backward = true;
             }else{
                 backward = false;
-            }
-        }
-        if(name.equals("left")){
-            if(isPressed){
-                left = true;                
-            }else{
-                left = false;
-            }
-        }
-        if(name.equals("right")){
-            if(isPressed){
-                right = true;
-            }else{
-                right = false;
             }
         }
         if(name.equals("strafeLeft")){
@@ -106,6 +96,9 @@ public class Human extends AbstractController implements ActionListener{
         }           
     }
 
+    /**
+     *
+     */
     public void createTrap(){
         Box box = new Box(0.1f,0.1f,0.1f);
         Geometry geom = new Geometry("Box", box);
@@ -128,6 +121,16 @@ public class Human extends AbstractController implements ActionListener{
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
         manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
+    }
+
+    @Override
+    public void onAnalog(String name, float value, float tpf) {
+        if(name.equals("left")){
+            self.charControl.getWalkDirection().addLocal(-tpf, 0, 0);
+        }
+        if(name.equals("right")){
+            self.charControl.getWalkDirection().addLocal(tpf, 0, 0);
+        }
     }
     
 }
