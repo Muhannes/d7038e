@@ -16,10 +16,13 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import network.service.movement.PlayerMovement;
+import network.service.movement.client.ClientMovementService;
 
 /**
  *
@@ -31,20 +34,20 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
-    private final CharacterControl charController;
     private final Entity self;
     private final AssetManager asset;
     private final SimpleApplication app;
     private Camera camera;
     
-    public final float movementSpeed = 3.0f;
     
-    public Human(Entity player, SimpleApplication app){
+    private ClientMovementService clientMovementService;
+    
+    public Human(Entity player, SimpleApplication app, ClientMovementService clientMovementService){
         this.self = player;
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
-        this.charController = self.getControl(CharacterControl.class);
         this.camera = app.getCamera();
+        this.clientMovementService = clientMovementService;
     }
     
     @Override
@@ -52,12 +55,11 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
         if(name.equals("jump")){ 
-            charController.jump();
+            self.charControl.jump();
         }
         if(name.equals("forward")){
             if(isPressed){
                 forward = true;
-                self.getWalkDirection().addLocal(camDir);
             }else{
                 forward = false;
             }
@@ -88,12 +90,51 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         } else {
             stopped = false;
         }
+        setNewMoveDirection();
+        sendMovementToServer();
         
         if(name.equals("trap")){
             if(isPressed){
                 createTrap();
             }
         }           
+    }
+    
+    private void setNewMoveDirection(){
+        Vector3f camDir = camera.getDirection().clone();
+        Vector3f camLeft = camera.getLeft().clone();
+        camDir.y = 0;
+        camLeft.y = 0;
+        camDir.normalizeLocal();
+        camLeft.normalizeLocal();
+        
+        Vector3f moveDirection = new Vector3f(0,0,0);
+        if (forward) {
+            moveDirection.addLocal(camDir);
+        }
+        if (backward) {
+            moveDirection.addLocal(camDir.negate());
+        }
+        if (strafeLeft) {
+            moveDirection.addLocal(camLeft);
+        }
+        if (strafeRight) {
+            moveDirection.addLocal(camLeft.negate());
+        }
+        
+        moveDirection.normalizeLocal();
+        moveDirection.multLocal(Entity.MOVEMENT_SPEED);
+
+        Vector3f rotation = self.charControl.getWalkDirection();
+        self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
+        self.setWalkDirection(moveDirection);
+    }
+    
+    private void sendMovementToServer(){         
+        System.out.println("Sending new direction");
+        PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
+                self.getWalkDirection(), self.getLocalRotation());
+        clientMovementService.sendMessage(pm);
     }
 
     /**
@@ -125,12 +166,13 @@ public class Human extends AbstractController implements ActionListener, AnalogL
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if(name.equals("left")){
-            self.charControl.getWalkDirection().addLocal(-tpf, 0, 0);
+        /*if(name.equals("left")){
+            // TODO: Rotate left by tpf
+            self.charControl.getWalkDirection();
         }
         if(name.equals("right")){
             self.charControl.getWalkDirection().addLocal(tpf, 0, 0);
-        }
+        }*/
     }
     
 }

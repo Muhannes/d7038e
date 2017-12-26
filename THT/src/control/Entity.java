@@ -23,6 +23,9 @@ public class Entity extends Geometry{
     
     // TODO: Init variables for different trap status, i.e. isFrozen.
     CharacterControl charControl;
+    
+    
+    public static final float MOVEMENT_SPEED = 3.0f;
 
     public Entity(String name, Vector3f position, BulletAppState bulletAppState, Material material) {
         super(name, new Box(0.2f, 0.4f, 0.2f));
@@ -48,19 +51,30 @@ public class Entity extends Geometry{
     }
     
     public void convergeLinear(Vector3f position, Vector3f rotation){
-        // TODO: Set movementdirection to that position
+        // TODO: Set movementdirection pointing to that position
         
         //charControl.setWalkDirection(vectorPointingAtPosition);
     }
     
     public void convergeSnap(Vector3f position, Vector3f walkDirection){
-        this.setLocalTranslation(position);
+        //this.setLocalTranslation(position);
+        charControl.setPhysicsLocation(position);
         charControl.setWalkDirection(walkDirection);
     }
     
     public Vector3f getWalkDirection(){
         return charControl.getWalkDirection();
     }
+    
+    public void setWalkDirection(Vector3f walkDirection){
+        charControl.setWalkDirection(walkDirection);
+    }
+    
+    public void scaleWalkDirection(float tpf){
+        Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
+        setWalkDirection(scaledSpeed);
+    }
+    
 }
 
     

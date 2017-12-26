@@ -9,6 +9,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import control.Entity;
 import java.util.logging.Logger;
 import network.service.movement.MovementSession;
 import network.service.movement.PlayerMovement;
@@ -69,6 +71,13 @@ public class PlayState extends BaseAppState implements MovementSession{
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }
             });
+        }
+    }
+    
+    @Override
+    public void update(float tpf){
+        for (Spatial entity : playersNode.getChildren()) {
+            ((Entity) entity).scaleWalkDirection(tpf);
         }
     }
 }
