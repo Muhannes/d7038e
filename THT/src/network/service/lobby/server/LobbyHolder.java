@@ -17,10 +17,16 @@ public class LobbyHolder{
 
     LobbyHolder() {}
     
-    synchronized final boolean addLobbyRoom(LobbyRoom lobbyRoom){
+    synchronized final LobbyRoom addLobbyRoom(String name){
         // TODO: Check if ok here? so the check will be synchronized too?
-        lobbyRooms.add(lobbyRoom);
-        return true;
+        for(LobbyRoom r : lobbyRooms){
+            if(r.getName().equals(name)){
+                return null;
+            }
+        }
+        LobbyRoom room = new LobbyRoom(name);
+        lobbyRooms.add(room);
+        return room;
     }
     
     synchronized List<LobbyRoom> getRooms(){

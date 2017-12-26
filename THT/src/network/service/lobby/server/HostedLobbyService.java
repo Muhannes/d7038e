@@ -198,11 +198,10 @@ public class HostedLobbyService extends AbstractHostedConnectionService{
             if (!authenticated){
                 return -1;
             }
-            LobbyRoom lr = new LobbyRoom(lobbyName);
-            boolean ok = lobbyHolder.addLobbyRoom(lr);
-            if(ok){
+            LobbyRoom room = lobbyHolder.addLobbyRoom(lobbyName);
+            if(room != null){
                 LOGGER.fine("Creating new lobbyRoom.");
-                lobbyRoom = lr;
+                lobbyRoom = room;
                 nonLobbyPlayers.remove(connection);
                 lobbyRoom.addPlayer(connection);
                 for (HostedConnection nonLobbyPlayer : nonLobbyPlayers) {
