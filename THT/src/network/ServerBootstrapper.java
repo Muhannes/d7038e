@@ -31,12 +31,12 @@ public class ServerBootstrapper {
         
         
         gameServer.start(JmeContext.Type.Headless);
-        while (true){
+        /*while (true){
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
     }
 }
