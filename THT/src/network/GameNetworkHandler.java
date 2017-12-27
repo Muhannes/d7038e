@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.handover.ClientHandoverService;
 import network.service.gamesetup.server.HostedGameSetupService;
+import network.service.gamestats.server.HostedGameStatsService;
 import network.service.login.LoginListenerService;
-import network.service.movement.MovementSession;
 import network.service.movement.server.HostedMovementService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
@@ -54,6 +54,7 @@ public class GameNetworkHandler {
             server.getServices().addService(new RmiHostedService());
             server.getServices().addService(new HostedGameSetupService());
             server.getServices().addService(new HostedMovementService());
+            server.getServices().addService(new HostedGameStatsService());
             
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -111,6 +112,10 @@ public class GameNetworkHandler {
    
    public HostedMovementService getHostedMovementService(){
        return server.getServices().getService(HostedMovementService.class);
+   }
+   
+   public HostedGameStatsService getHostedGameStatsService(){
+       return server.getServices().getService(HostedGameStatsService.class);
    }
    
    public HostedGameSetupService getHostedGameSetupService(){

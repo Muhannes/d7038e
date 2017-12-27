@@ -49,14 +49,14 @@ public class PlayState extends BaseAppState implements MovementSession{
         if (playersNode == null || root == null) {
             LOGGER.severe("root or playersNode is null");
         }
-        hostedMovementService.addListener(this);        
+        hostedMovementService.addSessions(this);        
 
         hostedMovementService.sendOutMovements(playersNode);
     }
 
     @Override
     protected void onDisable() {
-        hostedMovementService.removeListener(this);
+        hostedMovementService.removeSessions(this);
     }
 
     @Override

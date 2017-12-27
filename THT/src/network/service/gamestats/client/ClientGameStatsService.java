@@ -12,9 +12,11 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionListener;
+import network.util.NetConfig;
 
 /**
  *
@@ -56,34 +58,40 @@ public class ClientGameStatsService extends AbstractClientService{
         rmiService.share((byte)channel, callback, GameStatsSessionListener.class);
     }
     
-    public void addGameStatsSessionListene(GameStatsSessionListener listener){
+    public void addGameStatsSessionListener(GameStatsSessionListener listener){
         listeners.add(listener);
+    }
+    
+    public GameStatsSession getDelegate(){
+        if(delegate == null){
+            delegate = NetConfig.getDelegate(rmiService, GameStatsSession.class);
+        }
+        return delegate;
+    }
+    
+    public void sendTrapMessage(String trapName, Vector3f newTrap){
     }
     
     private class GameStatsCallback implements GameStatsSessionListener {
 
         @Override
-        public void notifyPlayerKilled(String victim, String killer) {
-            LOGGER.log(Level.FINE, "Player killed. Victim: {0}, Killer: {1}", new Object[]{victim, killer});
-            listeners.forEach(l -> l.notifyPlayerKilled(victim, killer));
+        public void notifyPlayersKilled(List<String> victims, List<String> killers) {
+            listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
         }
 
         @Override
-        public void notifyPlayerEscaped(String name) {
-            LOGGER.log(Level.FINE, "Player escaped. Name: {0}", name);
-            listeners.forEach(l -> l.notifyPlayerEscaped(name));
+        public void notifyPlayersEscaped(List<String> names) {
+            listeners.forEach(l -> l.notifyPlayersEscaped(names));
         }
 
         @Override
-        public void notifyTrapPlaced(String id, Vector3f newTrap) {
-            listeners.forEach(l -> l.notifyTrapPlaced(id, newTrap));
+        public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+            listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
         }
 
         @Override
-        public void notifyTrapTriggered(String id) {
-            listeners.forEach(l -> l.notifyTrapTriggered(id));
+        public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
         }
-        
-        
     }
 }

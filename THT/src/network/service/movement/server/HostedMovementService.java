@@ -38,7 +38,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
     private static final String MOVEMENT = "MOVEMENT";
     
-    private final List<MovementSession> movementListeners = new ArrayList<>();
+    private final List<MovementSession> movementSessions = new ArrayList<>();
     
     private RmiHostedService rmiHostedService;
     private List<MovementSessionImpl> players = new ArrayList<>();
@@ -145,13 +145,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
 
     @Override
-    public void addListener(MovementSession movementSession) {
-        movementListeners.add(movementSession);
+    public void addSessions(MovementSession movementSession) {
+        movementSessions.add(movementSession);
     }
 
     @Override
-    public void removeListener(MovementSession movementSession) {
-        movementListeners.remove(movementSession);
+    public void removeSessions(MovementSession movementSession) {
+        movementSessions.remove(movementSession);
     }
     
     private class MovementSessionImpl implements MovementSession{
@@ -173,7 +173,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
-            movementListeners.forEach(l -> l.sendMessage(playerMovement));
+            movementSessions.forEach(l -> l.sendMessage(playerMovement));
         }
         
     }

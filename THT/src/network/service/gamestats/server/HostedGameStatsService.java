@@ -13,15 +13,18 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.sun.istack.internal.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import network.service.gamestats.GameStatsSession;
+import network.service.gamestats.GameStatsSessionEmitter;
 import network.service.gamestats.GameStatsSessionListener;
 
 /**
  *
  * @author truls
  */
-public class HostedGameStatsService extends AbstractHostedConnectionService{
+public class HostedGameStatsService extends AbstractHostedConnectionService implements GameStatsSessionEmitter{
 
     private static final Logger LOGGER = Logger.getLogger(HostedGameStatsService.class);
     
@@ -29,6 +32,9 @@ public class HostedGameStatsService extends AbstractHostedConnectionService{
     
     private RmiHostedService rmiHostedService;
     
+    private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
+    private final ArrayList<GameStatsSession> gameStatsSessions = new ArrayList<>();
+            
     private int channel;
     
     public HostedGameStatsService(){
@@ -80,36 +86,64 @@ public class HostedGameStatsService extends AbstractHostedConnectionService{
         return callback;
     }
     
+    @Override
+    public void addSessions(GameStatsSession session){
+        gameStatsSessions.add(session);
+    }
+    
+    @Override
+    public void removeSessions(GameStatsSession session){
+        gameStatsSessions.remove(session);
+    }
+    
     private class GameStatsSessionImpl implements GameStatsSession, GameStatsSessionListener {
         
-        private HostedConnection connection;
-        private GameStatsSessionListener callback;
+        private HostedConnection connection; //Used for what?
+        private GameStatsSessionListener callback; //Used for what?
         
         public GameStatsSessionImpl(HostedConnection connection, GameStatsSessionListener callback){
             this.connection = connection;
             this.callback = callback;
         }
-
+        
         @Override
         public void notifyPlayerKilled(String victim, String killer) {
-            callback.notifyPlayerKilled(victim, killer);
+            gameStatsSessions.forEach(l -> l.notifyPlayerKilled(victim, killer));
         }
 
         @Override
         public void notifyPlayerEscaped(String name) {
-            callback.notifyPlayerEscaped(name);
+            gameStatsSessions.forEach(l -> l.notifyPlayerEscaped(name));
         }
 
         @Override
-        public void notifyTrapPlaced(String id, Vector3f newTrap) {
-            callback.notifyTrapPlaced(id, newTrap);
+        public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
+            gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 
         @Override
-        public void notifyTrapTriggered(String id) {
-            callback.notifyTrapTriggered(id);
+        public void notifyTrapTriggered(String name, String trapName) {
+            gameStatsSessions.forEach(l -> l.notifyTrapTriggered(name, trapName));
         }
-    
+
+        @Override
+        public void notifyPlayersKilled(List<String> victims, List<String> killers) {
+            listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
+        }
+
+        @Override
+        public void notifyPlayersEscaped(List<String> names) {
+            listeners.forEach(l -> l.notifyPlayersEscaped(names));
+        }
+
+        @Override
+        public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+            listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
+        }
+
+        @Override
+        public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
+        }
     } 
-    
 }

@@ -6,6 +6,7 @@
 package network.service.gamestats;
 
 import com.jme3.math.Vector3f;
+import java.util.List;
 
 /**
  *
@@ -13,12 +14,11 @@ import com.jme3.math.Vector3f;
  */
 public interface GameStatsSessionListener {
     
-    void notifyPlayerKilled(String victim, String killer);
+    void notifyPlayersKilled(List <String> victims, List <String> killers);
     
-    void notifyPlayerEscaped(String name);
+    void notifyPlayersEscaped(List <String> names);
     
-    void notifyTrapPlaced(String id, Vector3f newTrap);
+    void notifyTrapsPlaced(List <String> trapNames, List <Vector3f> newTraps);
     
-    void notifyTrapTriggered(String id);
-
+    void notifyTrapsTriggered(List <String> names, List <String> trapNames);
 }

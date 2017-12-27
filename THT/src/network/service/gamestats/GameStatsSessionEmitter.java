@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package network.service.movement;
+package network.service.gamestats;
 
 /**
  *
  * @author ted
  */
-public interface MovementSessionEmitter {
-    void addSessions(MovementSession movementSession);
-    void removeSessions(MovementSession movementSession);
+public interface GameStatsSessionEmitter {
+    
+    void addSessions(GameStatsSession session);
+    
+    void removeSessions(GameStatsSession session);
+    
 }

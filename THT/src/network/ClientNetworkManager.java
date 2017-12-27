@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.chat.client.ClientChatService;
 import network.service.gamesetup.client.ClientGameSetupService;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.lobby.client.ClientLobbyService;
 import network.service.login.client.ClientLoginService;
 import network.service.movement.client.ClientMovementService;
@@ -65,6 +66,7 @@ public class ClientNetworkManager implements
             gameClient.getServices().addService(new RmiClientService());
             gameClient.getServices().addService(new ClientGameSetupService());
             gameClient.getServices().addService(new ClientMovementService());
+            gameClient.getServices().addService(new ClientGameStatsService());
             
             gameClient.start();
         }catch(IOException ex){
@@ -142,5 +144,8 @@ public class ClientNetworkManager implements
         return gameClient.getServices().getService(ClientMovementService.class);
     }
   
+    public ClientGameStatsService getClientGameStatsService(){
+        return gameClient.getServices().getService(ClientGameStatsService.class);
+    }
 }
 

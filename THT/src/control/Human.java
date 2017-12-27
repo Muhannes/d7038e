@@ -22,6 +22,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import java.util.List;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 
@@ -33,6 +35,8 @@ public class Human extends AbstractController implements ActionListener, AnalogL
 
     private Jump jump;
     
+    private int numberOfTraps = 5; 
+    
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
     private final Entity self;
@@ -42,13 +46,15 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     
     private ClientMovementService clientMovementService;
+    private ClientGameStatsService clientGameStatsService;
     
-    public Human(Entity player, SimpleApplication app, ClientMovementService clientMovementService){
+    public Human(Entity player, SimpleApplication app, ClientMovementService clientMovementService, ClientGameStatsService clientGameStatsService){
         this.self = player;
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
         this.camera = app.getCamera();
         this.clientMovementService = clientMovementService;
+        this.clientGameStatsService = clientGameStatsService;
     }
     
     @Override
@@ -95,8 +101,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         sendMovementToServer();
         
         if(name.equals("trap")){
-            if(isPressed){
-                
+            if(isPressed){                
                 createTrap();
             }
         }           
@@ -139,25 +144,37 @@ public class Human extends AbstractController implements ActionListener, AnalogL
      * Sends information about entity to server
      */
     private void sendMovementToServer(){         
-        System.out.println("Sending new direction");
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 self.getWalkDirection(), self.getLocalRotation());
         clientMovementService.sendMessage(pm);
     }
-
+    
     /**
      *
      */
     public void createTrap(){
-        Box box = new Box(0.1f,0.1f,0.1f);
-        Geometry geom = new Geometry("Box", box);
-        Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-        material.setColor("Color", ColorRGBA.Red);
-        geom.setMaterial(material);
-        geom.setLocalTranslation(self.getLocalTranslation());        
-        app.getRootNode().attachChild(geom);
+        if(this.numberOfTraps > 0){
+            Box box = new Box(0.1f,0.1f,0.1f);
+            Geometry geom = new Geometry(self.getName()+":"+this.numberOfTraps, box);
+            this.numberOfTraps--;
+            Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+            material.setColor("Color", ColorRGBA.Red);
+            geom.setMaterial(material);
+            Vector3f position = self.getLocalTranslation();
+            position.y = 0.1f;
+            geom.setLocalTranslation(position);        
+            app.getRootNode().attachChild(geom); //Add to a trap node instead of app (after works).
+
+            sendTrapToServer(geom.getName(), position);            
+        }
     }
     
+    /**
+     * Send trap information to server
+     */
+    private void sendTrapToServer(String trapName, Vector3f newTrap){
+        clientGameStatsService.sendTrapMessage(trapName, newTrap);
+    }
     
     @Override
     public void initKeys(InputManager manager) {
