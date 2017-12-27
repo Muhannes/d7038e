@@ -11,9 +11,9 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.service.lobby.LobbyRoom;
 import network.util.NetConfig;
 import network.service.lobby.LobbySessionListener;
 import network.service.lobby.LobbySession;
@@ -67,9 +67,9 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     }
 
     @Override
-    public List<String> join(int roomid) {
-        LOGGER.log(Level.FINE, "Sending join message to server. Roomid: {0}", roomid);
-        return getDelegate().join(roomid);
+    public void join(String room) {
+        LOGGER.log(Level.FINE, "Sending join message to server. Roomid: {0}", room);
+        getDelegate().join(room);
     }
 
     @Override
@@ -83,25 +83,15 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         LOGGER.log(Level.FINE, "Sending ready message to server");
         getDelegate().ready();
     }
-
-    @Override
-    public int createLobby(String lobbyName) {
-        return getDelegate().createLobby(lobbyName);
-    }
-
-    @Override
-    public boolean removeLobby(String lobbyName){
-        return getDelegate().removeLobby(lobbyName);
-    }
-    
-    @Override
-    public Map<String, Integer> getAllRooms() {
-        return getDelegate().getAllRooms();
-    }
     
     @Override
     public void authenticate(int id, String key) {
         getDelegate().authenticate(id, key);
+    }
+    
+    @Override
+    public void fetchAllRooms() {
+        getDelegate().fetchAllRooms();
     }
     
     @Override
@@ -112,8 +102,9 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
     private class ClientLobbyHandlerImpl implements LobbySessionListener {
 
         @Override
-        public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
-            listeners.forEach(l -> l.updateLobby(lobbyName, roomID, numPlayers, maxPlayers));
+        public void updateLobby(List<LobbyRoom> rooms) {
+            LOGGER.log(Level.FINE, "Number of rooms: {0}", rooms.size());
+            listeners.forEach(l -> l.updateLobby(rooms));
         }
 
         @Override
@@ -138,6 +129,11 @@ public class ClientLobbyService extends AbstractClientService implements ClientL
         public void allReady(String ip, int port) {
             LOGGER.log(Level.FINE, "Everyone is ready");
             listeners.forEach(l -> l.allReady(ip, port));
+        }
+
+        @Override
+        public void joinedLobby(LobbyRoom room) {
+            listeners.forEach(l -> l.joinedLobby(room));
         }
         
     }

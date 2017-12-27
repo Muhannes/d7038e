@@ -5,6 +5,7 @@
  */
 package network.service.gamestats.client;
 
+import com.jme3.math.Vector3f;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
@@ -72,5 +73,17 @@ public class ClientGameStatsService extends AbstractClientService{
             LOGGER.log(Level.FINE, "Player escaped. Name: {0}", name);
             listeners.forEach(l -> l.notifyPlayerEscaped(name));
         }
+
+        @Override
+        public void notifyTrapPlaced(String id, Vector3f newTrap) {
+            listeners.forEach(l -> l.notifyTrapPlaced(id, newTrap));
+        }
+
+        @Override
+        public void notifyTrapTriggered(String id) {
+            listeners.forEach(l -> l.notifyTrapTriggered(id));
+        }
+        
+        
     }
 }

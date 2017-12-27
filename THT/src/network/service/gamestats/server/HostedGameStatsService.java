@@ -5,6 +5,7 @@
  */
 package network.service.gamestats.server;
 
+import com.jme3.math.Vector3f;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractHostedConnectionService;
@@ -97,6 +98,16 @@ public class HostedGameStatsService extends AbstractHostedConnectionService{
         @Override
         public void notifyPlayerEscaped(String name) {
             callback.notifyPlayerEscaped(name);
+        }
+
+        @Override
+        public void notifyTrapPlaced(String id, Vector3f newTrap) {
+            callback.notifyTrapPlaced(id, newTrap);
+        }
+
+        @Override
+        public void notifyTrapTriggered(String id) {
+            callback.notifyTrapTriggered(id);
         }
     
     } 

@@ -10,11 +10,13 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.lobby.LobbyGUI;
 import gui.lobby.LobbyGUIListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.chat.client.ClientChatService;
+import network.service.lobby.LobbyRoom;
 import network.service.lobby.client.ClientLobbyService;
 import network.service.login.Account;
 import network.service.login.client.ClientLoginService;
@@ -56,13 +58,49 @@ public class LobbyState extends BaseAppState implements
             app.getAssetManager(), app.getInputManager(), 
             app.getAudioRenderer(), app.getGuiViewPort()
         );
-        
-        
     }    
 
     @Override
     public void cleanup(Application app){
         LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+    }
+        
+    @Override
+    protected void onEnable() {
+        clientLobbyService = app.getClientLobbyService();
+        // Create GUI
+        if (!lobbyAuthenticated) {
+            Account acc = ClientLoginService.getAccount();
+            clientLobbyService.authenticate(acc.id, acc.key);
+            lobbyAuthenticated = true;
+        }
+        if (!chatAuthenticated) {
+            Account acc = ClientLoginService.getAccount();
+            try {
+                clientChatService = app.getClientChatService();
+                clientChatService.authenticate(acc.id, acc.key, acc.name);
+                chatAuthenticated = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        rooms = new HashMap<>();
+        
+        gui = new LobbyGUI(niftyDisplay);
+        app.getGuiViewPort().addProcessor(niftyDisplay);
+        gui.addLobbyGUIListener(this);
+        
+        clientLobbyService.addClientLobbyListener(this);
+        clientLobbyService.fetchAllRooms();
+    }
+
+    @Override
+    protected void onDisable() {
+        app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
+        gui.removeLobbyGUIListener(this);
+        clientLobbyService.removeClientLobbyListener(this);
     }
     
     /**
@@ -75,35 +113,25 @@ public class LobbyState extends BaseAppState implements
         if (clientChatService != null) {
             clientChatService.joinchat(gls.getID());
         }
-        app.enqueue(new Runnable() {
-            @Override
-            public void run() {
-                ls.setEnabled(false);
-                gls.setEnabled(true);
-            }
+        app.enqueue(() -> {
+            ls.setEnabled(false);
+            gls.setEnabled(true);
         });
     }
 
-    /**
-     * Updates the list of lobbyRooms available to choose
-     * TODO: Deleteion of rooms are not supported yet.
-     * @param lobbyName
-     * @param roomID
-     * @param numPlayers
-     * @param maxPlayers 
-     */
     @Override
-    public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
-        LOGGER.log(Level.INFO, "Lobby room udpated. Name: {0}, id: {1}, Players: {2}, "
-                + "Max-players: {3}", new Object[]{lobbyName, roomID, numPlayers, maxPlayers});
-        app.enqueue(() -> {
-            if(rooms.containsKey(lobbyName)){
-                return;
-            }
-            rooms.put(lobbyName, roomID);
-            gui.addLobbyRoom(lobbyName);
+    public void updateLobby(List<LobbyRoom> room) {
+        room.forEach(r -> {
+            LOGGER.log(Level.INFO, "Lobby room udpated. Name: {0}, Players: {2}, "
+                    + "Max-players: {3}", new Object[]{r.getName(), r.numberOfPlayers(), r.maxPlayers()});
+            app.enqueue(() -> {
+                if(rooms.containsKey(r.getName())){
+                    return;
+                }
+                rooms.put(r.getName(), 0);
+                gui.addLobbyRoom(r.getName());
+            });
         });
-        
     }
 
     @Override
@@ -139,80 +167,27 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     public void onJoinLobby(String lobbyName) {
-        int roomID = rooms.get(lobbyName);
-        List<String> playerNames = clientLobbyService.join(roomID);
-        if (playerNames != null) {
-            LOGGER.log(Level.INFO, "Number of players in room: {0}", playerNames.size());
-            GameLobbyState gls = app.getStateManager().getState(GameLobbyState.class);
-            gls.setName(lobbyName);
-            gls.setID(roomID);
-            playerNames.forEach(name -> gls.addPlayers(name));
-            joinGame(gls);
-        }
+        clientLobbyService.join(lobbyName);
     }
 
     @Override
     public void onRefresh() {
-        rooms = clientLobbyService.getAllRooms();
         gui.clearLobbyRoomList();
-        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
+        clientLobbyService.fetchAllRooms();
     }
 
     @Override
     public void onCreateLobby(String lobbyName) {
-        if(!lobbyName.isEmpty()){
-            int roomID = clientLobbyService.createLobby(lobbyName);
-            if (roomID != -1) {
-                GameLobbyState gls = app.getStateManager().getState(GameLobbyState.class);
-                gls.addPlayers(ClientLoginService.getAccount().name);
-                gls.setName(lobbyName);
-                gls.setID(roomID);
-                joinGame(gls);
-            } else {
-                LOGGER.log(Level.INFO, "Server did not approve new name.");
-            }
-        } else {
-            //TODO: Let server check name and return false if name is ""
-            LOGGER.log(Level.INFO, "Must have a name!");
-        }
+        clientLobbyService.join(lobbyName);
     }
 
     @Override
-    protected void onEnable() {
-        clientLobbyService = app.getClientLobbyService();
-        // Create GUI
-        if (!lobbyAuthenticated) {
-            Account acc = ClientLoginService.getAccount();
-            clientLobbyService.authenticate(acc.id, acc.key);
-            lobbyAuthenticated = true;
-        }
-        if (!chatAuthenticated) {
-            Account acc = ClientLoginService.getAccount();
-            try {
-                clientChatService = app.getClientChatService();
-                clientChatService.authenticate(acc.id, acc.key, acc.name);
-                chatAuthenticated = true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        gui = new LobbyGUI(niftyDisplay);
-        clientLobbyService.addClientLobbyListener(this);
-
-        app.getGuiViewPort().addProcessor(niftyDisplay);
-
-        // Fetching available lobbyRooms
-        rooms = clientLobbyService.getAllRooms();
-        rooms.forEach((name, id) -> gui.addLobbyRoom(name));
-        gui.addLobbyGUIListener(this);
-    }
-
-    @Override
-    protected void onDisable() {
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
-        gui.removeLobbyGUIListener(this);
-        clientLobbyService.removeClientLobbyListener(this);
+    public void joinedLobby(LobbyRoom room) {
+        GameLobbyState gls = app.getStateManager().getState(GameLobbyState.class);
+        gls.setName(ClientLoginService.getAccount().name);
+        gls.setID(room.getChatId());
+        room.getPlayers().forEach(name -> gls.addPlayers(name));
+        joinGame(gls);
     }
   
 }

@@ -12,11 +12,12 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.gamelobby.GameLobbyGUI;
 import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.chat.ChatSessionListener;
-import network.service.chat.server.ChatSpace;
 import network.service.chat.client.ClientChatService;
+import network.service.lobby.LobbyRoom;
 import network.service.lobby.client.ClientLobbyService;
 import network.service.lobby.LobbySessionListener;
 
@@ -41,8 +42,6 @@ public class GameLobbyState extends BaseAppState implements
     private int roomID;
     
     private GameLobbyGUI gui;
-
-    private final int GLOBAL_CHAT = ChatSpace.Chat.GLOBAL.ordinal();
     
     GameLobbyState() {
         this.gameName = "No name";        
@@ -61,6 +60,46 @@ public class GameLobbyState extends BaseAppState implements
     @Override
     public void cleanup(Application app){
         
+    }
+    
+    @Override
+    protected void onEnable() {
+        try {
+            chatService = app.getClientChatService();
+            chatService.addChatSessionListener(this);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Chat service is offline");
+        }
+        lobbyService = app.getClientLobbyService();
+        gui = new GameLobbyGUI(niftyDisplay);
+        
+        gui.addGameLobbyGUIListener(this);
+        
+        app.getGuiViewPort().addProcessor(niftyDisplay);
+        
+        lobbyService.addClientLobbyListener(this);
+        
+        for (String player : players) {
+            playerJoinedLobby(player);
+        }
+    }
+
+    @Override
+    protected void onDisable() {
+        players.clear();
+        gui.clearChat();
+        if (chatService != null) {
+            chatService.removeChatSessionListener(this);
+        }
+        lobbyService.removeClientLobbyListener(this);
+        gui.removeGameLobbyGUIListener(this);
+        app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
+        
+        lobbyService.leave();
+        if (chatService != null) {
+            chatService.leavechat(roomID);
+        }
     }
 
     public void addPlayers(String name){
@@ -121,7 +160,7 @@ public class GameLobbyState extends BaseAppState implements
     }
 
     @Override
-    public void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers) {
+    public void updateLobby(List<LobbyRoom> room) {
         // Nothing
     }
 
@@ -152,7 +191,7 @@ public class GameLobbyState extends BaseAppState implements
     
     @Override
     public void allReady(String ip, int port) {
-        LOGGER.log(Level.FINE, "Connecting to game server at {0}:{1}", new Object[]{ip, port});
+        LOGGER.log(Level.INFO, "Connecting to game server at {0}:{1}", new Object[]{ip, port});
         ((ClientApplication)app).connectToGameServer(ip, port);
         app.enqueue(() -> {
             this.setEnabled(false);
@@ -167,10 +206,10 @@ public class GameLobbyState extends BaseAppState implements
 
     @Override
     public void onReturnToLobby() {
-        lobbyService.leave();
+        /*lobbyService.leave();
         if (chatService != null) {
             chatService.leavechat(roomID);
-        }
+        }*/
         
         GameLobbyState gls = this;
         app.enqueue(() -> {
@@ -194,38 +233,8 @@ public class GameLobbyState extends BaseAppState implements
     }
 
     @Override
-    protected void onEnable() {
-        try {
-            chatService = app.getClientChatService();
-            chatService.addChatSessionListener(this);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Chat service is offline");
-        }
-        lobbyService = app.getClientLobbyService();
-        gui = new GameLobbyGUI(niftyDisplay);
-        
-        gui.addGameLobbyGUIListener(this);
-        
-        app.getGuiViewPort().addProcessor(niftyDisplay);
-        
-        lobbyService.addClientLobbyListener(this);
-        
-        for (String player : players) {
-            playerJoinedLobby(player);
-        }
-    }
-
-    @Override
-    protected void onDisable() {
-        players.clear();
-        gui.clearChat();
-        if (chatService != null) {
-            chatService.removeChatSessionListener(this);
-        }
-        lobbyService.removeClientLobbyListener(this);
-        gui.removeGameLobbyGUIListener(this);
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
+    public void joinedLobby(LobbyRoom room) {
+        // Nothing
     }
 
 }

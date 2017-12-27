@@ -8,6 +8,7 @@ package control;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import control.action.Jump;
@@ -95,6 +96,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         
         if(name.equals("trap")){
             if(isPressed){
+                
                 createTrap();
             }
         }           
@@ -186,5 +188,4 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             self.charControl.getWalkDirection().addLocal(tpf, 0, 0);
         }*/
     }
-    
 }
