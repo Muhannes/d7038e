@@ -95,6 +95,11 @@ public class GameLobbyState extends BaseAppState implements
         gui.removeGameLobbyGUIListener(this);
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
+        
+        lobbyService.leave();
+        if (chatService != null) {
+            chatService.leavechat(roomID);
+        }
     }
 
     public void addPlayers(String name){
@@ -201,10 +206,10 @@ public class GameLobbyState extends BaseAppState implements
 
     @Override
     public void onReturnToLobby() {
-        lobbyService.leave();
+        /*lobbyService.leave();
         if (chatService != null) {
             chatService.leavechat(roomID);
-        }
+        }*/
         
         GameLobbyState gls = this;
         app.enqueue(() -> {

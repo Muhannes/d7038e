@@ -12,8 +12,6 @@ import java.util.Map;
 import network.service.gamesetup.SetupGameEvent;
 import network.service.lobby.LobbyRoom;
 import network.service.lobby.LobbySessionListener;
-import network.service.login.Account;
-import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
 /**
@@ -86,7 +84,7 @@ public class LobbyRoomImpl implements LobbyRoom {
         participants.remove(player);
         participants.forEach(p -> p.playerLeftLobby(player.getName()));
         
-        if(participants.size() < 0) rooms.remove(name);
+        if(participants.isEmpty()) rooms.remove(name);
         // If no players left in lobby room, remove it
     }
     

@@ -172,6 +172,7 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     public void onRefresh() {
+        gui.clearLobbyRoomList();
         clientLobbyService.fetchAllRooms();
     }
 

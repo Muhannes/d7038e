@@ -72,12 +72,14 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
             return;
         }
         
+        if(room.equals("")) return;
+        
         LobbyRoomImpl r = (LobbyRoomImpl)LobbyRoomImpl.getRoom(room);
         joinedRoom = r.join(this);
         
         if(joinedRoom != null) {
             LOGGER.log(Level.INFO, "Player {0} joined lobby room {1}", 
-                    new Object[]{account.name, room});
+                    new Object[]{account.name, joinedRoom});
         }
     }
 
@@ -95,6 +97,7 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
         
         LobbyRoomImpl room = (LobbyRoomImpl)LobbyRoomImpl.getRoom(joinedRoom);
         room.leave(this);
+        LOGGER.log(Level.INFO, "Player {0} left lobby room {1}", new Object[]{account.name, joinedRoom});
         joinedRoom = null;
     }
 
@@ -120,7 +123,6 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
             LOGGER.log(Level.INFO, "Not authenticated.");
             return;
         }
-        System.out.println("Fetching all rooms" + LobbyRoomImpl.getAllRooms().size());
         getCallback().updateLobby(LobbyRoomImpl.getAllRooms());
     }
 
