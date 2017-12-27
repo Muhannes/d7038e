@@ -31,13 +31,16 @@ public class GameServer extends SimpleApplication{
         
     }
     
+    public GameServer(){
+        
+        gnh = new GameNetworkHandler();
+    }
+    
     @Override
     public void simpleInitApp() {
         // Do intialization here.
-        gnh = new GameNetworkHandler();
         
         gnh.startServer();
-        gnh.connectToLoginServer();
         
         
         WaitingState waitingState = new WaitingState();

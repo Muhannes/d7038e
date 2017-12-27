@@ -5,15 +5,20 @@
  */
 package network.service.login;
 
+import com.jme3.network.serializing.Serializable;
+
 /**
  *
  * @author hannes
  */
+@Serializable
 public class Account {
     
-    public final String name;
-    public final int id;
-    public final String key;
+    public String name;
+    public int id;
+    public String key;
+    
+    public Account(){}
 
     public Account(String name, int id, String key) {
         this.name = name;

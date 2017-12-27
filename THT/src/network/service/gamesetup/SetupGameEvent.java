@@ -9,21 +9,22 @@ import java.util.List;
 import java.util.Map;
 import utils.eventbus.Event;
 import network.service.lobby.LobbySessionListener;
+import network.service.login.Account;
 
 /**
  *
  * @author hannes
  */
 public class SetupGameEvent extends Event{
-    private Map<Integer, String> lobbyPlayers;
-    private List<LobbySessionListener> callbacks;
+    private final List<Account> lobbyPlayers;
+    private final List<LobbySessionListener> callbacks;
 
-    public SetupGameEvent(Map<Integer, String> lobbyPlayers, List<LobbySessionListener> callbacks) {
+    public SetupGameEvent(List<Account> lobbyPlayers, List<LobbySessionListener> callbacks) {
         this.lobbyPlayers = lobbyPlayers;
         this.callbacks = callbacks;
     }
     
-    public Map<Integer, String> getPlayers(){
+    public List<Account> getPlayers(){
         return lobbyPlayers;
     }
     

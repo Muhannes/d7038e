@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import network.service.gamesetup.AllReadyListener;
 import network.service.gamesetup.GameSetupSessionListener;
 import network.service.gamesetup.server.HostedGameSetupService;
+import network.service.login.Account;
 import network.service.movement.server.HostedMovementService;
 
 /**
@@ -42,9 +43,9 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private AssetManager asset;
     private BulletAppState bulletAppState;
     private GameServer app;
-    private Map<Integer, String> playerInfo;
     private HostedGameSetupService hostedGameSetupService;
     private HostedMovementService hostedMovementService;
+    private List<Account> accounts;
     
     @Override
     protected void initialize(Application app) {
@@ -69,15 +70,14 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         hostedGameSetupService = app.getHostedGameSetupService();
         asset = app.getAssetManager();
         hostedGameSetupService.addListener(this);
-        
-        List<Player> playerInits = createPlayerInitInfo(playerInfo);
-        hostedGameSetupService.setInitialized(playerInits);
+        List<Player> playerInits = createPlayerInitInfo();
+        hostedGameSetupService.setInitialized(playerInits, accounts);
         loadStaticGeometry();
         createPlayers(playerInits);
     }
-
-    public void setPlayerInfo(Map<Integer, String> playerInfo){
-        this.playerInfo = playerInfo;
+    
+    public void setAccounts(List<Account> accounts){
+        this.accounts = accounts;
     }
     
     @Override
@@ -113,14 +113,15 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     }
     
     /**
-     * When expected players are received, run this.
+     * When accounts are received, run this.
      * Creates Player objects for each participant.
      */
-    private List<Player> createPlayerInitInfo(Map<Integer, String> expectedPlayers){
+    private List<Player> createPlayerInitInfo(){
         List<Player> players = new ArrayList<>();
-        Random random = new Random();
-        for (Integer id : expectedPlayers.keySet()) {
-            players.add(new Player(EntityType.Human, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), id));
+        Random random = new Random(); 
+        for (Account account : accounts) {
+            players.add(new Player(EntityType.Human, 
+                    new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), account.id));
         }
         LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
         int monsterID = RANDOM.nextInt(players.size());

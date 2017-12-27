@@ -14,6 +14,7 @@ import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import network.service.login.Account;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
 
@@ -72,9 +73,9 @@ public class ClientHandoverService extends AbstractClientService implements Hand
     private class GameLobbySessionListenerImpl implements HandoverSessionListener {
 
         @Override
-        public void startSetup(Map<Integer, String> playerInfo) {
+        public void startSetup(List<Account> accounts) {
             for (HandoverSessionListener listener : listeners) {
-                listener.startSetup(playerInfo);
+                listener.startSetup(accounts);
             }
         }
         

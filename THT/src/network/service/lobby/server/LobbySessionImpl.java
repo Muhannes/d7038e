@@ -40,7 +40,7 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
         this.rmi = rmi;
     }
     
-    Account getAccount(){
+    public Account getAccount(){
         return account;
     }
     
