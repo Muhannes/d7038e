@@ -7,8 +7,10 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import java.util.List;
 import java.util.Map;
 import network.service.handover.HandoverSessionListener;
+import network.service.login.Account;
 
 /**
  *
@@ -40,9 +42,9 @@ public class WaitingState extends BaseAppState implements HandoverSessionListene
     }
 
     @Override
-    public void startSetup(Map<Integer, String> playerInfo) {
+    public void startSetup(List<Account> accounts) {
         SetupState ss = app.getStateManager().getState(SetupState.class);
-        ss.setPlayerInfo(playerInfo);
+        ss.setAccounts(accounts);
         this.setEnabled(false);
         app.enqueue(new Runnable() {
             @Override

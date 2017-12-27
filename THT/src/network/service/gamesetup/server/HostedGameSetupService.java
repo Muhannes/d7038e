@@ -58,7 +58,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 //    private AssetManager assetManager;
     
     private final List<AllReadyListener> readyListeners = new ArrayList<>();
-    private final Map<Integer, String> expectedPlayers = new HashMap<>();
+    private List<Account> accounts;
     private List<Player> players = new ArrayList<>();
     private final List<Integer> readyPlayers = new ArrayList<>();
     private final List<GameSetupSessionImpl> sessions = new ArrayList<>();    
@@ -84,8 +84,9 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
     }
     
-    public void setInitialized(List<Player> playerInitInfo){
+    public void setInitialized(List<Player> playerInitInfo, List<Account> accounts){
         players = playerInitInfo;
+        this.accounts = accounts;
         initialized = true;
     }
 
@@ -167,7 +168,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
         
         @Override
         public void join(int globalID, String key, String name) {
-            for (Account account : LoginListenerService.getAccounts()) {
+            for (Account account : accounts) {
                 if (account.isEqual(globalID, key)) {
                     authenticated = true;
                     connection.setAttribute(ConnectionAttribute.ACCOUNT, account);

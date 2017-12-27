@@ -12,6 +12,7 @@ import java.util.Map;
 import network.service.gamesetup.SetupGameEvent;
 import network.service.lobby.LobbyRoom;
 import network.service.lobby.LobbySessionListener;
+import network.service.login.Account;
 import utils.eventbus.EventBus;
 
 /**
@@ -93,11 +94,11 @@ public class LobbyRoomImpl implements LobbyRoom {
      
         playersReady++;
         if(playersReady == participants.size()){
-            Map<Integer, String> playerInfo = new HashMap<>();
-            participants.forEach(p -> playerInfo.put(p.getId(), p.getName()));
+            List<Account> accounts = new ArrayList<>();
+            participants.forEach(p -> accounts.add(p.getAccount()));
             List<LobbySessionListener> callbacks = new ArrayList<>();
             participants.forEach(p -> callbacks.add(p));
-            EventBus.publish(new SetupGameEvent(playerInfo, callbacks), SetupGameEvent.class);
+            EventBus.publish(new SetupGameEvent(accounts, callbacks), SetupGameEvent.class);
         }
     }
     

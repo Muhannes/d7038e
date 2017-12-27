@@ -79,22 +79,6 @@ public class GameNetworkHandler {
         }
     }
     
-    public void connectToLoginServer(){
-        try{
-            LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
-                    new Object[]{NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT});
-            loginClient = Network.connectToServer(NetConfig.LOGIN_SERVER_NAME, NetConfig.LOGIN_SERVER_PORT);
-            loginClient.getServices().addService(new RpcClientService());
-            loginClient.getServices().addService(new RmiClientService()); 
-            loginClient.getServices().addService(new LoginListenerService());
-            
-            loginClient.start();
-            loginClient.getServices().getService(LoginListenerService.class).listenForLogins();
-        }catch(IOException ex){
-               LOGGER.log(Level.SEVERE, null, ex);
-        }
-    }
-    
     public void disconnectFromLobbyServer(){
         if (lobbyClient != null && lobbyClient.isStarted()) {
             lobbyClient.close();

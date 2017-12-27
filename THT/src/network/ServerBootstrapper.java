@@ -5,8 +5,10 @@
  */
 package network;
 
+import com.jme3.system.JmeContext;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.gameserver.GameServer;
 import network.util.NetConfig;
 
 /**
@@ -21,10 +23,14 @@ public class ServerBootstrapper {
     public static void main(String args[]){
         LoginNetworkHandler loginNH = new LoginNetworkHandler();
         LobbyNetworkHandler lobbyNH = new LobbyNetworkHandler();
+        GameServer gameServer = new GameServer();
         loginNH.startServer();
         lobbyNH.startServers();
         NetConfig.networkDelay(30);
         lobbyNH.connectToLoginServer();
+        
+        
+        gameServer.start(JmeContext.Type.Headless);
         while (true){
             try {
                 Thread.sleep(1000);

@@ -6,7 +6,8 @@
 package network.service.handover;
 
 import com.jme3.network.service.rmi.Asynchronous;
-import java.util.Map;
+import java.util.List;
+import network.service.login.Account;
 
 /**
  *
@@ -15,5 +16,5 @@ import java.util.Map;
 public interface HandoverSessionListener {
     
     @Asynchronous
-    void startSetup(Map<Integer, String> playerInfo);
+    void startSetup(List<Account> accounts);
 }
