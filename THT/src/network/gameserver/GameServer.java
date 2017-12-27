@@ -11,6 +11,7 @@ import com.jme3.system.JmeContext;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
 import network.service.gamesetup.server.HostedGameSetupService;
+import network.service.gamestats.server.HostedGameStatsService;
 import network.service.movement.server.HostedMovementService;
 
 /**
@@ -74,5 +75,9 @@ public class GameServer extends SimpleApplication{
     
     public HostedMovementService getHostedMovementService(){
         return gnh.getHostedMovementService();
+    }
+    
+    public HostedGameStatsService getHostedGameStatsService(){
+        return gnh.getHostedGameStatsService();
     }
 }

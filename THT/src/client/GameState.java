@@ -10,11 +10,15 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import control.Entity;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
@@ -45,6 +49,8 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     private GameStatsSessionListener gameStatsListener;
     
     private Node root;
+    private Node traps;
+    private Node playerNode;
     private AssetManager asset;
     private InputManager input;
     private GameGUI game;
@@ -87,6 +93,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         gameStatsListener = this;
         
         this.root = app.getRootNode();
+        this.traps = (Node) app.getRootNode().getChild("traps");            
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
@@ -98,7 +105,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         this.clientGameStatsService = app.getClientGameStatsService();
         this.clientGameStatsService.addGameStatsSessionListener(gameStatsListener);
         
-        Node playerNode = (Node) root.getChild("players");
+        playerNode = (Node) root.getChild("players");
         player = (Entity) playerNode.getChild(""+ClientLoginService.getAccount().id);
         if(player == null){
             LOGGER.log(Level.SEVERE, "player is null");
@@ -132,9 +139,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
             ((Entity) entity).scaleWalkDirection(tpf);
         }
-        
-        //Contantly increase walking speed if entity is slowed from previous trap.
- 
+         
         //Check if any player walks on a trap!
         
     }
@@ -166,18 +171,15 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         }
         
     }
-
-    public void receivedNewTrap(String name, Vector3f position){
-        
-    }
     
+    /*
     public void triggeredTrap(String name, String trapName){
-        root.detachChildNamed(trapName);
-        Node playerNode = (Node) root.getChild("players");
+        traps.detachChildNamed(trapName);
+        playerNode = (Node) root.getChild("players");
         Entity triggerer = (Entity) playerNode.getChild(name);
         triggerer.setWalkDirection(triggerer.getWalkDirection().mult(0.0f));
     }
-
+    */
     
     @Override
     public void notifyPlayersKilled(List<String> victims, List<String> killers) {
@@ -191,17 +193,29 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
 
     @Override
     public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
-        for(String trapName : trapNames){
+        for(int i = 0; i < trapNames.size(); i++){
             //Create a trap at the location with the name given.
+            Box box = new Box(0.1f,0.1f,0.1f);
+            Geometry geom = new Geometry(trapNames.get(i), box);
+            Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+            material.setColor("Color", ColorRGBA.Red);
+            geom.setMaterial(material);
+            Vector3f position = newTraps.get(i);
+            position.y = 0.1f;
+            geom.setLocalTranslation(position);        
+            traps.attachChild(geom);
         }
     }
 
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-        for(String name : names){
+        for(int i = 0; i < names.size(); i++){
             //The players that triggered the corresponding trap is slowed.
+            traps.detachChildNamed(trapNames.get(i));
+            playerNode = (Node) root.getChild("players");
+            Entity triggerer = (Entity) playerNode.getChild(names.get(i));
+            triggerer.setWalkDirection(triggerer.getWalkDirection().mult(0.5f));
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 

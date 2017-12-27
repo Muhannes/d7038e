@@ -12,10 +12,15 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
+import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionEmitter;
 import network.service.gamestats.GameStatsSessionListener;
@@ -32,6 +37,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     private RmiHostedService rmiHostedService;
     
+    private final ArrayList<GameStatsSessionImpl> players = new ArrayList<>();
     private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
     private final ArrayList<GameStatsSession> gameStatsSessions = new ArrayList<>();
             
@@ -60,10 +66,10 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         
         // Retrieve the client side callback
         GameStatsSessionListener callback = getCallback(connection);
-        
         // The newly connected client will be represented by this object on
         // the server side
         GameStatsSessionImpl session = new GameStatsSessionImpl(connection, callback);
+        players.add(session);
         
         connection.setAttribute(GAME_STATS_SERVICE, session);
         
@@ -81,7 +87,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
         GameStatsSessionListener callback = rmiRegistry.getRemoteObject(GameStatsSessionListener.class);
         if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for ChatSessionListener");
+            throw new RuntimeException("Unable to locate client callback for gameStatsSessionListener");
         }
         return callback;
     }
@@ -94,6 +100,37 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     @Override
     public void removeSessions(GameStatsSession session){
         gameStatsSessions.remove(session);
+    }
+    
+    public void sendOutTraps(Node trapNode, Node playersNode){
+    /*
+        //Send out movements everything 10ms 
+        LOGGER.log(Level.INFO, "Sending out to clients");                    
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    while(true){
+                        try {                    
+                            Thread.sleep(20);                    
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {
+                            //Look if players are colliding with any traps
+                            for(Spatial trap : trapNode.getChildren()){
+                                //Broadcast out the list of collisions
+                            }
+                        }                    
+                    }
+                }            
+            }
+        ).start();
+    */  
+    }
+
+    
+    public void broadcast(List<String> trapNames, List<Vector3f> trapPositions){
+        players.forEach(l -> l.callback.notifyTrapsPlaced(trapNames, trapPositions));
     }
     
     private class GameStatsSessionImpl implements GameStatsSession, GameStatsSessionListener {
