@@ -6,6 +6,7 @@
 package network.service.lobby;
 
 import com.jme3.network.service.rmi.Asynchronous;
+import java.util.List;
 
 /**
  *
@@ -14,7 +15,7 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface LobbySessionListener {
     
     @Asynchronous
-    void updateLobby(String lobbyName, int roomID, int numPlayers, int maxPlayers);
+    void updateLobby(List<LobbyRoom> rooms);
     
     @Asynchronous
     void playerJoinedLobby(String name);
@@ -27,5 +28,8 @@ public interface LobbySessionListener {
     
     @Asynchronous
     void allReady(String ip, int port);
+    
+    @Asynchronous
+    void joinedLobby(LobbyRoom room);
     
 }

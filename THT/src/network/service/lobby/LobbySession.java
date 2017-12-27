@@ -6,8 +6,6 @@
 package network.service.lobby;
 
 import com.jme3.network.service.rmi.Asynchronous;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -15,20 +13,37 @@ import java.util.Map;
  */
 public interface LobbySession {
     
+    /**
+     * Authenticate with the lobby server
+     * @param id
+     * @param key 
+     */
+    @Asynchronous
     void authenticate(int id, String key);
     
-    List<String> join(int roomid);
+    /**
+     * Join the room with the given name
+     * @param room Name of room
+     */
+    @Asynchronous
+    void join(String room);
 
+    /**
+     * Leave the room 
+     */
     @Asynchronous
     void leave();
     
+    /**
+     * Notify that you are ready to begin playing the game
+     */
     @Asynchronous
     void ready();
     
-    int createLobby(String lobbyName);
-    
-    Map<String, Integer> getAllRooms();
-
-    public boolean removeLobby(String lobbyName);
+    /**
+     * Fetches all rooms
+     */
+    @Asynchronous
+    void fetchAllRooms();
     
 }

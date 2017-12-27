@@ -11,6 +11,7 @@ import com.jme3.network.service.rmi.RmiClientService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import network.service.lobby.server.LobbyRoomMessage;
 import network.service.movement.PlayerMovement;
 
 /**
@@ -37,6 +38,7 @@ public class NetConfig {
     public static void initSerializables(){
         Serializer.registerClass(Player.class);
         Serializer.registerClass(PlayerMovement.class);
+        Serializer.registerClass(LobbyRoomMessage.class);
     }
     
     public static void networkDelay(int ms){
