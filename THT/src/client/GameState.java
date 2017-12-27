@@ -6,16 +6,10 @@
 package client;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
@@ -25,7 +19,6 @@ import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.login.client.ClientLoginService;
@@ -51,11 +44,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private InputManager input;
     private GameGUI game;
     
-    private Boolean sentStop = false;
     private Entity player;
-    private Spatial playerSpatial;
-    private boolean left = false, right = false, forward = false, backward = false;
-    private Vector3f walkingDirection = Vector3f.ZERO;
     private ChaseCamera chaseCamera;
     private Camera camera;
     private Human human;
@@ -123,21 +112,12 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         app.stop();
     }
     
-    private void sendToServer(Vector3f location, Vector3f direction, Quaternion rotation){         
-        System.out.println("Sending new direction : " + direction);
-        PlayerMovement pm = new PlayerMovement(player.getName(), location, direction, rotation);
-        clientMovementService.sendMessage(pm);
-    }
-    
     @Override
     public void update(float tpf){
         // Scale walking speed by tpf
         for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
             ((Entity) entity).scaleWalkDirection(tpf);
         }
-    }
-
-    public void youAreTrapped(){
     }
     
     @Override
@@ -147,17 +127,22 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         });
     }
     
+    /**
+     * converges all players that have changed their movementStatus.
+     * currently only snaps. Should be linear convergence for characters that moves "short distances".
+     * @param playerMovements 
+     */
     private void convergePlayers(List<PlayerMovement> playerMovements){
      
         Node players = (Node) root.getChild("players");
         for (PlayerMovement playerMovement : playerMovements) {
             if (playerMovement.id.equals(player.getName())) { // This player
                 LOGGER.log(Level.INFO, "Converging self: {0}", playerMovement.id);
-                player.convergeSnap(playerMovement.location, player.getWalkDirection());
+                player.convergeSnap(playerMovement.location, player.getWalkDirection(), player.getLocalRotation());
             } else { // Other entity, converge
                 LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
                 Entity entity = (Entity) players.getChild(playerMovement.id);
-                entity.convergeSnap(playerMovement.location, playerMovement.direction);
+                entity.convergeSnap(playerMovement.location, playerMovement.direction, playerMovement.rotation);
             }
         }
         

@@ -100,6 +100,9 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         }           
     }
     
+    /**
+     * Depending on what buttons are pressed, set a new movementDirection
+     */
     private void setNewMoveDirection(){
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
@@ -130,6 +133,9 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         self.setWalkDirection(moveDirection);
     }
     
+    /**
+     * Sends information about entity to server
+     */
     private void sendMovementToServer(){         
         System.out.println("Sending new direction");
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
@@ -164,6 +170,12 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
     }
 
+    /**
+     * TODO: Make rotations here?
+     * @param name
+     * @param value
+     * @param tpf 
+     */
     @Override
     public void onAnalog(String name, float value, float tpf) {
         /*if(name.equals("left")){

@@ -11,12 +11,13 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
 /**
- *
+ * The spatial for a movable character
  * @author hannes
  */
 public class Entity extends Geometry{
@@ -32,6 +33,12 @@ public class Entity extends Geometry{
         initEntity(material, bulletAppState, position);
     }
     
+    /**
+     * Sets shape and looks of object. is currently a box, but can be changed to something else
+     * @param material
+     * @param bulletAppState
+     * @param position 
+     */
     private void initEntity(Material material, BulletAppState bulletAppState, Vector3f position){
         material.setColor("Color", ColorRGBA.Blue);
         this.setMaterial(material);
@@ -56,9 +63,10 @@ public class Entity extends Geometry{
         //charControl.setWalkDirection(vectorPointingAtPosition);
     }
     
-    public void convergeSnap(Vector3f position, Vector3f walkDirection){
-        //this.setLocalTranslation(position);
+    public void convergeSnap(Vector3f position, Vector3f walkDirection, Quaternion rotation){
         charControl.setPhysicsLocation(position);
+        //charControl.setViewDirection(rotation); // maybe use this instead? but takes a vector3f...
+        this.setLocalRotation(rotation);
         charControl.setWalkDirection(walkDirection);
     }
     
@@ -70,6 +78,10 @@ public class Entity extends Geometry{
         charControl.setWalkDirection(walkDirection);
     }
     
+    /**
+     * Scales the movementSpeed depending on tpf
+     * @param tpf 
+     */
     public void scaleWalkDirection(float tpf){
         Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
         setWalkDirection(scaledSpeed);
