@@ -18,7 +18,13 @@ import com.jme3.scene.Node;
  *
  * @author ted
  */
-public class TrapController extends RigidBodyControl implements PhysicsCollisionListener{
+public class TrapController extends GhostControl implements PhysicsCollisionListener{
+
+    BulletAppState bulletAppState;
+    
+    public TrapController() {
+        bulletAppState.getPhysicsSpace().addCollisionListener(this);
+    }
 
     @Override
     public void collision(PhysicsCollisionEvent event) {

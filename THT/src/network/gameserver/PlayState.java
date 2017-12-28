@@ -129,8 +129,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     material.setColor("Color", ColorRGBA.Red);
                     geom.setMaterial(material);
 
+                    //Create node for each Trap
+                    Node node = new Node(trapName);
+                    node.attachChild(geom);
                     GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
-                    geom.addControl(ghost);
+                    node.addControl(ghost);
 
                     Vector3f position = newTrap;
                     position.y = 0.1f;
