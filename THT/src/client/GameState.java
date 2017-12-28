@@ -60,10 +60,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     private Camera camera;
     private Human human;
     private int id;
-    
-    private long slow;
-    
-    
+        
     @Override
     protected void initialize(Application app) {
         

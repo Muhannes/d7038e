@@ -179,7 +179,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
      */
     private void sendTrapToServer(String trapName, Vector3f newTrap){
         LOGGER.log(Level.INFO, "sending new trap to server");
-        clientGameStatsService.sendTrapMessage(trapName, newTrap);
+        clientGameStatsService.notifyTrapPlaced(trapName, newTrap);
     }
     
     @Override

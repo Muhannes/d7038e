@@ -22,13 +22,13 @@ import network.util.NetConfig;
  *
  * @author truls
  */
-public class ClientGameStatsService extends AbstractClientService{
+public class ClientGameStatsService extends AbstractClientService implements GameStatsSession{
     private static final Logger LOGGER = Logger.getLogger(ClientGameStatsService.class);
     
-    private GameStatsCallback callback = new GameStatsCallback();
+    private final GameStatsSessionListener callback = new GameStatsSessionCallback();
     // Used to get notifications from the server
     
-    private ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
+    private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
     // Used to notify listeners on client side
     
     private GameStatsSession delegate;
@@ -54,6 +54,7 @@ public class ClientGameStatsService extends AbstractClientService{
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
         }
+        LOGGER.log(Level.SEVERE, "callBack : " + callback);
         rmiService.share((byte)channel, callback, GameStatsSessionListener.class);
     }
     
@@ -61,7 +62,7 @@ public class ClientGameStatsService extends AbstractClientService{
         listeners.add(listener);
     }
     
-    public GameStatsSession getDelegate(){
+    private GameStatsSession getDelegate(){
         if(delegate == null){
             LOGGER.log(Level.INFO, "Getting delegate from netConfig");
             delegate = NetConfig.getDelegate(rmiService, GameStatsSession.class);
@@ -69,12 +70,28 @@ public class ClientGameStatsService extends AbstractClientService{
         return delegate;
     }
     
-    public void sendTrapMessage(String trapName, Vector3f newTrap){
-        LOGGER.log(Level.INFO, "Received new trap");
+    @Override
+    public void notifyPlayerKilled(String victim, String killer) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyPlayerEscaped(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
+        LOGGER.log(Level.INFO, "Received new trap" + trapName + " at " + newTrap);
         getDelegate().notifyTrapPlaced(trapName, newTrap);
     }
+
+    @Override
+    public void notifyTrapTriggered(String name, String trapName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
-    private class GameStatsCallback implements GameStatsSessionListener {
+    private class GameStatsSessionCallback implements GameStatsSessionListener {
 
         @Override
         public void notifyPlayersKilled(List<String> victims, List<String> killers) {

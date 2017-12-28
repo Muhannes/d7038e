@@ -38,14 +38,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
     private static final String MOVEMENT = "MOVEMENT";
     
-    private final List<MovementSession> movementSessions = new ArrayList<>();
-    
     private RmiHostedService rmiHostedService;
-    private List<MovementSessionImpl> players = new ArrayList<>();
-    private List<PlayerMovement> movements = new ArrayList<>();
+    private final List<MovementSessionImpl> players = new ArrayList<>();
+    private final List<MovementSession> movementSessions = new ArrayList<>();
+    private final List<PlayerMovement> movements = new ArrayList<>();
     
-    private AssetManager asset;
-    private BulletAppState bulletAppState;
+//    private AssetManager asset;
+//    private BulletAppState bulletAppState;
     
     private List<String> updatedPlayers = new ArrayList<>();
 //    private MovementSession session;
@@ -67,6 +66,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
     
     public void playerUpdated(String id){
+        System.out.println("New update in playerUpdated (HostedMovementService)");
         if (!updatedPlayers.contains(id)) {
             updatedPlayers.add(id);
         }
@@ -173,6 +173,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
+            LOGGER.log(Level.INFO, "new movement received");
             movementSessions.forEach(l -> l.sendMessage(playerMovement));
         }
         

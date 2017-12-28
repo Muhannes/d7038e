@@ -41,6 +41,7 @@ public class ClientMovementService extends AbstractClientService implements Move
     public ClientMovementService(){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;  
     }
+    
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
         rmiService = getService(RmiClientService.class);
@@ -51,7 +52,6 @@ public class ClientMovementService extends AbstractClientService implements Move
         LOGGER.log(Level.SEVERE, "callBack : " + callback);
         rmiService.share((byte)channel, callback, MovementSessionListener.class);
     }
-    
     
     private MovementSession getDelegate(){
         if(delegate == null){

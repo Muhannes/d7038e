@@ -53,9 +53,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService = app.getHostedMovementService();
         hostedGameStatsService = app.getHostedGameStatsService();
         
+        root = (Node) app.getRootNode();
         playersNode = (Node) app.getRootNode().getChild("playersNode");
         trapNode = (Node) app.getRootNode().getChild("traps");
-        root = (Node) app.getRootNode();
         
         if (playersNode == null || root == null || trapNode == null) {
             LOGGER.severe("root, trapNode or playersNode is null");
@@ -75,7 +75,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
-        
+
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
         }else {
@@ -85,6 +85,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
                     playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
                     playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
+
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }
             });
@@ -110,13 +111,17 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        if (root.getChild(trapName) == null) {
-            LOGGER.severe("ID was wrong!");
+        System.out.println("new playerMovement in PlayState -> notifyTrapPlaced");
+        LOGGER.info("trap children : " + trapNode.getChildren());
+
+        if (trapNode.getChild(trapName) != null) {
+            LOGGER.severe("ID already exist! " + trapName);
         }else {
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
                     //Create a new trap
+                    //TODO: Add rigidBody to traps
                     Box box = new Box(0.1f,0.1f,0.1f);
                     Geometry geom = new Geometry(trapName, box);
                     Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -126,7 +131,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     position.y = 0.1f;
                     geom.setLocalTranslation(position);      
                     trapNode.attachChild(geom);
-                    hostedGameStatsService.sendOutTraps(trapNode, playersNode);
+                    System.out.println("playstate sending out trapUpdated");
+                    hostedGameStatsService.trapUpdated(geom.getName());
+                    //hostedGameStatsService.sendOutTraps(trapNode, playersNode);
                 }
             });
         }

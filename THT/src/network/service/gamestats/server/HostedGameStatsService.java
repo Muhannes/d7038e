@@ -24,6 +24,7 @@ import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionEmitter;
 import network.service.gamestats.GameStatsSessionListener;
+import network.util.NetConfig;
 
 /**
  *
@@ -37,10 +38,14 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     private RmiHostedService rmiHostedService;
     
-    private final ArrayList<GameStatsSessionImpl> players = new ArrayList<>();
-    private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
-    private final ArrayList<GameStatsSession> gameStatsSessions = new ArrayList<>();
-            
+    private final List<GameStatsSessionImpl> players = new ArrayList<>();
+    //private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
+    private final List<GameStatsSession> gameStatsSessions = new ArrayList<>();
+    private final List<String> trapNames = new ArrayList<>();
+    private final List<Vector3f> trapPositions = new ArrayList<>();
+    
+    private List <String> updatedTraps = new ArrayList<>();
+    
     private int channel;
     
     public HostedGameStatsService(){
@@ -53,22 +58,32 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
     @Override
     protected void onInitialize(HostedServiceManager serviceManager) {
-        setAutoHost(false);
+        //setAutoHost(false);
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("GameStats service requires an RMI service.");
         }   
     }
     
+    public void trapUpdated(String id){
+        LOGGER.log(Level.INFO, "New trap received : " + id);
+        System.out.println("new update in trapUpdated (HostedGameStatsService)");
+        if(!updatedTraps.contains(id)){
+            updatedTraps.add(id);
+        }
+    }
+    
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "GameStats service started. Client id: {0}", connection.getId());
-        
+        NetConfig.networkDelay(30);
+
         // Retrieve the client side callback
-        GameStatsSessionListener callback = getCallback(connection);
+        
+//        GameStatsSessionListener callback = getCallback(connection);
         // The newly connected client will be represented by this object on
         // the server side
-        GameStatsSessionImpl session = new GameStatsSessionImpl(connection, callback);
+        GameStatsSessionImpl session = new GameStatsSessionImpl(connection);
         players.add(session);
         
         connection.setAttribute(GAME_STATS_SERVICE, session);
@@ -83,7 +98,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "GameStats service stopped: Client id: {0}", connection.getId());
     }
     
-    private GameStatsSessionListener getCallback(HostedConnection connection){
+/*    private GameStatsSessionListener getCallback(HostedConnection connection){
         RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
         GameStatsSessionListener callback = rmiRegistry.getRemoteObject(GameStatsSessionListener.class);
         if( callback == null){ 
@@ -91,7 +106,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         }
         return callback;
     }
-    
+*/    
     @Override
     public void addSessions(GameStatsSession session){
         gameStatsSessions.add(session);
@@ -103,9 +118,8 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void sendOutTraps(Node trapNode, Node playersNode){
-    /*
+        LOGGER.log(Level.INFO, "Sending out to clients");
         //Send out movements everything 10ms 
-        LOGGER.log(Level.INFO, "Sending out to clients");                    
         new Thread(
             new Runnable(){
                 @Override
@@ -115,32 +129,49 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             Thread.sleep(20);                    
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {
-                            //Look if players are colliding with any traps
-                            for(Spatial trap : trapNode.getChildren()){
-                                //Broadcast out the list of collisions
+                        } finally {                            
+                            for(String newTrapId : updatedTraps){            
+                                LOGGER.log(Level.INFO, "sending out new trap : " + newTrapId);
+                                Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
+                                String trapName = trapNode.getChild(newTrapId).getName();
+                                trapNames.add(trapName);
+                                trapPositions.add(position);
+                                if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
+                                    broadcast(trapNames, trapPositions);
+                                    //Clearing old traps
+                                    trapNames.clear();
+                                    trapPositions.clear();
+                                }
                             }
                         }                    
                     }
                 }            
             }
         ).start();
-    */  
     }
 
-    
-    public void broadcast(List<String> trapNames, List<Vector3f> trapPositions){
-        players.forEach(l -> l.callback.notifyTrapsPlaced(trapNames, trapPositions));
+    public void broadcast(List<String> trapNames, List<Vector3f> trapLocations){
+        LOGGER.log(Level.INFO, "New broadcast out to clients");
+        System.out.println("New Broadcast!");
+        players.forEach(l -> l.getCallback().notifyTrapsPlaced(trapNames, trapLocations));
     }
     
-    private class GameStatsSessionImpl implements GameStatsSession, GameStatsSessionListener {
+    private class GameStatsSessionImpl implements GameStatsSession {
         
-        private HostedConnection connection; //Used for what?
+        private final HostedConnection connection; //Used for what?
         private GameStatsSessionListener callback; //Used for what?
         
-        public GameStatsSessionImpl(HostedConnection connection, GameStatsSessionListener callback){
+        public GameStatsSessionImpl(HostedConnection connection){
             this.connection = connection;
-            this.callback = callback;
+//            this.callback = callback;
+        }
+        
+        private GameStatsSessionListener getCallback(){
+            if(callback == null){
+                RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
+                callback = NetConfig.getCallback(rmiRegistry, GameStatsSessionListener.class);
+            }
+            return callback;
         }
         
         @Override
@@ -156,6 +187,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
             LOGGER.log(Level.INFO, "trap received at server");
+            System.out.println("Trap received : " + trapName + " at position : " + newTrap);
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 
@@ -164,7 +196,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
             gameStatsSessions.forEach(l -> l.notifyTrapTriggered(name, trapName));
         }
 
-        @Override
+/*        @Override
         public void notifyPlayersKilled(List<String> victims, List<String> killers) {
             listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
         }
@@ -183,5 +215,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
             listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
         }
+*/
     } 
 }
