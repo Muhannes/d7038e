@@ -13,6 +13,7 @@ import com.jme3.scene.control.AbstractControl;
 
 /**
  * Base class for Human and Monster input control
+ * 
  * @author truls
  */
 public abstract class AbstractInputControl extends AbstractControl implements AnalogListener{

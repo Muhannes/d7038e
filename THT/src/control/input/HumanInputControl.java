@@ -13,6 +13,7 @@ import com.jme3.math.Vector3f;
 
 /**
  * This control handles how a human should react to keyboard input.
+ * 
  * @author truls
  */
 public class HumanInputControl extends AbstractInputControl{

@@ -11,6 +11,7 @@ import com.jme3.input.controls.KeyTrigger;
 
 /**
  * This control handles how a monster should react to keyboard input.
+ * 
  * @author truls
  */
 public class MonsterInputControl extends AbstractInputControl{
