@@ -14,7 +14,10 @@ import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
 
 /**
- * This control will converge a Spatial to a given Setpoint 
+ * This control will converge a Spatial to a given Setpoint. This control, once
+ * added as listener to a MovementSession, will receive new setpoints continously 
+ * from a server and try to converge the controller spatial to this point
+ * 
  * @author truls
  */
 public class ConvergeControl extends AbstractControl implements MovementSessionListener{
