@@ -106,7 +106,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         
-        Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, mat);
+        Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
         players.setName("playersNode");
         
         world.attachChild(players);        

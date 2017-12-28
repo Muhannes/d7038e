@@ -35,7 +35,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
-    private final Entity self;
+    private final EntityNode self;
     private final AssetManager asset;
     private final SimpleApplication app;
     private Camera camera;
@@ -43,7 +43,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     private ClientMovementService clientMovementService;
     
-    public Human(Entity player, SimpleApplication app, ClientMovementService clientMovementService){
+    public Human(EntityNode player, SimpleApplication app, ClientMovementService clientMovementService){
         this.self = player;
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
@@ -53,8 +53,6 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        Vector3f camDir = camera.getDirection().clone();
-        Vector3f camLeft = camera.getLeft().clone();
         if(name.equals("jump")){ 
             self.charControl.jump();
         }
@@ -104,6 +102,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     /**
      * Depending on what buttons are pressed, set a new movementDirection
+     * Should always be called when updating speed or direction.
      */
     private void setNewMoveDirection(){
         Vector3f camDir = camera.getDirection().clone();
@@ -128,15 +127,20 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         }
         
         moveDirection.normalizeLocal();
-        moveDirection.multLocal(Entity.MOVEMENT_SPEED);
+        moveDirection.multLocal(EntityNode.MOVEMENT_SPEED);
 
         Vector3f rotation = self.charControl.getWalkDirection();
         self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
         self.setWalkDirection(moveDirection);
+        if (forward || backward || strafeLeft || strafeRight) {
+            Vector3f viewDirection = new Vector3f(moveDirection).normalize();
+            viewDirection.y = 0;
+            self.setViewDirection(viewDirection);
+        }
     }
     
     /**
-     * Sends information about entity to server
+     * Sends information about model to server
      */
     private void sendMovementToServer(){         
         System.out.println("Sending new direction");

@@ -10,11 +10,14 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
+import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import control.Entity;
+import com.jme3.scene.control.CameraControl.ControlDirection;
+import control.EntityNode;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
@@ -44,7 +47,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     private InputManager input;
     private GameGUI game;
     
-    private Entity player;
+    private EntityNode player;
     private ChaseCamera chaseCamera;
     private Camera camera;
     private Human human;
@@ -85,7 +88,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
         this.clientMovementService.addListener(listener);
         
         Node playerNode = (Node) root.getChild("players");
-        player = (Entity) playerNode.getChild(""+ClientLoginService.getAccount().id);
+        player = (EntityNode) playerNode.getChild(""+ClientLoginService.getAccount().id);
         if(player == null){
             LOGGER.log(Level.SEVERE, "player is null");
         }
@@ -96,6 +99,13 @@ public class GameState extends BaseAppState implements MovementSessionListener{
             LOGGER.log(Level.SEVERE, "inputmanager is null");
         }
         
+        // set forward camera node that follows the character
+        /*CameraNode camNode = new CameraNode("CamNode", camera);
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        camNode.setLocalTranslation(new Vector3f(0, 1, -5));
+        camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
+        player.attachChild(camNode);
+        */
         chaseCamera = new ChaseCamera(camera, player, input);
         chaseCamera.setMaxDistance(12);
         
@@ -116,7 +126,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
     public void update(float tpf){
         // Scale walking speed by tpf
         for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
-            ((Entity) entity).scaleWalkDirection(tpf);
+            ((EntityNode) entity).scaleWalkDirection(tpf);
         }
     }
     
@@ -141,7 +151,7 @@ public class GameState extends BaseAppState implements MovementSessionListener{
                 player.convergeSnap(playerMovement.location, player.getWalkDirection(), player.getLocalRotation());
             } else { // Other entity, converge
                 LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
-                Entity entity = (Entity) players.getChild(playerMovement.id);
+                EntityNode entity = (EntityNode) players.getChild(playerMovement.id);
                 entity.convergeSnap(playerMovement.location, playerMovement.direction, playerMovement.rotation);
             }
         }
