@@ -67,7 +67,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     public void trapUpdated(String id){
         LOGGER.log(Level.INFO, "New trap received : " + id);
-        System.out.println("new update in trapUpdated (HostedGameStatsService)");
         if(!updatedTraps.contains(id)){
             updatedTraps.add(id);
         }
@@ -118,7 +117,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void sendOutTraps(Node trapNode, Node playersNode){
-        LOGGER.log(Level.INFO, "Sending out to clients");
         //Send out movements everything 10ms 
         new Thread(
             new Runnable(){
@@ -131,7 +129,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {                            
                             for(String newTrapId : updatedTraps){            
-                                LOGGER.log(Level.INFO, "sending out new trap : " + newTrapId);
                                 Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
                                 String trapName = trapNode.getChild(newTrapId).getName();
                                 trapNames.add(trapName);
@@ -151,8 +148,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
 
     public void broadcast(List<String> trapNames, List<Vector3f> trapLocations){
-        LOGGER.log(Level.INFO, "New broadcast out to clients");
-        System.out.println("New Broadcast!");
         players.forEach(l -> l.getCallback().notifyTrapsPlaced(trapNames, trapLocations));
     }
     
@@ -187,7 +182,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
             LOGGER.log(Level.INFO, "trap received at server");
-            System.out.println("Trap received : " + trapName + " at position : " + newTrap);
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 

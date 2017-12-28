@@ -8,6 +8,8 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.material.Material;
@@ -204,6 +206,10 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
             Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
             material.setColor("Color", ColorRGBA.Red);
             geom.setMaterial(material);
+            
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+            geom.addControl(ghost);
+            
             Vector3f position = newTraps.get(i);
             position.y = 0.1f;
             geom.setLocalTranslation(position);        

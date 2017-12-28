@@ -66,7 +66,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
     
     public void playerUpdated(String id){
-        System.out.println("New update in playerUpdated (HostedMovementService)");
         if (!updatedPlayers.contains(id)) {
             updatedPlayers.add(id);
         }
@@ -106,7 +105,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     
     public void sendOutMovements(Node playersNode){
         //Send out movements everything 10ms 
-        LOGGER.log(Level.INFO, "Sending out to clients");                    
         new Thread(
             new Runnable(){
                 @Override
@@ -121,7 +119,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                             //Create PlayerMovements
                             //Send out to clients
                             for(String id : updatedPlayers){
-                                LOGGER.info("Sending movement regarding id: " + id);
                                 Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                                 Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
                                 Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());

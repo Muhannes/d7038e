@@ -7,7 +7,9 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -111,7 +113,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        System.out.println("new playerMovement in PlayState -> notifyTrapPlaced");
         LOGGER.info("trap children : " + trapNode.getChildren());
 
         if (trapNode.getChild(trapName) != null) {
@@ -127,11 +128,14 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
                     material.setColor("Color", ColorRGBA.Red);
                     geom.setMaterial(material);
+
+                    GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+                    geom.addControl(ghost);
+
                     Vector3f position = newTrap;
                     position.y = 0.1f;
                     geom.setLocalTranslation(position);      
                     trapNode.attachChild(geom);
-                    System.out.println("playstate sending out trapUpdated");
                     hostedGameStatsService.trapUpdated(geom.getName());
                     //hostedGameStatsService.sendOutTraps(trapNode, playersNode);
                 }
