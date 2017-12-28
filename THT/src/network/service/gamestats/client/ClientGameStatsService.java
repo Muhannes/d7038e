@@ -54,7 +54,6 @@ public class ClientGameStatsService extends AbstractClientService{
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
         }
-        
         rmiService.share((byte)channel, callback, GameStatsSessionListener.class);
     }
     
@@ -64,12 +63,15 @@ public class ClientGameStatsService extends AbstractClientService{
     
     public GameStatsSession getDelegate(){
         if(delegate == null){
+            LOGGER.log(Level.INFO, "Getting delegate from netConfig");
             delegate = NetConfig.getDelegate(rmiService, GameStatsSession.class);
         }
         return delegate;
     }
     
     public void sendTrapMessage(String trapName, Vector3f newTrap){
+        LOGGER.log(Level.INFO, "Received new trap");
+        getDelegate().notifyTrapPlaced(trapName, newTrap);
     }
     
     private class GameStatsCallback implements GameStatsSessionListener {

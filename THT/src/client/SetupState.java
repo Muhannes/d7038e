@@ -105,7 +105,12 @@ public class SetupState extends BaseAppState implements
     
     private void loadStaticGeometry(){   
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
-        world.attachChild(creepyhouse);   
+        world.attachChild(creepyhouse);
+        
+        //Create a static node for traps
+        Node traps = new Node("traps");
+        app.getRootNode().attachChild(traps);
+        
         if (bulletAppState != null) {
             WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
         } else {

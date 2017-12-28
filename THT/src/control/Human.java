@@ -21,8 +21,11 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import java.util.List;
+import java.util.logging.Level;
+import com.sun.istack.internal.logging.Logger;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
@@ -32,6 +35,8 @@ import network.service.movement.client.ClientMovementService;
  * @author ted
  */
 public class Human extends AbstractController implements ActionListener, AnalogListener{
+
+    private static final Logger LOGGER = Logger.getLogger(Human.class);
 
     private Jump jump;
     
@@ -162,10 +167,10 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             geom.setMaterial(material);
             Vector3f position = self.getLocalTranslation();
             position.y = 0.1f;
-            geom.setLocalTranslation(position);        
-            app.getRootNode().attachChild(geom); //Add to a trap node instead of app (after works).
-
-            sendTrapToServer(geom.getName(), position);            
+            geom.setLocalTranslation(position);
+            Node traps = (Node) app.getRootNode().getChild("traps");
+            traps.attachChild(geom);
+            sendTrapToServer(geom.getName(), position);
         }
     }
     
@@ -173,6 +178,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
      * Send trap information to server
      */
     private void sendTrapToServer(String trapName, Vector3f newTrap){
+        LOGGER.log(Level.INFO, "sending new trap to server");
         clientGameStatsService.sendTrapMessage(trapName, newTrap);
     }
     

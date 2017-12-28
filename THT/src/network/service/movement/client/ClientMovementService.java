@@ -5,9 +5,7 @@
  */
 package network.service.movement.client;
 
-import com.jme3.math.Vector3f;
 import com.jme3.network.MessageConnection;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;

@@ -193,6 +193,13 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
 
     @Override
     public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+        app.enqueue(() -> {
+            updateTreeWithNewTraps(trapNames, newTraps);
+        });    
+    }
+
+    public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
+                        
         for(int i = 0; i < trapNames.size(); i++){
             //Create a trap at the location with the name given.
             Box box = new Box(0.1f,0.1f,0.1f);
@@ -206,7 +213,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
             traps.attachChild(geom);
         }
     }
-
+    
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
         for(int i = 0; i < names.size(); i++){

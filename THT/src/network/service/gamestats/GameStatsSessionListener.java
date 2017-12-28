@@ -6,6 +6,7 @@
 package network.service.gamestats;
 
 import com.jme3.math.Vector3f;
+import com.jme3.network.service.rmi.Asynchronous;
 import java.util.List;
 
 /**
@@ -14,11 +15,15 @@ import java.util.List;
  */
 public interface GameStatsSessionListener {
     
+    @Asynchronous
     void notifyPlayersKilled(List <String> victims, List <String> killers);
     
+    @Asynchronous
     void notifyPlayersEscaped(List <String> names);
     
+    @Asynchronous
     void notifyTrapsPlaced(List <String> trapNames, List <Vector3f> newTraps);
     
+    @Asynchronous
     void notifyTrapsTriggered(List <String> names, List <String> trapNames);
 }

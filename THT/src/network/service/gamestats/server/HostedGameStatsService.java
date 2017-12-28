@@ -155,6 +155,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
+            LOGGER.log(Level.INFO, "trap received at server");
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 
