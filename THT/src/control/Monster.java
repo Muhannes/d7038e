@@ -13,15 +13,12 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.scene.Spatial;
-import control.action.Jump;
 
 /**
  *
  * @author ted
  */
 public class Monster extends AbstractController implements ActionListener{
-
-    private Jump jump;
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     

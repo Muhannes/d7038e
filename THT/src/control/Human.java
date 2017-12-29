@@ -13,7 +13,6 @@ import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
-import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -39,8 +38,6 @@ import network.service.movement.client.ClientMovementService;
 public class Human extends AbstractController implements ActionListener, AnalogListener{
 
     private static final Logger LOGGER = Logger.getLogger(Human.class);
-
-    private Jump jump;
     
     private int numberOfTraps = 5; 
     
