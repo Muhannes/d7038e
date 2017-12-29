@@ -7,7 +7,9 @@ package control;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -44,6 +46,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
+    
     private final Entity self;
     private final AssetManager asset;
     private final SimpleApplication app;
@@ -64,8 +67,8 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        Vector3f camDir = camera.getDirection().clone();
-        Vector3f camLeft = camera.getLeft().clone();
+//        Vector3f camDir = camera.getDirection().clone();
+//        Vector3f camLeft = camera.getLeft().clone();
         if(name.equals("jump")){ 
             self.charControl.jump();
         }
@@ -154,9 +157,6 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         clientMovementService.sendMessage(pm);
     }
     
-    /**
-     *
-     */
     public void createTrap(){
         if(this.numberOfTraps > 0){
             Box box = new Box(0.1f,0.1f,0.1f);
@@ -168,8 +168,18 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             Vector3f position = self.getLocalTranslation();
             position.y = 0.1f;
             geom.setLocalTranslation(position);
+            
+            Node trap = new Node(geom.getName());
+            trap.attachChild(geom);
+            
+            //Might fuck things up, remember this and two more places in playState and GameState
+            System.out.println("in Human, ghostControl");
+
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+            trap.addControl(ghost);
             Node traps = (Node) app.getRootNode().getChild("traps");
-            traps.attachChild(geom);
+            traps.attachChild(trap);
+            
             sendTrapToServer(geom.getName(), position);
         }
     }

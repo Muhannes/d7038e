@@ -7,6 +7,7 @@ package control;
 
 import api.models.Player;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
@@ -27,9 +28,7 @@ public class WorldCreator {
     
     public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, Material material){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
-        
         Node players = new Node("players");
-        
         
         listOfPlayers.forEach(p -> {
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, material));
@@ -41,8 +40,8 @@ public class WorldCreator {
     public static Entity createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Material material){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
-        return new Entity(name, tmpPos, bulletAppState, material);
-        
+        Entity entity = new Entity(name, tmpPos, bulletAppState, material);
+        return entity;
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 

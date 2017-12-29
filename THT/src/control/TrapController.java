@@ -33,5 +33,6 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
     @Override
     public void collision(PhysicsCollisionEvent event) {
         LOGGER.log(Level.INFO, "New collision");
+        System.out.println("New collision for ghost control");
     }
 }
