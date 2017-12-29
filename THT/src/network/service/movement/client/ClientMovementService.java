@@ -5,9 +5,7 @@
  */
 package network.service.movement.client;
 
-import com.jme3.math.Vector3f;
 import com.jme3.network.MessageConnection;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
@@ -43,6 +41,7 @@ public class ClientMovementService extends AbstractClientService implements Move
     public ClientMovementService(){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;  
     }
+    
     @Override
     protected void onInitialize(ClientServiceManager serviceManager) {
         rmiService = getService(RmiClientService.class);
@@ -53,7 +52,6 @@ public class ClientMovementService extends AbstractClientService implements Move
         LOGGER.log(Level.SEVERE, "callBack : " + callback);
         rmiService.share((byte)channel, callback, MovementSessionListener.class);
     }
-    
     
     private MovementSession getDelegate(){
         if(delegate == null){

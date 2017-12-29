@@ -57,7 +57,7 @@ public class NetConfig {
         while (delegate == null){
             networkDelay(50);
             delegate = rmi.getRemoteObject(type); 
-            if (counter > 30) { //default 10
+            if (counter > 10) { 
                 throw new RuntimeException("Unable to locate delegate for " + type.getName());
             }
             counter++;

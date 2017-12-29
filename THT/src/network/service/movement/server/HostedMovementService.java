@@ -38,14 +38,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
     private static final String MOVEMENT = "MOVEMENT";
     
-    private final List<MovementSession> movementListeners = new ArrayList<>();
-    
     private RmiHostedService rmiHostedService;
-    private List<MovementSessionImpl> players = new ArrayList<>();
-    private List<PlayerMovement> movements = new ArrayList<>();
+    private final List<MovementSessionImpl> players = new ArrayList<>();
+    private final List<MovementSession> movementSessions = new ArrayList<>();
+    private final List<PlayerMovement> movements = new ArrayList<>();
     
-    private AssetManager asset;
-    private BulletAppState bulletAppState;
+//    private AssetManager asset;
+//    private BulletAppState bulletAppState;
     
     private List<String> updatedPlayers = new ArrayList<>();
 //    private MovementSession session;
@@ -106,7 +105,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     
     public void sendOutMovements(Node playersNode){
         //Send out movements everything 10ms 
-        LOGGER.log(Level.INFO, "Sending out to clients");                    
         new Thread(
             new Runnable(){
                 @Override
@@ -121,7 +119,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                             //Create PlayerMovements
                             //Send out to clients
                             for(String id : updatedPlayers){
-                                LOGGER.info("Sending movement regarding id: " + id);
                                 Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                                 Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
                                 Quaternion rotation = new Quaternion(playersNode.getChild(id).getLocalRotation());
@@ -145,13 +142,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
 
     @Override
-    public void addListener(MovementSession movementSession) {
-        movementListeners.add(movementSession);
+    public void addSessions(MovementSession movementSession) {
+        movementSessions.add(movementSession);
     }
 
     @Override
-    public void removeListener(MovementSession movementSession) {
-        movementListeners.remove(movementSession);
+    public void removeSessions(MovementSession movementSession) {
+        movementSessions.remove(movementSession);
     }
     
     private class MovementSessionImpl implements MovementSession{
@@ -173,7 +170,8 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
-            movementListeners.forEach(l -> l.sendMessage(playerMovement));
+            LOGGER.log(Level.INFO, "new movement received");
+            movementSessions.forEach(l -> l.sendMessage(playerMovement));
         }
         
     }

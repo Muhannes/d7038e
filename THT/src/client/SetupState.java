@@ -9,20 +9,14 @@ import api.models.Player;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import control.WorldCreator;
 import java.util.List;
 import java.util.logging.Level;
@@ -79,7 +73,8 @@ public class SetupState extends BaseAppState implements
         LOGGER.info("Sending join to server...");
         gameSetupService.join(acc.id, acc.key, acc.name);
         
-        loadStaticGeometry();       
+        loadStaticGeometry();
+        initGlobalLightSource();
     }
 
     @Override
@@ -103,9 +98,30 @@ public class SetupState extends BaseAppState implements
         });         
     }
     
+    /**
+     * Some models require light to not only be black.
+     */
+    private void initGlobalLightSource(){
+        //Directional light
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.White);
+        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        app.getRootNode().addLight(dl);
+        
+        // Ambient light
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.White.mult(0.3f));
+        app.getRootNode().addLight(al);
+    }
+    
     private void loadStaticGeometry(){   
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
-        world.attachChild(creepyhouse);   
+        world.attachChild(creepyhouse);
+        
+        //Create a static node for traps
+        Node traps = new Node("traps");
+        app.getRootNode().attachChild(traps);
+        
         if (bulletAppState != null) {
             WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
         } else {
@@ -118,7 +134,7 @@ public class SetupState extends BaseAppState implements
         
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         
-        Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, mat);
+        Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
         
         world.attachChild(players);
         
