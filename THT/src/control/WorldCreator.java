@@ -5,7 +5,9 @@
  */
 package control;
 
+import api.models.EntityType;
 import api.models.Player;
+import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -26,22 +28,28 @@ public class WorldCreator {
     private static final Logger LOGGER = Logger.getLogger(WorldCreator.class.getName());
     
     
-    public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, Material material){
+    public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         Node players = new Node("players");
         
+        Spatial monsterModel = assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
+        //Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
+        Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o");
+        humanModel.scale(0.75f);
+        monsterModel.scale(0.15f);
+        // TODO: if it is a monster, set monster spatial instead.
         listOfPlayers.forEach(p -> {
-            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, material));
+            Spatial model = (p.getType() == EntityType.Human) ? humanModel : monsterModel;
+            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model));
         });
         
         return players;
     }
     
-    public static Entity createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Material material){
+    public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
-        Entity entity = new Entity(name, tmpPos, bulletAppState, material);
-        return entity;
+        return new EntityNode(name, tmpPos, bulletAppState, model);
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 

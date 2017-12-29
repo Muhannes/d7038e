@@ -17,7 +17,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import control.Entity;
+import control.EntityNode;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.server.HostedGameStatsService;
@@ -97,7 +97,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     @Override
     public void update(float tpf){
         for (Spatial entity : playersNode.getChildren()) {
-            ((Entity) entity).scaleWalkDirection(tpf);
+            ((EntityNode) entity).scaleWalkDirection(tpf);
         }
     }
 
@@ -122,7 +122,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 @Override
                 public void run() {
                     //Create a new trap
-                    //TODO: Add rigidBody to traps
+                    //TODO: Add rigidBody/ghost to traps
                     Box box = new Box(0.1f,0.1f,0.1f);
                     Geometry geom = new Geometry(trapName, box);
                     Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
