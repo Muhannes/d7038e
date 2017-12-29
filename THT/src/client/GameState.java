@@ -147,8 +147,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
             ((EntityNode) entity).scaleWalkDirection(tpf);
         }
-         
-        //Check if any player walks on a trap!
         
     }
     
@@ -180,15 +178,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         
     }
     
-    /*
-    public void triggeredTrap(String name, String trapName){
-        traps.detachChildNamed(trapName);
-        playerNode = (Node) root.getChild("players");
-        Entity triggerer = (Entity) playerNode.getChild(name);
-        triggerer.setWalkDirection(triggerer.getWalkDirection().mult(0.0f));
-    }
-    */
-    
     @Override
     public void notifyPlayersKilled(List<String> victims, List<String> killers) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -216,29 +205,29 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
             material.setColor("Color", ColorRGBA.Red);
             geom.setMaterial(material);
             
+            Vector3f position = newTraps.get(i);
+            position.y = 0.1f;
+            geom.setLocalTranslation(position);        
+            
             //Create node for each Trap
             Node node = new Node(trapNames.get(i));
             node.attachChild(geom);
             GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
             node.addControl(ghost);
             
-            Vector3f position = newTraps.get(i);
-            position.y = 0.1f;
-            geom.setLocalTranslation(position);        
-            traps.attachChild(geom);
+            traps.attachChild(node);
         }
     }
     
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-        for(int i = 0; i < names.size(); i++){
+/*        for(int i = 0; i < names.size(); i++){
             //The players that triggered the corresponding trap is slowed.
             traps.detachChildNamed(trapNames.get(i));
             playerNode = (Node) root.getChild("players");
             EntityNode triggerer = (EntityNode) playerNode.getChild(names.get(i));
             triggerer.setWalkDirection(triggerer.getWalkDirection().mult(0.5f));
-        }
+        }*/
     }
-
 
 }

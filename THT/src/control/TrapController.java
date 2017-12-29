@@ -26,7 +26,8 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
     
     BulletAppState bulletAppState;
     
-    public TrapController() {
+    public TrapController(BulletAppState bullet) {
+        this.bulletAppState = bullet;
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
     }
 

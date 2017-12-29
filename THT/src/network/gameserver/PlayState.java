@@ -7,6 +7,7 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
@@ -18,6 +19,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
+import control.TrapController;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.server.HostedGameStatsService;
@@ -38,10 +40,14 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private Node trapNode;
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
-
+    private TrapController trapController;
+    private BulletAppState bulletAppState;
+    
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;
+        this.bulletAppState = app.getStateManager().getState(BulletAppState.class);
+        
     }
 
     @Override
@@ -137,10 +143,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
                     Vector3f position = newTrap;
                     position.y = 0.1f;
-                    geom.setLocalTranslation(position);      
-                    trapNode.attachChild(geom);
+                    geom.setLocalTranslation(position);   
+                    
+                    trapController = new TrapController(bulletAppState);
+                    
+                    trapNode.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
-                    //hostedGameStatsService.sendOutTraps(trapNode, playersNode);
                 }
             });
         }

@@ -197,13 +197,11 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             Node trap = new Node(geom.getName());
             trap.attachChild(geom);
             
-            //Might fuck things up, remember this and two more places in playState and GameState
-            System.out.println("in Human, ghostControl");
-
             GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
             trap.addControl(ghost);
             Node traps = (Node) app.getRootNode().getChild("traps");
             traps.attachChild(trap);
+            
             
             sendTrapToServer(geom.getName(), position);
         }
