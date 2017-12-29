@@ -13,6 +13,8 @@ import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +22,8 @@ import com.jme3.scene.Node;
  */
 public class TrapController extends GhostControl implements PhysicsCollisionListener{
 
+    private static final Logger LOGGER = Logger.getLogger(TrapController.class.getName());
+    
     BulletAppState bulletAppState;
     
     public TrapController() {
@@ -28,6 +32,6 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
 
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        System.out.println("There is a collision between " + event.getNodeA().getName() + " - " + event.getNodeB().getName());        
+        LOGGER.log(Level.INFO, "New collision");
     }
 }
