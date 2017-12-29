@@ -112,7 +112,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
         
-        Vector3f moveDirection = new Vector3f(0,0,0);
+        Vector3f moveDirection = new Vector3f(Vector3f.ZERO);
         if (forward) {
             moveDirection.addLocal(camDir);
         }
@@ -130,7 +130,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         moveDirection.multLocal(EntityNode.MOVEMENT_SPEED);
 
         Vector3f rotation = self.charControl.getWalkDirection();
-        self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
+        //self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
         self.setWalkDirection(moveDirection);
         if (forward || backward || strafeLeft || strafeRight) {
             Vector3f viewDirection = new Vector3f(moveDirection).normalize();

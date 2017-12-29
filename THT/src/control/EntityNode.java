@@ -45,6 +45,7 @@ public class EntityNode extends Node{
     private void initEntity(Spatial model, BulletAppState bulletAppState, Vector3f position){
         this.setLocalTranslation(position);
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
+        
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         float width = boundingBox.getZExtent();
@@ -66,8 +67,13 @@ public class EntityNode extends Node{
     public void convergeSnap(Vector3f position, Vector3f walkDirection, Quaternion rotation){
         charControl.setPhysicsLocation(position);
         //charControl.setViewDirection(rotation); // maybe use this instead? but takes a vector3f...
-        model.setLocalRotation(rotation);
+        setViewDirection(walkDirection);
         charControl.setWalkDirection(walkDirection);
+        if(walkDirection != Vector3f.ZERO){
+            Vector3f viewDirection = new Vector3f(walkDirection).normalize();
+            viewDirection.y = 0;
+            setViewDirection(viewDirection);
+        }
     }
     
     public Vector3f getWalkDirection(){

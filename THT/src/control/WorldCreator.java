@@ -32,11 +32,11 @@ public class WorldCreator {
         
         Node players = new Node("players");
         
-        Spatial humanModel = assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
+        Spatial monsterModel = assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
         //Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
-        humanModel.scale(0.15f);
-        monsterModel.scale(0.01f);
+        Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o");
+        humanModel.scale(0.75f);
+        monsterModel.scale(0.15f);
         // TODO: if it is a monster, set monster spatial instead.
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel : monsterModel;
