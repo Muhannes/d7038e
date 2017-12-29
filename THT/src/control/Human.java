@@ -100,6 +100,20 @@ public class Human extends AbstractController implements ActionListener, AnalogL
                 strafeRight = false;
             }
         } 
+        if(name.equals("left")){
+            if(isPressed){
+                left = true;
+            }else{
+                left = false;
+            }
+        }
+        if(name.equals("right")){
+            if(isPressed){
+                right = true;
+            }else{
+                right = false;
+            }
+        }        
         if(!forward && !backward && !strafeLeft && !strafeRight && !left && !right){
             stopped = true;
         } else {
@@ -138,6 +152,13 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         }
         if (strafeRight) {
             moveDirection.addLocal(camLeft.negate());
+        }
+        if(left) {
+            System.out.println("self rotation : " + self.getLocalRotation());
+            Quaternion tmp = self.getLocalRotation();
+        }
+        if(right) {
+            System.out.println("self rotation : " + self.getLocalRotation());            
         }
         
         moveDirection.normalizeLocal();
