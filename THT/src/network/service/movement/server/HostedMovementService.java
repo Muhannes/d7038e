@@ -115,9 +115,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {
-                            //Fetch info from tree (only for the id)
-                            //Create PlayerMovements
-                            //Send out to clients
                             for(String id : updatedPlayers){
                                 Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                                 Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
@@ -170,7 +167,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
         @Override
         public void sendMessage(PlayerMovement playerMovement) {
-            LOGGER.log(Level.INFO, "new movement received");
             movementSessions.forEach(l -> l.sendMessage(playerMovement));
         }
         

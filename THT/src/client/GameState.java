@@ -10,6 +10,8 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.GhostControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.material.Material;
@@ -198,24 +200,25 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
                         
         for(int i = 0; i < trapNames.size(); i++){
-            //Create a trap at the location with the name given.
-            Box box = new Box(0.1f,0.1f,0.1f);
-            Geometry geom = new Geometry(trapNames.get(i), box);
-            Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-            material.setColor("Color", ColorRGBA.Red);
-            geom.setMaterial(material);
-            
-            Vector3f position = newTraps.get(i);
-            position.y = 0.1f;
-            geom.setLocalTranslation(position);        
-            
-            //Create node for each Trap
-            Node node = new Node(trapNames.get(i));
-            node.attachChild(geom);
-            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
-            node.addControl(ghost);
-            
-            traps.attachChild(node);
+            if(traps.getChild(trapNames.get(i)) != null){
+                LOGGER.log(Level.SEVERE, "trap already exist, dont add");
+            } else {
+                //Create a trap at the location with the name given.
+                Box box = new Box(0.1f,0.1f,0.1f);
+                Geometry geom = new Geometry(trapNames.get(i), box);
+                Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+                material.setColor("Color", ColorRGBA.Red);
+                geom.setMaterial(material);
+
+                Vector3f position = newTraps.get(i);
+                position.y = 0.1f;
+                geom.setLocalTranslation(position);        
+
+                //Create node for each Trap (Only server needs to control check ghosts)
+                Node node = new Node(trapNames.get(i));
+                node.attachChild(geom);
+                traps.attachChild(node);
+            }
         }
     }
     

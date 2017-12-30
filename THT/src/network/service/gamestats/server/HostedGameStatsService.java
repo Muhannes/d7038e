@@ -14,11 +14,10 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
@@ -39,12 +38,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     private RmiHostedService rmiHostedService;
     
     private final List<GameStatsSessionImpl> players = new ArrayList<>();
-    //private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
     private final List<GameStatsSession> gameStatsSessions = new ArrayList<>();
     private final List<String> trapNames = new ArrayList<>();
     private final List<Vector3f> trapPositions = new ArrayList<>();
     
-    private List <String> updatedTraps = new ArrayList<>();
+    private final List <String> updatedTraps = new ArrayList<>();
     
     private int channel;
     
@@ -97,15 +95,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "GameStats service stopped: Client id: {0}", connection.getId());
     }
     
-/*    private GameStatsSessionListener getCallback(HostedConnection connection){
-        RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        GameStatsSessionListener callback = rmiRegistry.getRemoteObject(GameStatsSessionListener.class);
-        if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for gameStatsSessionListener");
-        }
-        return callback;
-    }
-*/    
     @Override
     public void addSessions(GameStatsSession session){
         gameStatsSessions.add(session);
@@ -117,7 +106,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void sendOutTraps(Node trapNode, Node playersNode){
-        //Send out movements everything 10ms 
+        //Send out movements everything 20ms 
         new Thread(
             new Runnable(){
                 @Override
@@ -127,17 +116,20 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             Thread.sleep(20);                    
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                            
+                        } finally {                         
                             for(String newTrapId : updatedTraps){            
                                 Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
                                 String trapName = trapNode.getChild(newTrapId).getName();
                                 trapNames.add(trapName);
                                 trapPositions.add(position);
+                                
                                 if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
                                     broadcast(trapNames, trapPositions);
-                                    //Clearing old traps
+
+                                    //Clearing old lists
                                     trapNames.clear();
                                     trapPositions.clear();
+                                    updatedTraps.clear();
                                 }
                             }
                         }                    
