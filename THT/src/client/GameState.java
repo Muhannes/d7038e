@@ -8,7 +8,9 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
@@ -24,6 +26,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.Human;
+import control.input.HumanInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.List;
@@ -131,8 +134,14 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        human = new Human(player, app, clientMovementService, clientGameStatsService);
-        human.initKeys(input);               
+        HumanInputControl inputControl = new HumanInputControl(clientMovementService, camera);
+        BetterCharacterControl physics = new BetterCharacterControl(0.2f, 2f, 70);
+        player.addControl(inputControl);
+        player.addControl(physics);
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().add(physics);
+        inputControl.initKeys(input);
+        //human = new Human(player, app, clientMovementService, clientGameStatsService);
+        //human.initKeys(input);               
 
     }
 

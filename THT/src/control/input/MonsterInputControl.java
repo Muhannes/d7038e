@@ -8,6 +8,7 @@ package control.input;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
+import network.service.movement.client.ClientMovementService;
 
 /**
  * This control handles how a monster should react to keyboard input.
@@ -15,6 +16,10 @@ import com.jme3.input.controls.KeyTrigger;
  * @author truls
  */
 public class MonsterInputControl extends AbstractInputControl{
+
+    public MonsterInputControl(ClientMovementService movementService) {
+        super(movementService);
+    }
 
     @Override
     public void initKeys(InputManager manager) {
@@ -38,6 +43,11 @@ public class MonsterInputControl extends AbstractInputControl{
     @Override
     public void onAnalog(String name, float value, float tpf) {
         
+    }
+
+    @Override
+    public void onAction(String name, boolean isPressed, float tpf) {
+       
     }
     
 }
