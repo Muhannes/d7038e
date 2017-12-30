@@ -5,29 +5,29 @@
  */
 package control;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 
 /**
  * The spatial for a movable character
  * @author hannes
  */
-public class EntityNode extends Node{
+public class EntityNode extends Node implements AnimEventListener{
     
     // TODO: Init variables for different trap status, i.e. isFrozen.
     CharacterControl charControl;
     Spatial model;
+    AnimControl animationControl;
+    AnimChannel animationChannel;
     
     public static final float MOVEMENT_SPEED = 3.0f;
 
@@ -44,6 +44,12 @@ public class EntityNode extends Node{
      */
     private void initEntity(Spatial model, BulletAppState bulletAppState, Vector3f position){
         this.setLocalTranslation(position);
+        // Currently only works for Oto model.
+        animationControl = model.getControl(AnimControl.class);
+        animationControl.addListener(this);
+        animationChannel = animationControl.createChannel();
+        animationChannel.setAnim("stand");
+        
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
         float radius = boundingBox.getXExtent();
@@ -66,22 +72,34 @@ public class EntityNode extends Node{
     
     public void convergeSnap(Vector3f position, Vector3f walkDirection, Quaternion rotation){
         charControl.setPhysicsLocation(position);
-        //charControl.setViewDirection(rotation); // maybe use this instead? but takes a vector3f...
-        setViewDirection(walkDirection);
-        charControl.setWalkDirection(walkDirection);
-        if(walkDirection != Vector3f.ZERO){
+        setWalkDirection(walkDirection);
+        if(walkDirection.length() > 0){
             Vector3f viewDirection = new Vector3f(walkDirection).normalize();
             viewDirection.y = 0;
             setViewDirection(viewDirection);
         }
     }
     
+    
     public Vector3f getWalkDirection(){
         return charControl.getWalkDirection();
     }
     
+    /**
+     * Currently only works for "Oto" model.
+     * @param walkDirection 
+     */
     public void setWalkDirection(Vector3f walkDirection){
         charControl.setWalkDirection(walkDirection);
+        if (walkDirection.length() > 0) {
+            if (!animationChannel.getAnimationName().equals("Walk")) {
+                animationChannel.setAnim("Walk", 1f);
+            }
+        } else {
+            if (!animationChannel.getAnimationName().equals("stand")) {
+                animationChannel.setAnim("stand");
+            }
+        }
     }
     
     public void setViewDirection(Vector3f walkDirection){
@@ -95,6 +113,16 @@ public class EntityNode extends Node{
     public void scaleWalkDirection(float tpf){
         Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
         setWalkDirection(scaledSpeed);
+    }
+
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        System.out.println("Cycle done!");
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        System.out.println("Animation changed");
     }
     
 }
