@@ -60,7 +60,9 @@ public class EntityNode extends Node implements AnimEventListener{
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);                
         charControl = new CharacterControl(shape, 1.0f); 
         this.addControl(charControl);
+                
         bulletAppState.getPhysicsSpace().add(charControl);
+        
         attachChild(model);
     }
     

@@ -12,21 +12,23 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionListener;
+import network.util.NetConfig;
 
 /**
  *
  * @author truls
  */
-public class ClientGameStatsService extends AbstractClientService{
+public class ClientGameStatsService extends AbstractClientService implements GameStatsSession{
     private static final Logger LOGGER = Logger.getLogger(ClientGameStatsService.class);
     
-    private GameStatsCallback callback = new GameStatsCallback();
+    private final GameStatsSessionListener callback = new GameStatsSessionCallback();
     // Used to get notifications from the server
     
-    private ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
+    private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
     // Used to notify listeners on client side
     
     private GameStatsSession delegate;
@@ -52,38 +54,64 @@ public class ClientGameStatsService extends AbstractClientService{
         if( rmiService == null ) {
             throw new RuntimeException("ChatClientService requires RMI service");
         }
-        
+        LOGGER.log(Level.SEVERE, "callBack : " + callback);
         rmiService.share((byte)channel, callback, GameStatsSessionListener.class);
     }
     
-    public void addGameStatsSessionListene(GameStatsSessionListener listener){
+    public void addGameStatsSessionListener(GameStatsSessionListener listener){
         listeners.add(listener);
     }
     
-    private class GameStatsCallback implements GameStatsSessionListener {
+    private GameStatsSession getDelegate(){
+        if(delegate == null){
+            LOGGER.log(Level.INFO, "Getting delegate from netConfig");
+            delegate = NetConfig.getDelegate(rmiService, GameStatsSession.class);
+        }
+        return delegate;
+    }
+    
+    @Override
+    public void notifyPlayerKilled(String victim, String killer) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyPlayerEscaped(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
+        LOGGER.log(Level.INFO, "new trap " + trapName + " - " + newTrap);
+        getDelegate().notifyTrapPlaced(trapName, newTrap);
+    }
+
+    @Override
+    public void notifyTrapTriggered(String name, String trapName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private class GameStatsSessionCallback implements GameStatsSessionListener {
 
         @Override
-        public void notifyPlayerKilled(String victim, String killer) {
-            LOGGER.log(Level.FINE, "Player killed. Victim: {0}, Killer: {1}", new Object[]{victim, killer});
-            listeners.forEach(l -> l.notifyPlayerKilled(victim, killer));
+        public void notifyPlayersKilled(List<String> victims, List<String> killers) {
+            listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
         }
 
         @Override
-        public void notifyPlayerEscaped(String name) {
-            LOGGER.log(Level.FINE, "Player escaped. Name: {0}", name);
-            listeners.forEach(l -> l.notifyPlayerEscaped(name));
+        public void notifyPlayersEscaped(List<String> names) {
+            listeners.forEach(l -> l.notifyPlayersEscaped(names));
         }
 
         @Override
-        public void notifyTrapPlaced(String id, Vector3f newTrap) {
-            listeners.forEach(l -> l.notifyTrapPlaced(id, newTrap));
+        public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+            LOGGER.log(Level.INFO, "New traps received");
+            listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
         }
 
         @Override
-        public void notifyTrapTriggered(String id) {
-            listeners.forEach(l -> l.notifyTrapTriggered(id));
+        public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
         }
-        
-        
     }
 }

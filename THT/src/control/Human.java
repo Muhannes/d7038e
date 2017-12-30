@@ -7,7 +7,9 @@ package control;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -21,7 +23,12 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import java.util.List;
+import java.util.logging.Level;
+import com.sun.istack.internal.logging.Logger;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 
@@ -31,24 +38,31 @@ import network.service.movement.client.ClientMovementService;
  */
 public class Human extends AbstractController implements ActionListener, AnalogListener{
 
+    private static final Logger LOGGER = Logger.getLogger(Human.class);
+
     private Jump jump;
+    
+    private int numberOfTraps = 5; 
     
     public Boolean forward = false, backward = false, left = false, right = false, strafeLeft = false, strafeRight = false;
     public Boolean stopped = true;
+    
     private final EntityNode self;
     private final AssetManager asset;
     private final SimpleApplication app;
     private Camera camera;
     
     
-    private ClientMovementService clientMovementService;
+    private final ClientMovementService clientMovementService;
+    private final ClientGameStatsService clientGameStatsService;
     
-    public Human(EntityNode player, SimpleApplication app, ClientMovementService clientMovementService){
+    public Human(EntityNode player, SimpleApplication app, ClientMovementService clientMovementService, ClientGameStatsService clientGameStatsService){
         this.self = player;
         this.app = (SimpleApplication)app;
         this.asset = app.getAssetManager();
         this.camera = app.getCamera();
         this.clientMovementService = clientMovementService;
+        this.clientGameStatsService = clientGameStatsService;
     }
     
     @Override
@@ -84,6 +98,20 @@ public class Human extends AbstractController implements ActionListener, AnalogL
                 strafeRight = false;
             }
         } 
+        if(name.equals("left")){
+            if(isPressed){
+                left = true;
+            }else{
+                left = false;
+            }
+        }
+        if(name.equals("right")){
+            if(isPressed){
+                right = true;
+            }else{
+                right = false;
+            }
+        }        
         if(!forward && !backward && !strafeLeft && !strafeRight && !left && !right){
             stopped = true;
         } else {
@@ -93,8 +121,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         sendMovementToServer();
         
         if(name.equals("trap")){
-            if(isPressed){
-                
+            if(isPressed){                
                 createTrap();
             }
         }           
@@ -125,12 +152,17 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         if (strafeRight) {
             moveDirection.addLocal(camLeft.negate());
         }
+        if(left) {
+            System.out.println("self rotation : " + self.getLocalRotation());
+            Quaternion tmp = self.getLocalRotation();
+        }
+        if(right) {
+            System.out.println("self rotation : " + self.getLocalRotation());            
+        }
         
         moveDirection.normalizeLocal();
         moveDirection.multLocal(EntityNode.MOVEMENT_SPEED);
 
-        Vector3f rotation = self.charControl.getWalkDirection();
-        //self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
         self.setWalkDirection(moveDirection);
         if (forward || backward || strafeLeft || strafeRight) {
             Vector3f viewDirection = new Vector3f(moveDirection).normalize();
@@ -143,25 +175,43 @@ public class Human extends AbstractController implements ActionListener, AnalogL
      * Sends information about model to server
      */
     private void sendMovementToServer(){         
-        System.out.println("Sending new direction");
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 self.getWalkDirection(), self.getLocalRotation());
         clientMovementService.sendMessage(pm);
     }
-
-    /**
-     *
-     */
+    
     public void createTrap(){
-        Box box = new Box(0.1f,0.1f,0.1f);
-        Geometry geom = new Geometry("Box", box);
-        Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-        material.setColor("Color", ColorRGBA.Red);
-        geom.setMaterial(material);
-        geom.setLocalTranslation(self.getLocalTranslation());        
-        app.getRootNode().attachChild(geom);
+        if(this.numberOfTraps > 0){
+            Box box = new Box(0.1f,0.1f,0.1f);
+            Geometry geom = new Geometry(self.getName()+":"+this.numberOfTraps, box);
+            this.numberOfTraps--;
+            Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+            material.setColor("Color", ColorRGBA.Red);
+            geom.setMaterial(material);
+            Vector3f position = self.getLocalTranslation();
+            position.y = 0.1f;
+            geom.setLocalTranslation(position);
+            
+            Node trap = new Node(geom.getName());
+            trap.attachChild(geom);
+            
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+            trap.addControl(ghost);
+            Node traps = (Node) app.getRootNode().getChild("traps");
+            traps.attachChild(trap);
+            
+            
+            sendTrapToServer(geom.getName(), position);
+        }
     }
     
+    /**
+     * Send trap information to server
+     */
+    private void sendTrapToServer(String trapName, Vector3f newTrap){
+        LOGGER.log(Level.INFO, "sending new trap to server");
+        clientGameStatsService.notifyTrapPlaced(trapName, newTrap);
+    }
     
     @Override
     public void initKeys(InputManager manager) {

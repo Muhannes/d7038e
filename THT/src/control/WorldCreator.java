@@ -11,7 +11,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -29,15 +28,13 @@ public class WorldCreator {
     
     public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
-        
         Node players = new Node("players");
         // TODO: make different models for each character type
-        Spatial monsterModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        //Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o");
+        Spatial monsterModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
+        //Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // apa
         //humanModel.scale(0.75f);
         monsterModel.scale(0.15f);
         Spatial humanModel = monsterModel;
-        // TODO: if it is a monster, set monster spatial instead.
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model));
@@ -50,7 +47,6 @@ public class WorldCreator {
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
         return new EntityNode(name, tmpPos, bulletAppState, model);
-        
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 
