@@ -34,14 +34,6 @@ public class HumanInputControl extends AbstractInputControl{
     
     private Vector3f camLeft;
     // Used to set new movement direction
-    
-    /*
-    private Boolean forward = false;
-    private Boolean backward = false;
-    private Boolean left = false;
-    private Boolean right = false;
-    private Boolean strafeLeft = false;
-    private Boolean strafeRight = false;*/
 
     public HumanInputControl(ClientMovementService movementService, Camera camera) {
         super(movementService);
@@ -65,6 +57,9 @@ public class HumanInputControl extends AbstractInputControl{
     
     @Override
     protected void controlUpdate(float tpf) {
+        moveDirection.normalize();
+        if(character != null) character.setWalkDirection(moveDirection);
+        moveDirection = new Vector3f(0, 0, 0);
         
     }
 
@@ -84,25 +79,10 @@ public class HumanInputControl extends AbstractInputControl{
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
         
-        moveDirection.set(0, 0, 0);
-        
-        if(name.equals("forward")){
-            moveDirection.addLocal(camDir);
-        }
-        
-        if(name.equals("backward")){
-            moveDirection.addLocal(camDir.negate());
-        }
-        
-        if(name.equals("strafeLeft")){
-            moveDirection.addLocal(camLeft);
-        }
-        
-        if(name.equals("strafeRight")){
-            moveDirection.addLocal(camLeft.negate());
-        }
-        
-        character.setWalkDirection(moveDirection);
+        if(name.equals("forward")) moveDirection.addLocal(camDir);
+        else if(name.equals("backward")) moveDirection.addLocal(camDir.negate());
+        else if(name.equals("strafeLeft")) moveDirection.addLocal(camLeft);
+        else if(name.equals("strafeRight")) moveDirection.addLocal(camLeft.negate()); 
     }
 
     @Override
@@ -113,13 +93,6 @@ public class HumanInputControl extends AbstractInputControl{
                 throw new RuntimeException("HumanInputControl requires a BetterCharactorControl to be attached to spatial");
             }
         }
-        /*
-        if(name.equals("forward")) forward = isPressed;
-        if(name.equals("backward")) backward = isPressed;
-        if(name.equals("strafeLeft")) strafeLeft = isPressed;
-        if(name.equals("strafeRight")) strafeRight = isPressed;
-        if(name.equals("left")) left = isPressed;
-        if(name.equals("right")) right = isPressed;*/
         
         if(name.equals("jump") && isPressed){
            character.jump();
