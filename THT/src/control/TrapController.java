@@ -41,13 +41,13 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
     public void collision(PhysicsCollisionEvent event) {
         if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
             if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
-                System.out.println("New Collision " + event.getNodeA().getName() + " - " + event.getNodeB().getName());
+                LOGGER.log(Level.INFO, "New Collision " + event.getNodeA().getName() + " - " + event.getNodeB().getName());
             /*    root.detachChildNamed(event.getNodeB().getParent().getName());
                 if(root.getChild(event.getNodeB().getParent().getName()) == null){
                     LOGGER.log(Level.SEVERE, "Trap " + event.getNodeB().getParent().getName() + " was not removed");
                 }*/
             } else if(event.getNodeB().getParent().getName().equals("playersNode") && event.getNodeA().getParent().getParent().getName().equals("traps")){
-                System.out.println("New Collision " + event.getNodeA().getName() + " - " + event.getNodeB().getName());
+                LOGGER.log(Level.INFO, "New Collision " + event.getNodeA().getName() + " - " + event.getNodeB().getName());
                 /*root.detachChildNamed(event.getNodeB().getParent().getName());
                 if(root.getChild(event.getNodeA().getParent().getName()) != null){
                     LOGGER.log(Level.SEVERE, "Trap " + event.getNodeA().getParent().getName() + " was not removed");
@@ -56,7 +56,7 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
                 /* Check if any of the two are monster, and if so, the other is killed */
                 EntityNode player1 = (EntityNode) root.getChild(event.getNodeA().getName());
                 EntityNode player2 = (EntityNode) root.getChild(event.getNodeB().getName());
-                System.out.println("Collision between players");
+                LOGGER.log(Level.INFO, "Collision between players");
             }
         }
     }

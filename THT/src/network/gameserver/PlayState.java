@@ -23,6 +23,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.TrapController;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.server.HostedGameStatsService;
@@ -126,6 +127,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
+        LOGGER.log(Level.INFO, "new trap received : " + trapName + " - " + newTrap);
         if (trapNode.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
         }else {
@@ -148,12 +150,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                             
                     Vector3f position = newTrap;                
                     position.y = 0.1f; 
-                    geom.setLocalTranslation(position);   
+                    node.setLocalTranslation(position);
                     ghost.setPhysicsLocation(position);
                     node.getControl(GhostControl.class).setSpatial(geom);
                     
                     bulletAppState.getPhysicsSpace().add(ghost);
-                    
                     trapNode.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
                 }

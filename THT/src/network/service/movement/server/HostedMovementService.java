@@ -128,14 +128,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                                 broadcast(movements);
                                 //Clear movements
                                 movements.clear();
-                                updatedPlayers.clear();
+                                updatedPlayers.clear(); //changed from within the loop.           
                             }
-                        }                    
+                        }
                     }
                 }            
             }
-        ).start();
-        
+        ).start();        
     }
 
     @Override

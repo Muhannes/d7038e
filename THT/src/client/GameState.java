@@ -8,10 +8,6 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.control.GhostControl;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.material.Material;
@@ -198,7 +194,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     }
 
     public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
-                        
+        LOGGER.log(Level.INFO, "new traps received from server");                        
         for(int i = 0; i < trapNames.size(); i++){
             if(traps.getChild(trapNames.get(i)) != null){
                 LOGGER.log(Level.SEVERE, "trap already exist, dont add");

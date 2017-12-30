@@ -33,8 +33,8 @@ public class WorldCreator {
         Spatial monsterModel = assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
         //Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o");
-        humanModel.scale(0.75f);
-        monsterModel.scale(0.15f);
+        humanModel.scale(0.5f); //75f
+        monsterModel.scale(0.15f); //15f
         // TODO: if it is a monster, set monster spatial instead.
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel : monsterModel;

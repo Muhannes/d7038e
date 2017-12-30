@@ -64,7 +64,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void trapUpdated(String id){
-        LOGGER.log(Level.INFO, "New trap received : " + id);
         if(!updatedTraps.contains(id)){
             updatedTraps.add(id);
         }
@@ -75,9 +74,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "GameStats service started. Client id: {0}", connection.getId());
         NetConfig.networkDelay(30);
 
-        // Retrieve the client side callback
-        
-//        GameStatsSessionListener callback = getCallback(connection);
         // The newly connected client will be represented by this object on
         // the server side
         GameStatsSessionImpl session = new GameStatsSessionImpl(connection);
@@ -120,18 +116,19 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             for(String newTrapId : updatedTraps){            
                                 Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
                                 String trapName = trapNode.getChild(newTrapId).getName();
+                                
                                 trapNames.add(trapName);
                                 trapPositions.add(position);
-                                
-                                if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
-                                    broadcast(trapNames, trapPositions);
+                            }    
+                            
+                            if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
+                                broadcast(trapNames, trapPositions);
 
-                                    //Clearing old lists
-                                    trapNames.clear();
-                                    trapPositions.clear();
-                                    updatedTraps.clear();
-                                }
-                            }
+                                //Clearing old lists
+                                trapNames.clear();
+                                trapPositions.clear();
+                                updatedTraps.clear(); //Bugg : when added, error for the list. when not, keeps sending old traps.
+                            }                            
                         }                    
                     }
                 }            
@@ -145,12 +142,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     private class GameStatsSessionImpl implements GameStatsSession {
         
-        private final HostedConnection connection; //Used for what?
-        private GameStatsSessionListener callback; //Used for what?
+        private final HostedConnection connection;
+        private GameStatsSessionListener callback; 
         
         public GameStatsSessionImpl(HostedConnection connection){
             this.connection = connection;
-//            this.callback = callback;
         }
         
         private GameStatsSessionListener getCallback(){
@@ -173,7 +169,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-            LOGGER.log(Level.INFO, "trap received at server");
+            LOGGER.log(Level.INFO, "trap received at server" + trapName + " - " + newTrap );
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 
