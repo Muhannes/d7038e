@@ -9,10 +9,8 @@ import api.models.EntityType;
 import api.models.Player;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -31,15 +29,14 @@ public class WorldCreator {
     public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         Node players = new Node("players");
-        
-        Spatial monsterModel = assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
-        //Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o");
-        humanModel.scale(0.75f);
+        // TODO: make different models for each character type
+        Spatial monsterModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
+        //Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // apa
+        //humanModel.scale(0.75f);
         monsterModel.scale(0.15f);
-        // TODO: if it is a monster, set monster spatial instead.
+        Spatial humanModel = monsterModel;
         listOfPlayers.forEach(p -> {
-            Spatial model = (p.getType() == EntityType.Human) ? humanModel : monsterModel;
+            Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model));
         });
         

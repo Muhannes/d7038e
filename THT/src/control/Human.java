@@ -160,8 +160,6 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         moveDirection.normalizeLocal();
         moveDirection.multLocal(EntityNode.MOVEMENT_SPEED);
 
-        Vector3f rotation = self.charControl.getWalkDirection();
-        //self.rotate(rotation.x, 0.0f, rotation.z); //Rotate the body to where it's going
         self.setWalkDirection(moveDirection);
         if (forward || backward || strafeLeft || strafeRight) {
             Vector3f viewDirection = new Vector3f(moveDirection).normalize();
@@ -194,13 +192,11 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             Node trap = new Node(geom.getName());
             trap.attachChild(geom);
             
-            //Might fuck things up, remember this and two more places in playState and GameState
-            System.out.println("in Human, ghostControl");
-
             GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
             trap.addControl(ghost);
             Node traps = (Node) app.getRootNode().getChild("traps");
             traps.attachChild(trap);
+            
             
             sendTrapToServer(geom.getName(), position);
         }

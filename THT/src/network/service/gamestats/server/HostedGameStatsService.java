@@ -14,11 +14,10 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
@@ -39,12 +38,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     private RmiHostedService rmiHostedService;
     
     private final List<GameStatsSessionImpl> players = new ArrayList<>();
-    //private final ArrayList<GameStatsSessionListener> listeners = new ArrayList<>();
     private final List<GameStatsSession> gameStatsSessions = new ArrayList<>();
     private final List<String> trapNames = new ArrayList<>();
     private final List<Vector3f> trapPositions = new ArrayList<>();
     
-    private List <String> updatedTraps = new ArrayList<>();
+    private final List <String> updatedTraps = new ArrayList<>();
     
     private int channel;
     
@@ -66,7 +64,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void trapUpdated(String id){
-        LOGGER.log(Level.INFO, "New trap received : " + id);
         if(!updatedTraps.contains(id)){
             updatedTraps.add(id);
         }
@@ -77,9 +74,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "GameStats service started. Client id: {0}", connection.getId());
         NetConfig.networkDelay(30);
 
-        // Retrieve the client side callback
-        
-//        GameStatsSessionListener callback = getCallback(connection);
         // The newly connected client will be represented by this object on
         // the server side
         GameStatsSessionImpl session = new GameStatsSessionImpl(connection);
@@ -97,15 +91,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         LOGGER.log(Level.INFO, "GameStats service stopped: Client id: {0}", connection.getId());
     }
     
-/*    private GameStatsSessionListener getCallback(HostedConnection connection){
-        RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
-        GameStatsSessionListener callback = rmiRegistry.getRemoteObject(GameStatsSessionListener.class);
-        if( callback == null){ 
-            throw new RuntimeException("Unable to locate client callback for gameStatsSessionListener");
-        }
-        return callback;
-    }
-*/    
     @Override
     public void addSessions(GameStatsSession session){
         gameStatsSessions.add(session);
@@ -117,7 +102,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void sendOutTraps(Node trapNode, Node playersNode){
-        //Send out movements everything 10ms 
+        //Send out movements everything 20ms 
         new Thread(
             new Runnable(){
                 @Override
@@ -127,19 +112,23 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             Thread.sleep(20);                    
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                            
+                        } finally {                         
                             for(String newTrapId : updatedTraps){            
                                 Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
                                 String trapName = trapNode.getChild(newTrapId).getName();
+                                
                                 trapNames.add(trapName);
                                 trapPositions.add(position);
-                                if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
-                                    broadcast(trapNames, trapPositions);
-                                    //Clearing old traps
-                                    trapNames.clear();
-                                    trapPositions.clear();
-                                }
-                            }
+                            }    
+                            
+                            if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
+                                broadcast(trapNames, trapPositions);
+
+                                //Clearing old lists
+                                trapNames.clear();
+                                trapPositions.clear();
+                                updatedTraps.clear(); //Bugg : when added, error for the list. when not, keeps sending old traps.
+                            }                            
                         }                    
                     }
                 }            
@@ -153,12 +142,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     private class GameStatsSessionImpl implements GameStatsSession {
         
-        private final HostedConnection connection; //Used for what?
-        private GameStatsSessionListener callback; //Used for what?
+        private final HostedConnection connection;
+        private GameStatsSessionListener callback; 
         
         public GameStatsSessionImpl(HostedConnection connection){
             this.connection = connection;
-//            this.callback = callback;
         }
         
         private GameStatsSessionListener getCallback(){
@@ -181,7 +169,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-            LOGGER.log(Level.INFO, "trap received at server");
+            LOGGER.log(Level.INFO, "trap received at server" + trapName + " - " + newTrap );
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
         }
 

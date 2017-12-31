@@ -7,9 +7,13 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -18,6 +22,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
+import control.TrapController;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.server.HostedGameStatsService;
@@ -38,10 +44,14 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private Node trapNode;
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
-
+    private TrapController trapController;
+    private BulletAppState bulletAppState;
+    
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;
+        this.bulletAppState = app.getStateManager().getState(BulletAppState.class);
+        
     }
 
     @Override
@@ -67,6 +77,10 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedGameStatsService.addSessions(this);
         hostedMovementService.sendOutMovements(playersNode);
         hostedGameStatsService.sendOutTraps(trapNode, playersNode);        
+
+        //Really need one for each trap?
+        trapController = new TrapController(bulletAppState, root);
+
     }
 
     @Override
@@ -113,34 +127,36 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        LOGGER.info("trap children : " + trapNode.getChildren());
-
+        LOGGER.log(Level.INFO, "new trap received : " + trapName + " - " + newTrap);
         if (trapNode.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
         }else {
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
-                    //Create a new trap
-                    //TODO: Add rigidBody/ghost to traps
+ 
                     Box box = new Box(0.1f,0.1f,0.1f);
                     Geometry geom = new Geometry(trapName, box);
                     Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
                     material.setColor("Color", ColorRGBA.Red);
                     geom.setMaterial(material);
-
+            
                     //Create node for each Trap
                     Node node = new Node(trapName);
                     node.attachChild(geom);
+
                     GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
                     node.addControl(ghost);
-
-                    Vector3f position = newTrap;
-                    position.y = 0.1f;
-                    geom.setLocalTranslation(position);      
-                    trapNode.attachChild(geom);
+                            
+                    Vector3f position = newTrap;                
+                    position.y = 0.1f; 
+                    node.setLocalTranslation(position);
+                    ghost.setPhysicsLocation(position);
+                    node.getControl(GhostControl.class).setSpatial(geom);
+                    
+                    bulletAppState.getPhysicsSpace().add(ghost);
+                    trapNode.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
-                    //hostedGameStatsService.sendOutTraps(trapNode, playersNode);
                 }
             });
         }

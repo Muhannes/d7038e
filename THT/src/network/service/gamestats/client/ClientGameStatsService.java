@@ -82,7 +82,7 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        LOGGER.log(Level.INFO, "Received new trap" + trapName + " at " + newTrap);
+        LOGGER.log(Level.INFO, "new trap " + trapName + " - " + newTrap);
         getDelegate().notifyTrapPlaced(trapName, newTrap);
     }
 
@@ -105,6 +105,7 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+            LOGGER.log(Level.INFO, "New traps received");
             listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
         }
 
