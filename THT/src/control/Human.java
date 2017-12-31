@@ -35,6 +35,7 @@ import network.service.movement.client.ClientMovementService;
  *
  * @author ted
  */
+@Deprecated
 public class Human extends AbstractController implements ActionListener, AnalogListener{
 
     private static final Logger LOGGER = Logger.getLogger(Human.class);

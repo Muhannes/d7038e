@@ -12,6 +12,7 @@ import com.jme3.scene.Spatial;
  *
  * @author ted
  */
+@Deprecated
 public abstract class AbstractController {
     
     protected Spatial entity;
