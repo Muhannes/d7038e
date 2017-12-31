@@ -6,6 +6,7 @@
 package control.input;
 
 import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
@@ -20,7 +21,7 @@ import network.service.movement.client.ClientMovementService;
  */
 public class HumanInputControl extends AbstractInputControl{
 
-    private BetterCharacterControl character;
+    private CharacterControl character;
     // Physical body that we use to control movment of spatial
     
     private Camera camera;
@@ -58,7 +59,10 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     protected void controlUpdate(float tpf) {
         moveDirection.normalize();
-        if(character != null) character.setWalkDirection(moveDirection);
+        if(character != null) {
+            character.setWalkDirection(moveDirection);
+            character.setViewDirection(moveDirection);
+        }
         moveDirection = new Vector3f(0, 0, 0);
         
     }
@@ -66,9 +70,9 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(BetterCharacterControl.class);
+            character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharactorControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         
@@ -88,9 +92,9 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(BetterCharacterControl.class);
+            character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharactorControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         

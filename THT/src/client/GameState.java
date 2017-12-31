@@ -135,13 +135,8 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
         HumanInputControl inputControl = new HumanInputControl(clientMovementService, camera);
-        BetterCharacterControl physics = new BetterCharacterControl(0.2f, 2f, 70);
         player.addControl(inputControl);
-        player.addControl(physics);
-        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().add(physics);
-        inputControl.initKeys(input);
-        //human = new Human(player, app, clientMovementService, clientGameStatsService);
-        //human.initKeys(input);               
+        inputControl.initKeys(input);       
 
     }
 
