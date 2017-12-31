@@ -25,5 +25,5 @@ public interface GameStatsSessionListener {
     void notifyTrapsPlaced(List <String> trapNames, List <Vector3f> newTraps);
     
     @Asynchronous
-    void notifyTrapsTriggered(List <String> names, List <String> trapNames);
+    void notifyTrapsTriggered(List <String> names, List <String> trapNames);    
 }

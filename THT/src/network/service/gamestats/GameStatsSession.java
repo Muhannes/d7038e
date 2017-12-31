@@ -26,4 +26,7 @@ public interface GameStatsSession {
     
     @Asynchronous
     void notifyTrapTriggered(String name, String trapName);
+
+    @Asynchronous
+    void notifyTrapsTriggered(List<String> names, List<String> trapNames);
 }

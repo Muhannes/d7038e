@@ -16,8 +16,10 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
@@ -39,10 +41,18 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     private final List<GameStatsSessionImpl> players = new ArrayList<>();
     private final List<GameStatsSession> gameStatsSessions = new ArrayList<>();
+
+    //For traps
     private final List<String> trapNames = new ArrayList<>();
     private final List<Vector3f> trapPositions = new ArrayList<>();
     
+    //When traps are triggered
+    private final List<String> triggers = new ArrayList<>();
+    private final List<String> triggeredTraps = new ArrayList<>();
+    
     private final List <String> updatedTraps = new ArrayList<>();
+    private final List <String> deletedTraps = new ArrayList<>();
+    private final List <String> slowedPlayers = new ArrayList<>();
     
     private int channel;
     
@@ -66,6 +76,15 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     public void trapUpdated(String id){
         if(!updatedTraps.contains(id)){
             updatedTraps.add(id);
+        }
+    }
+    
+    public void triggeredTrap(String playerId, String id){        
+        if(!deletedTraps.contains(id)){
+            deletedTraps.add(id);
+        }
+        if(!slowedPlayers.contains(playerId)){
+            slowedPlayers.add(playerId);
         }
     }
     
@@ -101,15 +120,15 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         gameStatsSessions.remove(session);
     }
     
-    public void sendOutTraps(Node trapNode, Node playersNode){
-        //Send out movements everything 20ms 
+    public void sendOutTraps(Node trapNode){
+        //Send out movements everything 10ms 
         new Thread(
             new Runnable(){
                 @Override
                 public void run() {
                     while(true){
                         try {                    
-                            Thread.sleep(20);                    
+                            Thread.sleep(10);                    
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {                         
@@ -127,7 +146,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                                 //Clearing old lists
                                 trapNames.clear();
                                 trapPositions.clear();
-                                updatedTraps.clear(); //Bugg : when added, error for the list. when not, keeps sending old traps.
+                                updatedTraps.clear(); 
                             }                            
                         }                    
                     }
@@ -140,6 +159,57 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         players.forEach(l -> l.getCallback().notifyTrapsPlaced(trapNames, trapLocations));
     }
     
+    public void sendOutDeletedTraps(){
+        //Send out movements everything 10ms 
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    while(true){
+                        try {                    
+                            Thread.sleep(10);                    
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {                         
+  
+                            for(String id : deletedTraps){            
+//                                String trapName = trapNode.getChild(id).getName();
+                                if(!triggeredTraps.contains(id)){
+                                    triggeredTraps.add(id);                                   
+                                }
+                            }    
+                            for(String playerId : slowedPlayers){
+                            //    String playerName = playersNode.getChild(playerId).getName();
+                                if(!triggers.contains(playerId)){
+                                    triggers.add(playerId);                                    
+                                }
+                            }
+                            if(triggers.size() > 0 && triggeredTraps.size() > 0){
+                                LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
+                                broadcastDeletedTraps(triggers, triggeredTraps);
+
+                                //Clearing old lists
+                                triggers.clear();
+                                triggeredTraps.clear();
+                                slowedPlayers.clear();
+                                deletedTraps.clear();                                
+                                if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
+                                    LOGGER.log(Level.SEVERE, "Clear not functional");
+                                }
+                            }
+                            
+                        }                    
+                    }
+                }            
+            }
+        ).start();
+    }
+
+    public void broadcastDeletedTraps(List<String> triggers, List<String> triggeredTraps){
+        players.forEach(l -> l.getCallback().notifyTrapsTriggered(triggers, triggeredTraps));            
+    }
+
+    
     private class GameStatsSessionImpl implements GameStatsSession {
         
         private final HostedConnection connection;
@@ -149,7 +219,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
             this.connection = connection;
         }
         
-        private GameStatsSessionListener getCallback(){
+        public GameStatsSessionListener getCallback(){
             if(callback == null){
                 RmiRegistry rmiRegistry = rmiHostedService.getRmiRegistry(connection);
                 callback = NetConfig.getCallback(rmiRegistry, GameStatsSessionListener.class);
@@ -158,12 +228,12 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         }
         
         @Override
-        public void notifyPlayerKilled(String victim, String killer) {
+        public void notifyPlayerKilled(String victim, String killer) { //Never happens
             gameStatsSessions.forEach(l -> l.notifyPlayerKilled(victim, killer));
         }
 
         @Override
-        public void notifyPlayerEscaped(String name) {
+        public void notifyPlayerEscaped(String name) { //Never happens
             gameStatsSessions.forEach(l -> l.notifyPlayerEscaped(name));
         }
 
@@ -175,28 +245,14 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
         @Override
         public void notifyTrapTriggered(String name, String trapName) {
+            System.out.println("notifyTrapTriggered in HOSTEDGAMESTATSSERVICE");
             gameStatsSessions.forEach(l -> l.notifyTrapTriggered(name, trapName));
-        }
-
-/*        @Override
-        public void notifyPlayersKilled(List<String> victims, List<String> killers) {
-            listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
-        }
-
-        @Override
-        public void notifyPlayersEscaped(List<String> names) {
-            listeners.forEach(l -> l.notifyPlayersEscaped(names));
-        }
-
-        @Override
-        public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
-            listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
         }
 
         @Override
         public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
+            System.out.println("notifyTrapsTriggered in HOSTEDGAMESTATSSERVICE");
+            gameStatsSessions.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
         }
-*/
     } 
 }

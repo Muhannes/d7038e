@@ -182,6 +182,9 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     
     public void createTrap(){
         if(this.numberOfTraps > 0){
+            String trapName = self.getName()+":"+this.numberOfTraps;
+            /*
+            //Kanske inte behövs?
             Box box = new Box(0.1f,0.1f,0.1f);
             Geometry geom = new Geometry(self.getName()+":"+this.numberOfTraps, box);
             this.numberOfTraps--;
@@ -200,8 +203,13 @@ public class Human extends AbstractController implements ActionListener, AnalogL
             Node traps = (Node) app.getRootNode().getChild("traps");
             traps.attachChild(trap);
             
-            
             sendTrapToServer(geom.getName(), position);
+        */
+            Vector3f position = self.getLocalTranslation();
+            position.y = 0.1f;
+            sendTrapToServer(trapName, position);
+            LOGGER.log(Level.INFO, "trying to send trap to server");
+            numberOfTraps--;
         }
     }
     

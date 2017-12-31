@@ -24,6 +24,7 @@ import control.EntityNode;
 import control.Human;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +49,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     
     private MovementSessionListener movementListener;
     private GameStatsSessionListener gameStatsListener;
-    
+        
     private Node root;
     private Node traps;
     private Node playerNode;
@@ -90,8 +91,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         movementListener = this;
         gameStatsListener = this;
         
-        this.root = app.getRootNode();
-        this.traps = (Node) app.getRootNode().getChild("traps");            
+        this.root = app.getRootNode();   
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
@@ -103,8 +103,9 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         this.clientGameStatsService = app.getClientGameStatsService();
         this.clientGameStatsService.addGameStatsSessionListener(gameStatsListener);
         
-        playerNode = (Node) root.getChild("players");
-        player = (EntityNode) playerNode.getChild(""+ClientLoginService.getAccount().id);
+        this.traps = (Node) app.getRootNode().getChild("traps");         
+        this.playerNode = (Node) root.getChild("players");
+        this.player = (EntityNode) playerNode.getChild(""+ClientLoginService.getAccount().id);
 
         if(player == null){
             LOGGER.log(Level.SEVERE, "player is null");
@@ -165,10 +166,10 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         Node players = (Node) root.getChild("players");
         for (PlayerMovement playerMovement : playerMovements) {
             if (playerMovement.id.equals(player.getName())) { // This player
-                LOGGER.log(Level.INFO, "Converging self: {0}", playerMovement.id);
+                //LOGGER.log(Level.INFO, "Converging self: {0}", playerMovement.id);
                 player.convergeSnap(playerMovement.location, player.getWalkDirection(), player.getLocalRotation());
             } else { // Other entity, converge
-                LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
+                //LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
                 EntityNode entity = (EntityNode) players.getChild(playerMovement.id);
                 entity.convergeSnap(playerMovement.location, playerMovement.direction, playerMovement.rotation);
             }
@@ -194,11 +195,8 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     }
 
     public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
-        LOGGER.log(Level.INFO, "new traps received from server");                        
         for(int i = 0; i < trapNames.size(); i++){
-            if(traps.getChild(trapNames.get(i)) != null){
-                LOGGER.log(Level.SEVERE, "trap already exist, dont add");
-            } else {
+            if(traps.getChild(trapNames.get(i)) == null){
                 //Create a trap at the location with the name given.
                 Box box = new Box(0.1f,0.1f,0.1f);
                 Geometry geom = new Geometry(trapNames.get(i), box);
@@ -220,13 +218,29 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-/*        for(int i = 0; i < names.size(); i++){
-            //The players that triggered the corresponding trap is slowed.
-            traps.detachChildNamed(trapNames.get(i));
-            playerNode = (Node) root.getChild("players");
-            EntityNode triggerer = (EntityNode) playerNode.getChild(names.get(i));
-            triggerer.setWalkDirection(triggerer.getWalkDirection().mult(0.5f));
-        }*/
+        app.enqueue(() -> {
+            updateTreeWithDeletedTraps(names, trapNames);
+        });    
     }
+    
+    public void updateTreeWithDeletedTraps(List<String> names, List<String> trapNames){
+        List<String> updatedNames = new ArrayList<>();
+        List<String> updatedTrapNames = new ArrayList<>();
 
+        for(int i = 0; i < trapNames.size(); i++){
+            if(!updatedTrapNames.contains(trapNames.get(i))){
+                traps.detachChildNamed(trapNames.get(i));
+                updatedTrapNames.add(trapNames.get(i));
+                LOGGER.log(Level.INFO, trapNames.get(i) + " is deattached.");
+            }
+        }
+
+        for(int j = 0; j < names.size(); j++){
+            if(!updatedNames.contains(names.get(j))){
+                updatedNames.add(names.get(j));
+                EntityNode entity = (EntityNode) playerNode.getChild(names.get(j));
+                entity.slowDown();
+            }
+        }        
+    }
 }

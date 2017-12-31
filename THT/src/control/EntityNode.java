@@ -16,21 +16,29 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The spatial for a movable character
  * @author hannes
  */
 public class EntityNode extends Node implements AnimEventListener{
-    
+        private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
+
     // TODO: Init variables for different trap status, i.e. isFrozen.
     CharacterControl charControl;
     Spatial model;
     AnimControl animationControl;
     AnimChannel animationChannel;
     
-    public static final float MOVEMENT_SPEED = 3.0f;
-
+    public static float MOVEMENT_SPEED = 3.0f;
+    public static float SLOWED_MOVEMENT_SPEED = 1.0f;
+    public static float NORMAL_MOVEMENT_SPEED = 3.0f;
+    private long timer;
+    private Boolean slowed = false;
+    private final int slowTime = 3;
+    
     public EntityNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name);
         initEntity(model, bulletAppState, position);
@@ -113,20 +121,37 @@ public class EntityNode extends Node implements AnimEventListener{
      * @param tpf 
      */
     public void scaleWalkDirection(float tpf){
+        if(slowed){
+            int tmpTimer = (int) ((System.currentTimeMillis() - timer)/1000);
+            LOGGER.log(Level.INFO, ""+tmpTimer);
+            if(tmpTimer > slowTime){
+//                LOGGER.log(Level.INFO, "slow time over!");
+                MOVEMENT_SPEED = NORMAL_MOVEMENT_SPEED;
+                slowed = false;
+            }            
+        }
         Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
         setWalkDirection(scaledSpeed);
+//        LOGGER.log(Level.INFO, "new tpf update");        
     }
 
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        System.out.println("Cycle done!");
+//        System.out.println("Cycle done!");
     }
 
     @Override
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-        System.out.println("Animation changed");
+//        System.out.println("Animation changed");
     }
     
-}
-
+    public void slowDown(){
+        if(!slowed){
+            System.out.println("Sloooowing down");
+            timer = System.currentTimeMillis();
+            slowed = true;
+            MOVEMENT_SPEED = SLOWED_MOVEMENT_SPEED;
+        }
+    }
     
+}    
