@@ -116,7 +116,9 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
         @Override
         public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
             LOGGER.log(Level.INFO, "Received new triggeres" + names + " and " + trapNames + "from server");
-            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
+            if(names.size() > 0 && trapNames.size() > 0){
+               listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));                
+            }
         }
     }
 }
