@@ -5,13 +5,14 @@
  */
 package control.input;
 
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Vector3f;  
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Spatial;
+import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 
 /**
@@ -35,6 +36,9 @@ public class HumanInputControl extends AbstractInputControl{
     
     private Vector3f camLeft;
     // Used to set new movement direction
+    
+    private final float updatePeriod = 0.1f;
+    private float lastUpdate = 0f;
 
     public HumanInputControl(ClientMovementService movementService, Camera camera) {
         super(movementService);
@@ -62,6 +66,12 @@ public class HumanInputControl extends AbstractInputControl{
         if(character != null) {
             character.setWalkDirection(moveDirection);
             character.setViewDirection(moveDirection);
+            
+            lastUpdate += tpf;
+            if(lastUpdate > updatePeriod){
+                sendMovementToServer();
+                lastUpdate -= updatePeriod;
+            }
         }
         moveDirection = new Vector3f(0, 0, 0);
         
@@ -101,6 +111,16 @@ public class HumanInputControl extends AbstractInputControl{
         if(name.equals("jump") && isPressed){
            character.jump();
         }
+    }
+    
+    /**
+     * Sends information about model to server
+     */
+    private void sendMovementToServer(){         
+        Spatial self = getSpatial();
+        PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
+                character.getWalkDirection(), self.getLocalRotation());
+        movementService.sendMessage(pm);
     }
 
 }

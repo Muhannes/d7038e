@@ -21,7 +21,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
-import control.Human;
+import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
@@ -60,7 +60,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     private EntityNode player;
     private ChaseCamera chaseCamera;
     private Camera camera;
-    private Human human;
     private int id;
         
     @Override
@@ -131,7 +130,9 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
         HumanInputControl inputControl = new HumanInputControl(clientMovementService, camera);
+        ConvergeControl converger = new ConvergeControl(clientMovementService);
         player.addControl(inputControl);
+        player.addControl(converger);
         inputControl.initKeys(input);       
 
     }
