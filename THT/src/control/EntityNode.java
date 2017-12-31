@@ -123,16 +123,13 @@ public class EntityNode extends Node implements AnimEventListener{
     public void scaleWalkDirection(float tpf){
         if(slowed){
             int tmpTimer = (int) ((System.currentTimeMillis() - timer)/1000);
-//            LOGGER.log(Level.INFO, ""+tmpTimer);
             if(tmpTimer > slowTime){
-//                LOGGER.log(Level.INFO, "slow time over!");
                 MOVEMENT_SPEED = NORMAL_MOVEMENT_SPEED;
                 slowed = false;
             }            
         }
         Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
         setWalkDirection(scaledSpeed);
-//        LOGGER.log(Level.INFO, "new tpf update");        
     }
 
     @Override
@@ -147,7 +144,7 @@ public class EntityNode extends Node implements AnimEventListener{
     
     public void slowDown(){
         if(!slowed){
-            System.out.println("Sloooowing down");
+            LOGGER.log(Level.INFO, "Sloooowing down");
             timer = System.currentTimeMillis();
             slowed = true;
             MOVEMENT_SPEED = SLOWED_MOVEMENT_SPEED;
