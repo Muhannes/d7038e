@@ -77,7 +77,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.sendOutMovements(playersNode);
         hostedGameStatsService.sendOutTraps(traps);        
 
-        trapController = new TrapController(bulletAppState, root, hostedGameStatsService);
+        trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
     }
 
@@ -194,5 +194,22 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 updatedNames.add(names.get(j));
             }
         }    
+    }    
+
+    public void deleteTrap(String name, String trapName){
+        LOGGER.log(Level.INFO, name + " \n " + trapName);
+        if(playersNode.getChild(name) != null){
+            //Slow down player 
+            EntityNode entity = (EntityNode) playersNode.getChild(name);
+            entity.slowDown();
+            LOGGER.log(Level.INFO, entity.getName() + " is slowed");
+        }
+        if(traps.getChild(trapName) != null){
+            //remove trap from root
+            traps.detachChildNamed(trapName);
+            if(traps.getChild(trapName) != null){
+                LOGGER.log(Level.INFO, "trap was not removed");                
+            }
+        }
     }    
 }

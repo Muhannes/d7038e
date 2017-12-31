@@ -123,7 +123,7 @@ public class EntityNode extends Node implements AnimEventListener{
     public void scaleWalkDirection(float tpf){
         if(slowed){
             int tmpTimer = (int) ((System.currentTimeMillis() - timer)/1000);
-            LOGGER.log(Level.INFO, ""+tmpTimer);
+//            LOGGER.log(Level.INFO, ""+tmpTimer);
             if(tmpTimer > slowTime){
 //                LOGGER.log(Level.INFO, "slow time over!");
                 MOVEMENT_SPEED = NORMAL_MOVEMENT_SPEED;
