@@ -50,26 +50,39 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
         if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
 
             if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
-
-                LOGGER.log(Level.INFO, "Collision " + event.getNodeA().getName() + " and " + event.getNodeB().getName());
-
+ 
                 if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
-                    LOGGER.log(Level.INFO, "removing trap : " + event.getNodeB().getParent().getName());
-                    hostedGameStatsService.triggeredTrap(event.getNodeA().getName(), event.getNodeB().getName());
-                    hostedGameStatsService.sendOutDeletedTraps();
-                    playState.deleteTrap(event.getNodeA().getName(), event.getNodeB().getName());
+                   
+                    String trap = event.getNodeB().getName();
+                    String[] list = trap.split(":");
+                    String owner = list[0];
+                   
+                    if(!event.getNodeA().getName().equals(owner)){
 
-                    triggeredTraps.add(event.getNodeB().getParent().getName());
-                    root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                        LOGGER.log(Level.INFO, "removing trap : " + event.getNodeB().getParent().getName());
+                        hostedGameStatsService.triggeredTrap(event.getNodeA().getName(), event.getNodeB().getName());
+                        hostedGameStatsService.sendOutDeletedTraps();
+                        playState.deleteTrap(event.getNodeA().getName(), event.getNodeB().getName());
 
+                        triggeredTraps.add(event.getNodeB().getParent().getName());
+                        root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                    }
                 } else if(event.getNodeB().getParent().getName().equals("playersNode") && event.getNodeA().getParent().getParent().getName().equals("traps")){
-                    LOGGER.log(Level.INFO, "removing trap : " + event.getNodeA().getParent().getName());
-                    hostedGameStatsService.triggeredTrap(event.getNodeB().getName(), event.getNodeA().getName());
-                    hostedGameStatsService.sendOutDeletedTraps();
-                    playState.deleteTrap(event.getNodeB().getName(), event.getNodeA().getName());
 
-                    triggeredTraps.add(event.getNodeB().getParent().getName());
-                    root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                    String trap = event.getNodeB().getName();
+                    String[] list = trap.split(":");
+                    String owner = list[0];
+                   
+                    if(!event.getNodeB().getName().equals(owner)){
+
+                        LOGGER.log(Level.INFO, "removing trap : " + event.getNodeA().getParent().getName());
+                        hostedGameStatsService.triggeredTrap(event.getNodeB().getName(), event.getNodeA().getName());
+                        hostedGameStatsService.sendOutDeletedTraps();
+                        playState.deleteTrap(event.getNodeB().getName(), event.getNodeA().getName());
+
+                        triggeredTraps.add(event.getNodeB().getParent().getName());
+                        root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                    }
                 }
             
             } else if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
