@@ -11,6 +11,7 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
 
 /**
@@ -21,9 +22,11 @@ import network.service.movement.client.ClientMovementService;
 public abstract class AbstractInputControl extends AbstractControl implements AnalogListener, ActionListener{
     
     protected final ClientMovementService movementService;
+    protected final ClientGameStatsService gameStatsService;
     
-    public AbstractInputControl(ClientMovementService movementService){
-        this.movementService = movementService;
+    public AbstractInputControl(ClientMovementService movementService, ClientGameStatsService gameStatsService){
+        this.movementService = movementService; 
+        this.gameStatsService = gameStatsService;
     }
 
     @Override

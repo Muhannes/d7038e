@@ -12,15 +12,20 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Vector3f;  
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
-
+import com.sun.istack.internal.logging.Logger;
+import control.EntityNode;
+import java.util.logging.Level;
 /**
  * This control handles how a human should react to keyboard input.
  * 
  * @author truls
  */
 public class HumanInputControl extends AbstractInputControl{
+
+    private static final Logger LOGGER = Logger.getLogger(HumanInputControl.class);
 
     private CharacterControl character;
     // Physical body that we use to control movment of spatial
@@ -39,9 +44,13 @@ public class HumanInputControl extends AbstractInputControl{
     
     private final float updatePeriod = 0.1f;
     private float lastUpdate = 0f;
+    
+    private EntityNode self;
+    private int traps = 5;
 
-    public HumanInputControl(ClientMovementService movementService, Camera camera) {
-        super(movementService);
+    public HumanInputControl(EntityNode self, ClientMovementService movementService, ClientGameStatsService gameStatsService, Camera camera) {
+        super(movementService, gameStatsService); 
+        this.self = self;
         this.camera = camera;
         this.moveDirection = new Vector3f(0, 0, 0);
     }
@@ -111,6 +120,21 @@ public class HumanInputControl extends AbstractInputControl{
         if(name.equals("jump") && isPressed){
            character.jump();
         }
+        if(name.equals("trap") && isPressed){
+            if(traps > 0){
+                sendTrapsToServer();
+            }
+        }
+    }
+    
+    private void sendTrapsToServer(){
+        LOGGER.log(Level.INFO, "new trap sent to server");
+
+        Vector3f position = self.getLocalTranslation();
+        position.y = 0.1f;
+        self.setLocalTranslation(position);
+        String trapName = self.getName() + ":" + traps;
+        gameStatsService.notifyTrapPlaced(trapName, position);
     }
     
     /**
