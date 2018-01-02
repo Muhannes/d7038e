@@ -49,7 +49,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     }
 
     @Override
-    public void newMessage(List<PlayerMovement> playerMovements) {
+    public void notifyPlayerMovement(List<PlayerMovement> playerMovements) {
         for(PlayerMovement pm : playerMovements){
             if(pm.id.equals(getSpatial().getName())){
                 synchronized(lock){

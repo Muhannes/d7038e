@@ -175,7 +175,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
     private void sendMovementToServer(){         
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 self.getWalkDirection(), self.getLocalRotation());
-        clientMovementService.sendMessage(pm);
+        clientMovementService.sendPlayerMovement(pm);
     }
     
     public void createTrap(){

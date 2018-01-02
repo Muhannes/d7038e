@@ -122,7 +122,7 @@ public class HumanInputControl extends AbstractInputControl{
         Spatial self = getSpatial();
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), self.getLocalRotation());
-        movementService.sendMessage(pm);
+        movementService.sendPlayerMovement(pm);
     }
 
 }

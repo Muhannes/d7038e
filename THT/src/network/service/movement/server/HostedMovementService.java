@@ -100,7 +100,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
      * @param movements 
      */
     public void broadcast(List<PlayerMovement> movements){
-        players.forEach(p -> p.getCallback().newMessage(movements));        
+        players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));        
     }
     
     public void sendOutMovements(Node playersNode){
@@ -165,8 +165,8 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         }
 
         @Override
-        public void sendMessage(PlayerMovement playerMovement) {
-            movementSessions.forEach(l -> l.sendMessage(playerMovement));
+        public void sendPlayerMovement(PlayerMovement playerMovement) {
+            movementSessions.forEach(l -> l.sendPlayerMovement(playerMovement));
         }
         
     }

@@ -15,6 +15,6 @@ import java.util.List;
 public interface MovementSessionListener {
     
     @Asynchronous
-    void newMessage(List<PlayerMovement> playerMovements);
+    void notifyPlayerMovement(List<PlayerMovement> playerMovements);
     
 }
