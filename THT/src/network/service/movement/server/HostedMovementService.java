@@ -111,7 +111,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                 public void run() {
                     while(true){
                         try {                    
-                            Thread.sleep(20);                    
+                            Thread.sleep(20);
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {

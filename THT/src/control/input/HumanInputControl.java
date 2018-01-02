@@ -12,6 +12,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Vector3f;  
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
+import control.EntityNode;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 
@@ -64,7 +65,7 @@ public class HumanInputControl extends AbstractInputControl{
     
     @Override
     protected void controlUpdate(float tpf) {
-        moveDirection.normalizeLocal().multLocal(tpf);
+        moveDirection.normalizeLocal().multLocal(tpf*EntityNode.NORMAL_MOVEMENT_SPEED);
         if(character != null) {
             character.setWalkDirection(moveDirection);
             character.setViewDirection(moveDirection);

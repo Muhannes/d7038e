@@ -93,24 +93,19 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
         }else {
-            app.enqueue(new Runnable() {
-                @Override
-                public void run() {
-                    playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
-                    playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-                    playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-
-                    hostedMovementService.playerUpdated(playerMovement.id);
-                }
+            app.enqueue(() -> {
+                //playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
+                playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
+                //playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
+                
+                hostedMovementService.playerUpdated(playerMovement.id);
             });
         }
     }
     
     @Override
     public void update(float tpf){
-        for (Spatial entity : playersNode.getChildren()) {
-            ((EntityNode) entity).scaleWalkDirection(tpf);
-        }
+        
     }
 
     @Override
@@ -170,7 +165,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-    app.enqueue(() -> {
+        app.enqueue(() -> {
             updateTreeWithDeletedTraps(names, trapNames);
         });    
     }

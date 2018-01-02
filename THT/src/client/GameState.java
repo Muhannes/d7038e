@@ -18,7 +18,6 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.converge.ConvergeControl;
@@ -118,10 +117,14 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         }
         
         HumanInputControl inputControl = new HumanInputControl(clientMovementService, camera);
-        ConvergeControl converger = new ConvergeControl(clientMovementService);
         player.addControl(inputControl);
-        player.addControl(converger);
-        inputControl.initKeys(input);       
+        inputControl.initKeys(input);  
+        
+        playerNode.getChildren().forEach((p) -> {   
+            System.out.println("Player: " + p.getName());
+            ConvergeControl converger = new ConvergeControl(clientMovementService);
+            p.addControl(converger);
+        });
 
     }
 

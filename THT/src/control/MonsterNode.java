@@ -24,27 +24,6 @@ public class MonsterNode extends EntityNode{
     }
 
     @Override
-    public void setWalkDirection(Vector3f walkDirection){
-        charControl.setWalkDirection(walkDirection);
-        
-        if (walkDirection.length() > 0) {
-            if (!animationChannel.getAnimationName().equals("Walk")) {
-                animationChannel.setAnim("Walk", 1f);
-            }
-        } else {
-            if (!animationChannel.getAnimationName().equals("Idle2")) {
-                animationChannel.setAnim("Idle2");
-            }
-        }
-        
-    }
-    
-    @Override
-    public void setViewDirection(Vector3f viewDirection){
-        super.setViewDirection(viewDirection.negate());
-    }
-
-    @Override
     public void initEntity(Vector3f position) {
         
         this.setLocalTranslation(position);

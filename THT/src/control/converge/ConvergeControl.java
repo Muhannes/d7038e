@@ -10,6 +10,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
+import control.EntityNode;
 import java.util.List;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -24,7 +25,10 @@ import network.service.movement.client.ClientMovementService;
  */
 public class ConvergeControl extends AbstractControl implements MovementSessionListener{
 
-    private final Object lock = new Object();
+    private static final float SNAP_LIMIT = 1.0f;
+    // Will snap a spatial if its further away than this value from its setpoint
+    
+    private final Object LOCK = new Object();
     // Used to synchronize updates/reads on setpoint 
     
     Vector3f setpoint; 
@@ -36,11 +40,44 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     
     @Override
     protected void controlUpdate(float tpf) {
-        // TODO: Do convergence
-        synchronized(lock){
-            CharacterControl character = getSpatial().getControl(CharacterControl.class);
-            character.setPhysicsLocation(setpoint);
+        System.out.println("Converging player: " + getSpatial().getName());
+        if(setpoint == null) return;
+        
+        Vector3f tempSetpoint;
+        synchronized(LOCK){
+            tempSetpoint = setpoint.clone();
         }
+        
+        CharacterControl character = getSpatial().getControl(CharacterControl.class);
+        
+        Vector3f currentPos = getSpatial().getLocalTranslation();
+        Vector3f dif = currentPos.subtract(tempSetpoint);
+        
+        
+        //METHOD 1: Takes a small fraction of difference towards the setpoint
+        if(dif.length() > SNAP_LIMIT){
+            System.out.println("Snapping, length = " + dif.length());
+            character.setPhysicsLocation(tempSetpoint);
+        }else{
+            character.setPhysicsLocation(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
+        }
+        
+        
+        // METHOD 2: Changes the walkdirection based on the difference vector
+        /*if(dif.length() > SNAP_LIMIT){
+            System.out.println("Snapping, length = " + dif.length());
+            character.setPhysicsLocation(tempSetpoint);
+        }else{
+            System.out.println("Linear, length = " + dif.length());
+            //Vector3f walk = character.getWalkDirection().add(
+            //        dif.negate().mult(tpf));
+            //character.setWalkDirection(walk.add(dif.negate().mult(tpf)));
+            Vector3f walk = character.getWalkDirection().add(dif).normalize().mult(EntityNode.MOVEMENT_SPEED*tpf);
+            character.setWalkDirection(walk);
+        }*/
+      
+        System.out.println("Dif:" + dif.toString());
+        
     }
 
     @Override
@@ -51,16 +88,11 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     @Override
     public void notifyPlayerMovement(List<PlayerMovement> playerMovements) {
         for(PlayerMovement pm : playerMovements){
+            System.out.println("pm.id = " + pm.id);
             if(pm.id.equals(getSpatial().getName())){
-                synchronized(lock){
+                synchronized(LOCK){
                     setpoint = pm.location;
                 }
-                
-                /*Vector3f dif = getSpatial().getLocalTranslation().subtract(setpoint);
-                System.out.println("newMessage:");
-                System.out.println("Local: " + getSpatial().getLocalTranslation().toString());
-                System.out.println("Setpoint: " + setpoint.toString());
-                System.out.println("Dif:" + dif.toString());*/
                 return;
             }
         }

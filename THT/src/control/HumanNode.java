@@ -18,7 +18,7 @@ import com.jme3.scene.Spatial;
  * @author hannes
  */
 public class HumanNode extends EntityNode{
-
+    
     public HumanNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name, position, bulletAppState, model);
     }
@@ -46,22 +46,6 @@ public class HumanNode extends EntityNode{
         bulletAppState.getPhysicsSpace().add(charControl);
         
         attachChild(model);
-    }
-
-    @Override
-    public void setWalkDirection(Vector3f walkDirection) {
-        
-        charControl.setWalkDirection(walkDirection);
-        
-        if (walkDirection.length() > 0) {
-            if (!animationChannel.getAnimationName().equals("Walk")) {
-                animationChannel.setAnim("Walk", 1f);
-            }
-        } else {
-            if (!animationChannel.getAnimationName().equals("stand")) {
-                animationChannel.setAnim("stand");
-            }
-        }
     }
     
 }
