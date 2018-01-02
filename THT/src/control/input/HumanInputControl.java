@@ -19,6 +19,8 @@ import network.service.movement.client.ClientMovementService;
  * This control handles how a human should react to keyboard input.
  * 
  * @author truls
+ * @author ted
+ * @author hannes
  */
 public class HumanInputControl extends AbstractInputControl{
 
@@ -62,7 +64,7 @@ public class HumanInputControl extends AbstractInputControl{
     
     @Override
     protected void controlUpdate(float tpf) {
-        moveDirection.normalize();
+        moveDirection.normalizeLocal().multLocal(tpf);
         if(character != null) {
             character.setWalkDirection(moveDirection);
             character.setViewDirection(moveDirection);

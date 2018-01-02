@@ -64,7 +64,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         
     @Override
     protected void initialize(Application app) {
-        
         this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -153,9 +152,9 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     
     @Override
     public void newMessage(List<PlayerMovement> playerMovements) {        
-        app.enqueue(() -> {
+        /*app.enqueue(() -> {
             convergePlayers(playerMovements);
-        });
+        });*/
     }
     
     /**
