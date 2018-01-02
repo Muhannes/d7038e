@@ -5,12 +5,12 @@
  */
 package control.converge;
 
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import java.util.List;
-import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
@@ -24,6 +24,9 @@ import network.service.movement.client.ClientMovementService;
  */
 public class ConvergeControl extends AbstractControl implements MovementSessionListener{
 
+    private final Object lock = new Object();
+    // Used to synchronize updates/reads on setpoint 
+    
     Vector3f setpoint; 
     // Börvärde in english
     
@@ -34,6 +37,10 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     @Override
     protected void controlUpdate(float tpf) {
         // TODO: Do convergence
+        synchronized(lock){
+            CharacterControl character = getSpatial().getControl(CharacterControl.class);
+            character.setPhysicsLocation(setpoint);
+        }
     }
 
     @Override
@@ -45,7 +52,9 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     public void newMessage(List<PlayerMovement> playerMovements) {
         for(PlayerMovement pm : playerMovements){
             if(pm.id.equals(getSpatial().getName())){
-                setpoint = pm.location;
+                synchronized(lock){
+                    setpoint = pm.location;
+                }
                 
                 /*Vector3f dif = getSpatial().getLocalTranslation().subtract(setpoint);
                 System.out.println("newMessage:");
