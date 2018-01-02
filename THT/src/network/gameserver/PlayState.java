@@ -9,6 +9,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
@@ -50,7 +51,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     protected void initialize(Application app) {
         this.app = (GameServer) app;
         this.bulletAppState = app.getStateManager().getState(BulletAppState.class);
-        
     }
 
     @Override
@@ -93,19 +93,21 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
         }else {
-            app.enqueue(() -> {
-                //playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
-                playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-                //playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
-                
-                hostedMovementService.playerUpdated(playerMovement.id);
+            app.enqueue(new Runnable() {
+                @Override
+                public void run() {
+                    Spatial player = playersNode.getChild(playerMovement.id);
+                    player.getControl(BetterCharacterControl.class).setWalkDirection(playerMovement.direction);
+                    player.getControl(BetterCharacterControl.class).setViewDirection(playerMovement.rotation);
+
+                    hostedMovementService.playerUpdated(playerMovement.id);
+                }
             });
         }
     }
     
     @Override
     public void update(float tpf){
-        
     }
 
     @Override

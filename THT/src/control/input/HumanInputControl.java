@@ -5,10 +5,12 @@
  */
 package control.input;
 
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;  
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
@@ -25,7 +27,7 @@ import network.service.movement.client.ClientMovementService;
  */
 public class HumanInputControl extends AbstractInputControl{
 
-    private CharacterControl character;
+    private BetterCharacterControl character;
     // Physical body that we use to control movment of spatial
     
     private Camera camera;
@@ -83,10 +85,19 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(CharacterControl.class);
+            character = getSpatial().getControl(BetterCharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
             }
+        }
+        
+        if(name.equals("rotateleft")){
+            rotateY(-value);
+            //sendMovementToServer();
+        }
+        if(name.equals("rotateright")){
+            rotateY(value);
+            //sendMovementToServer();          
         }
         
         camDir = camera.getDirection().clone();
@@ -100,14 +111,15 @@ public class HumanInputControl extends AbstractInputControl{
         else if(name.equals("backward")) moveDirection.addLocal(camDir.negate());
         else if(name.equals("strafeLeft")) moveDirection.addLocal(camLeft);
         else if(name.equals("strafeRight")) moveDirection.addLocal(camLeft.negate()); 
+        
     }
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(CharacterControl.class);
+            character = getSpatial().getControl(BetterCharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
             }
         }
         
@@ -122,8 +134,56 @@ public class HumanInputControl extends AbstractInputControl{
     private void sendMovementToServer(){         
         Spatial self = getSpatial();
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
-                character.getWalkDirection(), self.getLocalRotation());
+                character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);
     }
-
+    
+    private void rotateY(float rotationRad){
+        Vector3f oldRot = character.getViewDirection();
+        float x = (FastMath.cos(rotationRad) * oldRot.x) + (FastMath.sin(rotationRad) * oldRot.z);
+        float z = (FastMath.cos(rotationRad) * oldRot.z) - (FastMath.sin(rotationRad) * oldRot.x);
+        character.setViewDirection(new Vector3f(x, oldRot.y, z));
+    }
+   /* 
+    private void createTrap(){
+        if(this.numberOfTraps > 0){
+            String trapName = self.getName()+":"+this.numberOfTraps;
+            /*
+            //Kanske inte behövs?
+            Box box = new Box(0.1f,0.1f,0.1f);
+            Geometry geom = new Geometry(self.getName()+":"+this.numberOfTraps, box);
+            this.numberOfTraps--;
+            Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
+            material.setColor("Color", ColorRGBA.Red);
+            geom.setMaterial(material);
+            Vector3f position = self.getLocalTranslation();
+            position.y = 0.1f;
+            geom.setLocalTranslation(position);
+            
+            Node trap = new Node(geom.getName());
+            trap.attachChild(geom);
+            
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+            trap.addControl(ghost);
+            Node traps = (Node) app.getRootNode().getChild("traps");
+            traps.attachChild(trap);
+            
+            sendTrapToServer(geom.getName(), position);
+        
+            Vector3f position = self.getLocalTranslation();
+            position.y = 0.1f;
+            sendTrapToServer(trapName, position);
+            LOGGER.log(Level.INFO, "trying to send trap to server");
+            numberOfTraps--;
+        }
+    }
+    
+    /**
+     * Send trap information to server
+     
+    private void sendTrapToServer(String trapName, Vector3f newTrap){
+        //LOGGER.log(Level.INFO, "sending new trap to server");
+        clientGameStatsService.notifyTrapPlaced(trapName, newTrap);
+    }
+*/
 }

@@ -5,12 +5,11 @@
  */
 package control.converge;
 
-import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import control.EntityNode;
 import java.util.List;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -47,7 +46,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
             tempSetpoint = setpoint.clone();
         }
         
-        CharacterControl character = getSpatial().getControl(CharacterControl.class);
+        BetterCharacterControl character = getSpatial().getControl(BetterCharacterControl.class);
         
         Vector3f currentPos = getSpatial().getLocalTranslation();
         Vector3f dif = currentPos.subtract(tempSetpoint);
@@ -55,9 +54,9 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         
         //METHOD 1: Takes a small fraction of difference towards the setpoint
         if(dif.length() > SNAP_LIMIT){
-            character.setPhysicsLocation(tempSetpoint);
+            character.warp(tempSetpoint);
         }else{
-            character.setPhysicsLocation(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
+            character.warp(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
         }
         
         
@@ -83,7 +82,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     @Override
     public void notifyPlayerMovement(List<PlayerMovement> playerMovements) {
         for(PlayerMovement pm : playerMovements){
-            System.out.println("pm.id = " + pm.id);
+            //System.out.println("pm.id = " + pm.id);
             if(pm.id.equals(getSpatial().getName())){
                 synchronized(LOCK){
                     setpoint = pm.location;

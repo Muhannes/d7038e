@@ -8,8 +8,8 @@ package control;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.CharacterControl;
-import com.jme3.math.Quaternion;
+import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -24,14 +24,14 @@ public abstract class EntityNode extends Node{
         private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
 
     // TODO: Init variables for different trap status, i.e. isFrozen.
-    CharacterControl charControl;
+    BetterCharacterControl charControl;
     Spatial model;
     AnimControl animationControl;
     AnimChannel animationChannel;
     
     BulletAppState bulletAppState;
     
-    public static float MOVEMENT_SPEED = 3.0f;
+    public float movementSpeed = NORMAL_MOVEMENT_SPEED;
     public static float SLOWED_MOVEMENT_SPEED = 1.0f;
     public static float NORMAL_MOVEMENT_SPEED = 3.0f;
     private long timer;
@@ -50,13 +50,77 @@ public abstract class EntityNode extends Node{
      * @param position 
      */
     public abstract void initEntity(Vector3f position);
+/*   
+<<<<<<< HEAD
+=======
+    public void convergeLinear(Vector3f position, Vector3f rotation){
+        // TODO: Set movementdirection pointing to that position
+        
+        //charControl.setWalkDirection(vectorPointingAtPosition);
+    }
     
+    public void convergeSnap(Vector3f position, Vector3f walkDirection, Vector3f rotation){
+        charControl.warp(position);
+        setWalkDirection(walkDirection);
+        setViewDirection(rotation);
+    }
+    
+    
+    public Vector3f getWalkDirection(){
+        return charControl.getWalkDirection();
+    }
+    
+    public Vector3f getViewDirection(){
+        return charControl.getViewDirection();
+    }
+*/    
+    /**
+     * Currently only works for "Oto" model.
+     * @param walkDirection 
+     */
+    public abstract void setWalkDirection(Vector3f walkDirection);
+    
+    /*
+    public void setViewDirection(Vector3f walkDirection){
+        charControl.setViewDirection(walkDirection);
+    }
+    */
+    public void rotateY(float rotationRad){
+        Vector3f oldRot = charControl.getViewDirection();
+        float x = (FastMath.cos(rotationRad) * oldRot.x) + (FastMath.sin(rotationRad) * oldRot.z);
+        float z = (FastMath.cos(rotationRad) * oldRot.z) - (FastMath.sin(rotationRad) * oldRot.x);
+        charControl.setViewDirection(new Vector3f(x, oldRot.y, z));
+    }
+    
+    
+    
+//>>>>>>> f7f8c3b8369b7b8f2b40f61c04469a1aa862f858
+        
     public void slowDown(){
         if(!slowed){
             LOGGER.log(Level.INFO, "Sloooowing down");
             timer = System.currentTimeMillis();
             slowed = true;
-            MOVEMENT_SPEED = SLOWED_MOVEMENT_SPEED;
+            movementSpeed = SLOWED_MOVEMENT_SPEED;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(EntityNode.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    slowed = false;
+                    movementSpeed = NORMAL_MOVEMENT_SPEED;
+                    Vector3f wd = charControl.getWalkDirection();
+                    if (wd.length() > 0) {
+                        wd.normalizeLocal();
+                        wd.multLocal(movementSpeed);
+                    }
+                }
+            }).start();
+            
+            
         }
     }
     
