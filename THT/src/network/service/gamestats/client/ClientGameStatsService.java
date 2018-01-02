@@ -90,6 +90,11 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
     public void notifyTrapTriggered(String name, String trapName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+        LOGGER.log(Level.INFO, "new trigger that is empty");
+    }
     
     private class GameStatsSessionCallback implements GameStatsSessionListener {
 
@@ -105,13 +110,15 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
-            LOGGER.log(Level.INFO, "New traps received");
             listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
         }
 
         @Override
         public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-            listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
+            LOGGER.log(Level.INFO, "Received new triggeres" + names + " and " + trapNames + "from server");
+            if(names.size() > 0 && trapNames.size() > 0){
+               listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));                
+            }
         }
     }
 }

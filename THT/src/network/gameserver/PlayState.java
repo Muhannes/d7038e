@@ -8,12 +8,9 @@ package network.gameserver;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -23,6 +20,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.TrapController;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
@@ -41,7 +40,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private GameServer app;
     private Node playersNode;
     private Node root;
-    private Node trapNode;
+    private Node traps;
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
     private TrapController trapController;
@@ -67,19 +66,18 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         
         root = (Node) app.getRootNode();
         playersNode = (Node) app.getRootNode().getChild("playersNode");
-        trapNode = (Node) app.getRootNode().getChild("traps");
+        traps = (Node) app.getRootNode().getChild("traps");
         
-        if (playersNode == null || root == null || trapNode == null) {
+        if (playersNode == null || root == null || traps == null) {
             LOGGER.severe("root, trapNode or playersNode is null");
         }
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
         hostedMovementService.sendOutMovements(playersNode);
-        hostedGameStatsService.sendOutTraps(trapNode, playersNode);        
+        hostedGameStatsService.sendOutTraps(traps);        
 
-        //Really need one for each trap?
-        trapController = new TrapController(bulletAppState, root);
+        trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
     }
 
@@ -127,8 +125,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        LOGGER.log(Level.INFO, "new trap received : " + trapName + " - " + newTrap);
-        if (trapNode.getChild(trapName) != null) {
+        if (traps.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
         }else {
             app.enqueue(new Runnable() {
@@ -155,7 +152,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     node.getControl(GhostControl.class).setSpatial(geom);
                     
                     bulletAppState.getPhysicsSpace().add(ghost);
-                    trapNode.attachChild(node);
+                    traps.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
                 }
             });
@@ -163,7 +160,56 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     @Override
-    public void notifyTrapTriggered(String name, String trapName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void notifyTrapTriggered(String name, String trapName) { //should not be needed
+ /*       System.out.println("nofityTrapTriggered in PlayState" + name + " - " + trapName);
+        traps.detachChildNamed(trapName);
+        EntityNode entity = (EntityNode) playersNode.getChild(name);
+        //Slow down entity.
+        entity.slowDown();*/
     }
+
+    @Override
+    public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+    app.enqueue(() -> {
+            updateTreeWithDeletedTraps(names, trapNames);
+        });    
+    }
+    
+    public void updateTreeWithDeletedTraps(List<String> names, List<String> trapNames){
+        LOGGER.log(Level.INFO, names + " \n " + trapNames);
+        List<String> updatedNames = new ArrayList<>();
+        List<String> updatedTrapNames = new ArrayList<>();
+        
+        for(int i = 0; i < trapNames.size(); i++){
+            if(!updatedTrapNames.contains(trapNames.get(i))){
+                traps.detachChildNamed(trapNames.get(i));
+                updatedTrapNames.add(trapNames.get(i));
+            }
+        }
+
+        for(int j = 0; j < names.size(); j++){
+            if(!updatedNames.contains(names.get(j))){
+                EntityNode entity = (EntityNode) playersNode.getChild(names.get(j));
+                entity.slowDown();
+                updatedNames.add(names.get(j));
+            }
+        }    
+    }    
+
+    public void deleteTrap(String name, String trapName){
+        LOGGER.log(Level.INFO, name + " \n " + trapName);
+        if(playersNode.getChild(name) != null){
+            //Slow down player 
+            EntityNode entity = (EntityNode) playersNode.getChild(name);
+            entity.slowDown();
+            LOGGER.log(Level.INFO, entity.getName() + " is slowed");
+        }
+        if(traps.getChild(trapName) != null){
+            //remove trap from root
+            traps.detachChildNamed(trapName);
+            if(traps.getChild(trapName) != null){
+                LOGGER.log(Level.INFO, "trap was not removed");                
+            }
+        }
+    }    
 }
