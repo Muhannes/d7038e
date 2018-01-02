@@ -63,7 +63,7 @@ public class ClientMovementService extends AbstractClientService implements Move
 
     @Override
     public void sendMessage(PlayerMovement playerMovement) {
-        LOGGER.log(Level.INFO, "Sending playerMovement message");
+        //LOGGER.log(Level.INFO, "Sending playerMovement message");
         getDelegate().sendMessage(playerMovement);
     }
     
