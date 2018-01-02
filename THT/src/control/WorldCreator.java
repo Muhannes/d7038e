@@ -30,23 +30,28 @@ public class WorldCreator {
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         Node players = new Node("players");
         // TODO: make different models for each character type
-        Spatial monsterModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
-        //Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // apa
-        //humanModel.scale(0.75f);
-        monsterModel.scale(0.15f);
-        Spatial humanModel = monsterModel;
+        Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
+        Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
+        humanModel.scale(0.15f);
+        monsterModel.scale(0.01f);
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
-            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model));
+            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
         
         return players;
     }
     
-    public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model){
+    public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
-        return new EntityNode(name, tmpPos, bulletAppState, model);
+        if (type == EntityType.Human) {
+            return new HumanNode(name, tmpPos, bulletAppState, model);
+        } else if (type == EntityType.Monster){
+            return new MonsterNode(name, tmpPos, bulletAppState, model);
+        } else {
+            return null;
+        }
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 
