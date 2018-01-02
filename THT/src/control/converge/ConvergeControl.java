@@ -40,7 +40,6 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     
     @Override
     protected void controlUpdate(float tpf) {
-        System.out.println("Converging player: " + getSpatial().getName());
         if(setpoint == null) return;
         
         Vector3f tempSetpoint;
@@ -56,7 +55,6 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         
         //METHOD 1: Takes a small fraction of difference towards the setpoint
         if(dif.length() > SNAP_LIMIT){
-            System.out.println("Snapping, length = " + dif.length());
             character.setPhysicsLocation(tempSetpoint);
         }else{
             character.setPhysicsLocation(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
@@ -75,9 +73,6 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
             Vector3f walk = character.getWalkDirection().add(dif).normalize().mult(EntityNode.MOVEMENT_SPEED*tpf);
             character.setWalkDirection(walk);
         }*/
-      
-        System.out.println("Dif:" + dif.toString());
-        
     }
 
     @Override
