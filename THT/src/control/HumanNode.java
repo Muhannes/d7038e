@@ -34,11 +34,8 @@ public class HumanNode extends EntityNode{
         
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
-        float radius = boundingBox.getXExtent();
-        float height = boundingBox.getYExtent();
-        float width = boundingBox.getZExtent();
-        //BoxCollisionShape boxShape = new BoxCollisionShape(new Vector3f(radius, height, width));
-        //charControl = new CharacterControl(boxShape, 1.0f);
+        float radius = boundingBox.getXExtent() / 2;
+        float height = boundingBox.getYExtent() * 1.15f;
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);                
         charControl = new CharacterControl(shape, 1.0f); 
         this.addControl(charControl);
