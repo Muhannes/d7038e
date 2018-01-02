@@ -14,6 +14,7 @@ import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.plugins.blender.BlenderModelLoader;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +32,9 @@ public class WorldCreator {
         Node players = new Node("players");
         // TODO: make different models for each character type
         Spatial monsterModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
-        //Spatial humanModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // apa
-        //humanModel.scale(0.75f);
+        Spatial humanModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
+        humanModel.scale(0.05f);
         monsterModel.scale(0.15f);
-        Spatial humanModel = monsterModel;
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model));

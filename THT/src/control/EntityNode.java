@@ -45,6 +45,7 @@ public class EntityNode extends Node implements AnimEventListener{
     private void initEntity(Spatial model, BulletAppState bulletAppState, Vector3f position){
         this.setLocalTranslation(position);
         // Currently only works for Oto model.
+        
         animationControl = model.getControl(AnimControl.class);
         animationControl.addListener(this);
         animationChannel = animationControl.createChannel();
@@ -93,6 +94,7 @@ public class EntityNode extends Node implements AnimEventListener{
      */
     public void setWalkDirection(Vector3f walkDirection){
         charControl.setWalkDirection(walkDirection);
+        
         if (walkDirection.length() > 0) {
             if (!animationChannel.getAnimationName().equals("Walk")) {
                 animationChannel.setAnim("Walk", 1f);
@@ -102,6 +104,7 @@ public class EntityNode extends Node implements AnimEventListener{
                 animationChannel.setAnim("stand");
             }
         }
+        
     }
     
     public void setViewDirection(Vector3f walkDirection){
