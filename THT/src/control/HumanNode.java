@@ -13,13 +13,14 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import control.animation.HumanAnimationControl;
 
 /**
  *
  * @author hannes
  */
 public class HumanNode extends EntityNode{
-
+    
     public HumanNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name, position, bulletAppState, model);
     }
@@ -29,10 +30,6 @@ public class HumanNode extends EntityNode{
         this.setLocalTranslation(position);
         // Currently only works for Oto model.
         
-        animationControl = model.getControl(AnimControl.class);
-        animationChannel = animationControl.createChannel();
-        animationChannel.setAnim("stand");
-        
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
         float radius = boundingBox.getXExtent() / 2; 
@@ -41,26 +38,12 @@ public class HumanNode extends EntityNode{
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
-                
         bulletAppState.getPhysicsSpace().add(charControl);
         
+        // Animation
+        this.addControl(new HumanAnimationControl(model));
+                
         attachChild(model);
-    }
-
-    @Override
-    public void setWalkDirection(Vector3f walkDirection) {
-        
-        charControl.setWalkDirection(walkDirection);
-        
-        if (walkDirection.length() > 0) {
-            if (!animationChannel.getAnimationName().equals("Walk")) {
-                animationChannel.setAnim("Walk", 1f);
-            }
-        } else {
-            if (!animationChannel.getAnimationName().equals("stand")) {
-                animationChannel.setAnim("stand");
-            }
-        }
     }
     
 }

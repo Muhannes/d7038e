@@ -51,7 +51,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     protected void initialize(Application app) {
         this.app = (GameServer) app;
         this.bulletAppState = app.getStateManager().getState(BulletAppState.class);
-        
     }
 
     @Override
@@ -89,7 +88,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     @Override
-    public void sendMessage(PlayerMovement playerMovement) {
+    public void sendPlayerMovement(PlayerMovement playerMovement) {
 
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
@@ -98,9 +97,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 @Override
                 public void run() {
                     Spatial player = playersNode.getChild(playerMovement.id);
-                    //player.setLocalTranslation(playerMovement.location);
-                    player.getControl(BetterCharacterControl.class).setWalkDirection(playerMovement.direction);
-                    player.getControl(BetterCharacterControl.class).setViewDirection(playerMovement.rotation);
+                    player.getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
+                    player.getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
 
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }
@@ -111,9 +109,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     @Override
     public void update(float tpf){
         // Scale walking speed by tpf
-        for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
-            ((EntityNode) entity).scaleWalkDirection(tpf);
-        }
     }
 
     @Override
@@ -173,7 +168,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-    app.enqueue(() -> {
+        app.enqueue(() -> {
             updateTreeWithDeletedTraps(names, trapNames);
         });    
     }

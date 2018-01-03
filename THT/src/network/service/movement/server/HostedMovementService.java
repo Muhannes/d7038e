@@ -101,7 +101,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
      * @param movements 
      */
     public void broadcast(List<PlayerMovement> movements){
-        players.forEach(p -> p.getCallback().newMessage(movements));        
+        players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));        
     }
     
     public void sendOutMovements(Node playersNode){
@@ -112,14 +112,14 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                 public void run() {
                     while(true){
                         try {                    
-                            Thread.sleep(20);                    
+                            Thread.sleep(20);
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {
                             for(String id : updatedPlayers){
                                 Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
-                                Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(BetterCharacterControl.class).getWalkDirection());
-                                Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(BetterCharacterControl.class).getViewDirection());
+                                Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
+                                Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
 
                                 //do same for location
                                 PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
@@ -166,8 +166,8 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         }
 
         @Override
-        public void sendMessage(PlayerMovement playerMovement) {
-            movementSessions.forEach(l -> l.sendMessage(playerMovement));
+        public void sendPlayerMovement(PlayerMovement playerMovement) {
+            movementSessions.forEach(l -> l.sendPlayerMovement(playerMovement));
         }
         
     }
