@@ -10,6 +10,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import network.service.gamestats.server.HostedGameStatsService;
  *
  * @author ted
  */
-public class TrapController extends GhostControl implements PhysicsCollisionListener, PhysicsTickListener {
+public class TrapController extends GhostControl implements PhysicsCollisionListener{
 
     private static final Logger LOGGER = Logger.getLogger(TrapController.class.getName());
     
@@ -41,10 +42,6 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
     }
 
-    /*
-    * TODO: Somehow update the tree so that the traps triggered are removed.
-    * TODO: Somehow update the players so that they are slowed when triggering traps.
-    */
     @Override
     public void collision(PhysicsCollisionEvent event) {
         if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
@@ -84,23 +81,18 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
                         root.detachChildNamed(event.getNodeB().getParent().getName());                    
                     }
                 }
-            
-            } else if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
+            } 
+
+            LOGGER.log(Level.INFO, "Node A : " + event.getNodeA().getName() + " - " + event.getNodeA().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getParent().getName());
+            LOGGER.log(Level.INFO, "Node B : " + event.getNodeB().getName() + " - " + event.getNodeB().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getParent().getName());
+//            if(event.getNodeA().getParent().getParent().getName("playersNode"))
+                
+            if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
                 /* Check if any of the two are monster, and if so, the other is killed */
-                EntityNode player1 = (EntityNode) root.getChild(event.getNodeA().getName());
-                EntityNode player2 = (EntityNode) root.getChild(event.getNodeB().getName());
-                LOGGER.log(Level.INFO, "Collision between players");
+            //    EntityNode player1 = (EntityNode) root.getChild(event.getNodeA().getName());
+            //    EntityNode player2 = (EntityNode) root.getChild(event.getNodeB().getName());
+                LOGGER.log(Level.INFO, "Collision between" + event.getNodeA().getName() + " and " + event.getNodeB().getName());
             }
         }
-    }
-
-    @Override
-    public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        System.out.println("prePhysicsTick");
-    }
-
-    @Override
-    public void physicsTick(PhysicsSpace space, float tpf) {
-        System.out.println("PhysicsTick");
     }
 }

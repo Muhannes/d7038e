@@ -8,8 +8,10 @@ package control;
 import com.jme3.animation.AnimControl;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
@@ -40,7 +42,14 @@ public class HumanNode extends EntityNode{
         charControl = new CharacterControl(shape, 1.0f); 
         this.addControl(charControl);
                 
+        //GhostControl used for collision
+        GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+        this.addControl(ghost);
+        this.getControl(GhostControl.class).setSpatial(model);
+        
         bulletAppState.getPhysicsSpace().add(charControl);
+        bulletAppState.getPhysicsSpace().add(ghost);
+        
         
         attachChild(model);
     }
@@ -60,5 +69,6 @@ public class HumanNode extends EntityNode{
             }
         }
     }
+
     
 }

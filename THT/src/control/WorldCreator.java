@@ -9,6 +9,7 @@ import api.models.EntityType;
 import api.models.Player;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.math.Vector3f;
@@ -36,6 +37,7 @@ public class WorldCreator {
         monsterModel.scale(0.01f);
         listOfPlayers.forEach(p -> {
             Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
+            
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
         
@@ -46,9 +48,15 @@ public class WorldCreator {
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
         if (type == EntityType.Human) {
-            return new HumanNode(name, tmpPos, bulletAppState, model);
+            HumanNode human = new HumanNode(name, tmpPos, bulletAppState, model);
+//            human.getControl(GhostControl.class).setSpatial(model);            
+            return human;
+
         } else if (type == EntityType.Monster){
-            return new MonsterNode(name, tmpPos, bulletAppState, model);
+            MonsterNode monster = new MonsterNode(name, tmpPos, bulletAppState, model);
+//            monster.getControl(GhostControl.class).setSpatial(model);
+            return monster;
+            
         } else {
             return null;
         }
