@@ -9,7 +9,9 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;  
 import com.jme3.renderer.Camera;
@@ -62,15 +64,17 @@ public class HumanInputControl extends AbstractInputControl{
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
         manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
-        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
+        manager.addMapping("rotateright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        manager.addMapping("rotateleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap", "rotateleft", "rotateright");
     }
     
     @Override
     protected void controlUpdate(float tpf) {
-        moveDirection.normalizeLocal().multLocal(tpf*EntityNode.NORMAL_MOVEMENT_SPEED);
+        moveDirection.normalizeLocal().multLocal(EntityNode.NORMAL_MOVEMENT_SPEED);
         if(character != null) {
             character.setWalkDirection(moveDirection);
-            character.setViewDirection(moveDirection);
+            //character.setViewDirection(moveDirection);
             
             lastUpdate += tpf;
             if(lastUpdate > updatePeriod){
@@ -95,6 +99,7 @@ public class HumanInputControl extends AbstractInputControl{
             rotateY(-value);
             //sendMovementToServer();
         }
+        
         if(name.equals("rotateright")){
             rotateY(value);
             //sendMovementToServer();          

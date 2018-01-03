@@ -14,6 +14,8 @@ import network.service.movement.client.ClientMovementService;
  * This control handles how a monster should react to keyboard input.
  * 
  * @author truls
+ * @author ted
+ * @author hannes
  */
 public class MonsterInputControl extends AbstractInputControl{
 

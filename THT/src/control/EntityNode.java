@@ -9,7 +9,6 @@ import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -46,55 +45,10 @@ public abstract class EntityNode extends Node{
     }
     
     /**
-     * Sets shape and looks of object. is currently a box, but can be changed to something else
+     * Sets up model and controllers that defines the behaviour of this entity
      * @param position 
      */
     public abstract void initEntity(Vector3f position);
-/*   
-<<<<<<< HEAD
-=======
-    public void convergeLinear(Vector3f position, Vector3f rotation){
-        // TODO: Set movementdirection pointing to that position
-        
-        //charControl.setWalkDirection(vectorPointingAtPosition);
-    }
-    
-    public void convergeSnap(Vector3f position, Vector3f walkDirection, Vector3f rotation){
-        charControl.warp(position);
-        setWalkDirection(walkDirection);
-        setViewDirection(rotation);
-    }
-    
-    
-    public Vector3f getWalkDirection(){
-        return charControl.getWalkDirection();
-    }
-    
-    public Vector3f getViewDirection(){
-        return charControl.getViewDirection();
-    }
-*/    
-    /**
-     * Currently only works for "Oto" model.
-     * @param walkDirection 
-     */
-    public abstract void setWalkDirection(Vector3f walkDirection);
-    
-    /*
-    public void setViewDirection(Vector3f walkDirection){
-        charControl.setViewDirection(walkDirection);
-    }
-    */
-    public void rotateY(float rotationRad){
-        Vector3f oldRot = charControl.getViewDirection();
-        float x = (FastMath.cos(rotationRad) * oldRot.x) + (FastMath.sin(rotationRad) * oldRot.z);
-        float z = (FastMath.cos(rotationRad) * oldRot.z) - (FastMath.sin(rotationRad) * oldRot.x);
-        charControl.setViewDirection(new Vector3f(x, oldRot.y, z));
-    }
-    
-    
-    
-//>>>>>>> f7f8c3b8369b7b8f2b40f61c04469a1aa862f858
         
     public void slowDown(){
         if(!slowed){
