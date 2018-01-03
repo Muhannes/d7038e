@@ -5,7 +5,6 @@
  */
 package control.converge;
 
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -31,31 +30,65 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     private final Object LOCK = new Object();
     // Used to synchronize updates/reads on setpoint 
     
-    Vector3f setpoint; 
-    // Börvärde in english
+    private Vector3f posSetpoint; 
+    // Positional setpoint
     
+    private Vector3f rotSetpoint;
+    // Rotational setpoint 
+    
+    private final boolean convRot;
+    // Used to determing if the rotation should be converged.
+    
+    /**
+     * Creates a default converger that will converge both rotation and position
+     * of the spatial
+     * @param service Service that will notify new setpoints
+     */
     public ConvergeControl(ClientMovementService service){
+        this(service, true);
+    }
+    
+    /**
+     * Creates a converger that will converge position but rotation is optional
+     * @param service Service that will notify new setpoints
+     * @param convRot True if rotational should be converged, else False.
+     */
+    public ConvergeControl(ClientMovementService service, boolean convRot){
         service.addListener(this);
+        this.convRot = convRot;
     }
     
     @Override
     protected void controlUpdate(float tpf) {
-        if(setpoint == null) return;
+        if(posSetpoint == null) return;
         
-        Vector3f tempSetpoint;
+        Vector3f tempPosSetpoint;
+        Vector3f tempRotSetpoint;
         synchronized(LOCK){
-            tempSetpoint = setpoint.clone();
+            tempPosSetpoint = posSetpoint.clone();
+            tempRotSetpoint = rotSetpoint.clone();
         }
         
-        
+        convergeRotation(tempRotSetpoint);
+        convergePosition(tempPosSetpoint);
+    }
+    
+    private void convergeRotation(Vector3f setpoint){
+        if(convRot){
+            CharacterControl character = getSpatial().getControl(CharacterControl.class);
+            character.setViewDirection(setpoint);
+        }
+    }
+    
+    private void convergePosition(Vector3f setpoint){
         CharacterControl character = getSpatial().getControl(CharacterControl.class);
         
         Vector3f currentPos = getSpatial().getLocalTranslation();
-        Vector3f dif = currentPos.subtract(tempSetpoint);
+        Vector3f dif = currentPos.subtract(setpoint);
              
         //METHOD 1: Takes a small fraction of difference towards the setpoint
         if(dif.length() > SNAP_LIMIT){
-            character.warp(tempSetpoint);
+            character.warp(setpoint);
         }else{
             character.warp(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
         }
@@ -84,7 +117,8 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         for(PlayerMovement pm : playerMovements){
             if(pm.id.equals(getSpatial().getName())){
                 synchronized(LOCK){
-                    setpoint = pm.location;
+                    posSetpoint = pm.location;
+                    rotSetpoint = pm.rotation;
                 }
                 return;
             }

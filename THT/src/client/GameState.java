@@ -135,7 +135,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         inputControl.initKeys(input);  
         
         playerNode.getChildren().forEach((p) -> {   
-            ConvergeControl converger = new ConvergeControl(clientMovementService);
+            ConvergeControl converger;
+            if(p.getName().equals(player.getName())){
+                converger = new ConvergeControl(clientMovementService, false);
+            }else{
+                converger = new ConvergeControl(clientMovementService);
+            }
             p.addControl(converger);
         });
 

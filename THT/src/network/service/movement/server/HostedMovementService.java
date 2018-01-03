@@ -102,7 +102,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
      * @param movements 
      */
     public void broadcast(List<PlayerMovement> movements){
-        players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));        
+        players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));
     }
     
     public void sendOutMovements(Node playersNode){
