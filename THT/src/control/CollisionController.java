@@ -6,11 +6,8 @@
 package control;
 
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -46,7 +43,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
     public void collision(PhysicsCollisionEvent event) {
         if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
 
-            if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
+            /*if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
  
                 if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
                    
@@ -82,17 +79,18 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                     }
                 }
             } 
-
-            LOGGER.log(Level.INFO, "Node A : " + event.getNodeA().getName() + " - " + event.getNodeA().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getParent().getName());
-            LOGGER.log(Level.INFO, "Node B : " + event.getNodeB().getName() + " - " + event.getNodeB().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getParent().getName());
+*/
+            //LOGGER.log(Level.INFO, "Node A : " + event.getNodeA().getName() + " - " + event.getNodeA().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getParent().getName());
+            //LOGGER.log(Level.INFO, "Node B : " + event.getNodeB().getName() + " - " + event.getNodeB().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getParent().getName());
                 
-            if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
+//            if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
+            if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
                 //Cant check entity type here, send collision to playState and hostedGameStatsService!
                 
                 LOGGER.log(Level.INFO, "Collision between" + event.getNodeA().getName() + " and " + event.getNodeB().getName());
                 playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
                 
-                hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
+                hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeA().getName());
                 hostedGameStatsService.sendOutKilled();
             }
         }

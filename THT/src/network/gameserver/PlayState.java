@@ -110,8 +110,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     public void playerGotKilled(String victim, String killer){
-        if(playersNode.getChild(victim) == null){
-            LOGGER.severe("player does not exist");
+        if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
+            LOGGER.severe("players does not exist");
         } else {
 //            app.enqueue(new Runnable() {
 //                @Override

@@ -200,12 +200,10 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
                 monster = new Monster(player, app, clientMovementService, clientGameStatsService);
                 monster.initKeys(input); 
 
-               
-               
-                playerNode.detachChildNamed(victims.get(i));
-                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
-                playerNode.attachChild(newMonster);
-               //TODO: Set new camera
+//                playerNode.detachChildNamed(victims.get(i));
+//                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+//                playerNode.attachChild(newMonster);
+//               //TODO: Set new camera
             } else {
              //TODO: change the player to new monsterNode and change position
                 playerNode.detachChildNamed(victims.get(i));
