@@ -23,6 +23,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
+import com.sun.scenario.Settings;
 import control.EntityNode;
 import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
@@ -36,6 +37,7 @@ import network.service.gamestats.GameStatsSessionListener;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.login.client.ClientLoginService;
 import network.service.movement.client.ClientMovementService;
+import org.lwjgl.opengl.Display;
 
 /**
  *
@@ -115,6 +117,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         
         // set forward camera node that follows the character
         CameraNode camNode = new CameraNode("CamNode", camera);
+        // so that walls are not invisible
+        camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         camNode.setLocalTranslation(new Vector3f(0, 1, 0));
         //camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);

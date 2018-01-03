@@ -21,6 +21,7 @@ import com.jme3.scene.Node;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.movement.MovementSession;
@@ -47,7 +48,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 //    private AssetManager asset;
 //    private BulletAppState bulletAppState;
     
-    private List<String> updatedPlayers = new ArrayList<>();
+    private CopyOnWriteArrayList<String> updatedPlayers = new CopyOnWriteArrayList<>();
 //    private MovementSession session;
     private int channel;
     private int playerId;
@@ -171,4 +172,5 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         }
         
     }
+    
 }
