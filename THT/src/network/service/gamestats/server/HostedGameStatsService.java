@@ -225,11 +225,12 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {                         
-                            if(!victims.isEmpty() && !killers.isEmpty()){
+                            if(victims.size() > 0 && killers.size() > 0){
+                                LOGGER.log(Level.INFO, "boardcasting out dead player");
                                 broadcastPlayersKilled(victims, killers);  
-                                victims.clear();
-                                killers.clear();
-                            }
+                            }   
+                            victims.clear();
+                            killers.clear();     
                         }
                     }
                 }

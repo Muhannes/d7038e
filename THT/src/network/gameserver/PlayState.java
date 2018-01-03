@@ -45,14 +45,13 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private Node traps;
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
-    private CollisionController trapController;
+    private CollisionController collisionController;
     private BulletAppState bulletAppState;
     
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;
         this.bulletAppState = app.getStateManager().getState(BulletAppState.class);
-        
     }
 
     @Override
@@ -79,7 +78,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.sendOutMovements(playersNode);
         hostedGameStatsService.sendOutTraps(traps);        
 
-        trapController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
+        collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
     }
 
@@ -90,7 +89,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     @Override
-    public void sendMessage(PlayerMovement playerMovement) {
+    public void sendPlayerMovement(PlayerMovement playerMovement) {
 
         if (playersNode.getChild(playerMovement.id) == null) {
             LOGGER.severe("ID was wrong!");
@@ -99,7 +98,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 @Override
                 public void run() {
                     Spatial player = playersNode.getChild(playerMovement.id);
-                    //player.setLocalTranslation(playerMovement.location);
                     player.getControl(BetterCharacterControl.class).setWalkDirection(playerMovement.direction);
                     player.getControl(BetterCharacterControl.class).setViewDirection(playerMovement.rotation);
 
@@ -110,18 +108,15 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     public void playerGotKilled(String victim, String killer){
+        LOGGER.log(Level.INFO, victim + " got slaughtered by " + killer);
         if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
-//            app.enqueue(new Runnable() {
-//                @Override
-//                public void run() {        
             playersNode.detachChildNamed(victim);
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
             playersNode.attachChild(newMonster);
-//                }
-//            });
-        }
+            LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName());
+        } 
     }
     
     @Override
@@ -129,11 +124,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     @Override
-    public void notifyPlayerKilled(String victim, String killer) {
+    public void notifyPlayerKilled(String victim, String killer) { //not used
     }
     
     @Override
-    public void notifyPlayerEscaped(String name) {
+    public void notifyPlayerEscaped(String name) { //not used
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
@@ -179,7 +174,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-    app.enqueue(() -> {
+        app.enqueue(() -> {
             updateTreeWithDeletedTraps(names, trapNames);
         });    
     }

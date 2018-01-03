@@ -21,13 +21,11 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
-import control.Human;
-import control.Monster;
-import control.WorldCreator;
+import control.converge.ConvergeControl;
+import control.input.HumanInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.ArrayList;
@@ -37,15 +35,13 @@ import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSessionListener;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.login.client.ClientLoginService;
-import network.service.movement.MovementSessionListener;
-import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 
 /**
  *
  * @author ted
  */
-public class GameState extends BaseAppState implements MovementSessionListener, GameStatsSessionListener{
+public class GameState extends BaseAppState implements GameStatsSessionListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private ClientApplication app;
     private NiftyJmeDisplay niftyDisplay; 
@@ -53,7 +49,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     private ClientMovementService clientMovementService;
     private ClientGameStatsService clientGameStatsService;
     
-    private MovementSessionListener movementListener;
     private GameStatsSessionListener gameStatsListener;
         
     private Node root;
@@ -66,13 +61,10 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     private EntityNode player;
     private ChaseCamera chaseCamera;
     private Camera camera;
-    private Human human;
-    private Monster monster;
     private int id;
         
     @Override
     protected void initialize(Application app) {
-        
         this.app = (ClientApplication) app;
         
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -95,7 +87,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
 
     @Override
     protected void onEnable() {     
-        movementListener = this;
         gameStatsListener = this;
         
         this.root = app.getRootNode();   
@@ -104,8 +95,7 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         this.camera = app.getCamera();
         
         /* Listeners */
-        this.clientMovementService = app.getClientMovementService();        
-        this.clientMovementService.addListener(movementListener);
+        this.clientMovementService = app.getClientMovementService();      
         
         this.clientGameStatsService = app.getClientGameStatsService();
         this.clientGameStatsService.addGameStatsSessionListener(gameStatsListener);
@@ -137,8 +127,14 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        human = new Human(player, app, clientMovementService, clientGameStatsService);
-        human.initKeys(input); 
+        HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService, camera);
+        player.addControl(inputControl);
+        inputControl.initKeys(input);  
+        
+        playerNode.getChildren().forEach((p) -> {   
+            ConvergeControl converger = new ConvergeControl(clientMovementService);
+            p.addControl(converger);
+        });
 
     }
 
@@ -149,34 +145,6 @@ public class GameState extends BaseAppState implements MovementSessionListener, 
     
     @Override
     public void update(float tpf){
-        
-    }
-    
-    @Override
-    public void newMessage(List<PlayerMovement> playerMovements) {        
-        app.enqueue(() -> {
-            convergePlayers(playerMovements);
-        });
-    }
-    
-    /**
-     * converges all players that have changed their movementStatus.
-     * currently only snaps. Should be linear convergence for characters that moves "short distances".
-     * @param playerMovements 
-     */
-    private void convergePlayers(List<PlayerMovement> playerMovements){
-     
-        Node players = (Node) root.getChild("players");
-        for (PlayerMovement playerMovement : playerMovements) {
-            if (playerMovement.id.equals(player.getName())) { // This player
-                //LOGGER.log(Level.INFO, "Converging self: {0}", playerMovement.id);
-                player.convergeSnap(playerMovement.location, player.getWalkDirection(), player.getViewDirection());
-            } else { // Other entity, converge
-                //LOGGER.log(Level.INFO, "Converging player: {0}", playerMovement.id);
-                EntityNode entity = (EntityNode) players.getChild(playerMovement.id);
-                entity.convergeSnap(playerMovement.location, playerMovement.direction, playerMovement.rotation);
-            }
-        }
         
     }
     

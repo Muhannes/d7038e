@@ -14,6 +14,7 @@ import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import control.animation.MonsterAnimationControl;
 
 /**
  *
@@ -24,33 +25,11 @@ public class MonsterNode extends EntityNode{
     public MonsterNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name, position, bulletAppState, model);
     }
-
-    @Override
-    public void setWalkDirection(Vector3f walkDirection){
-        charControl.setWalkDirection(walkDirection);
-        
-        if (walkDirection.length() > 0) {
-            if (!animationChannel.getAnimationName().equals("Walk")) {
-                animationChannel.setAnim("Walk", 1f);
-            }
-        } else {
-            if (!animationChannel.getAnimationName().equals("Idle2")) {
-                animationChannel.setAnim("Idle2");
-            }
-        }
-        
-    }
     
-
     @Override
     public void initEntity(Vector3f position) {
-        
         this.setLocalTranslation(position);
         // Currently only works for Oto model.
-        
-        animationControl = model.getControl(AnimControl.class);
-        animationChannel = animationControl.createChannel();
-        animationChannel.setAnim("Idle2");
         
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
@@ -62,15 +41,16 @@ public class MonsterNode extends EntityNode{
         this.addControl(charControl);
         
         //GhostControl used for collision
-        GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
+/*        GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.1f,0.1f,0.1f)));
         this.addControl(ghost);
         this.getControl(GhostControl.class).setSpatial(model);
-        
+        bulletAppState.getPhysicsSpace().add(ghost);      */  
+
         bulletAppState.getPhysicsSpace().add(charControl);
-        bulletAppState.getPhysicsSpace().add(ghost);
+        
+        this.addControl(new MonsterAnimationControl(model));
         
         attachChild(model);
     }
-
     
 }

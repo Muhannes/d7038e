@@ -125,7 +125,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         Random random = new Random(); 
         for (Account account : accounts) {
             players.add(new Player(EntityType.Human, 
-                    new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), account.id));
+                    new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), account.id)); //pretty damn useless random vector
         }
         LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
         int monsterID = RANDOM.nextInt(players.size());

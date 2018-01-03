@@ -14,6 +14,6 @@ import com.jme3.network.service.rmi.Asynchronous;
 public interface MovementSession {
     
     @Asynchronous
-    void sendMessage(PlayerMovement playerMovement);
+    void sendPlayerMovement(PlayerMovement playerMovement);
     
 }
