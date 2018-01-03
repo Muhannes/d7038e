@@ -8,6 +8,8 @@ package control.input;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
+import control.EntityNode;
+import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
 
 /**
@@ -19,8 +21,8 @@ import network.service.movement.client.ClientMovementService;
  */
 public class MonsterInputControl extends AbstractInputControl{
 
-    public MonsterInputControl(ClientMovementService movementService) {
-        super(movementService);
+    public MonsterInputControl(EntityNode player, ClientMovementService movementService, ClientGameStatsService gameStatsService) {
+        super(movementService, gameStatsService);
     }
 
     @Override
