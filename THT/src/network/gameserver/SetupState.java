@@ -123,13 +123,19 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private List<Player> createPlayerInitInfo(){
         List<Player> players = new ArrayList<>();
         Random random = new Random(); 
-        for (Account account : accounts) {
-            players.add(new Player(EntityType.Human, 
-                    new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), account.id)); //pretty damn useless random vector
+
+        LOGGER.log(Level.INFO, "Number of players in game: {0}", accounts.size());
+        int monsterID = random.nextInt(accounts.size());
+
+        for (int a = 0; a < accounts.size(); a++) {
+            if(a == monsterID){
+                players.add(new Player(EntityType.Monster, 
+                    new Vector3f(-3.78f, 1.0f, 8.84f), new Quaternion(0, 0, 0, 0), accounts.get(a).id));                 
+            }else{
+                players.add(new Player(EntityType.Human, 
+                    new Vector3f(-3.16f, 2f, -8.9f), new Quaternion(0, 0, 0, 0), accounts.get(a).id)); 
+            }            
         }
-        LOGGER.log(Level.INFO, "Number of players in game: {0}", players.size());
-        int monsterID = RANDOM.nextInt(players.size());
-        players.get(monsterID).setType(EntityType.Monster);
         return players;
         
     }

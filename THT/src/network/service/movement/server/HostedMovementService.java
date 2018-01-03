@@ -105,7 +105,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
     
     public void sendOutMovements(Node playersNode){
-        //Send out movements everything 10ms 
+        //Send out movements everything 20ms 
         new Thread(
             new Runnable(){
                 @Override
@@ -116,6 +116,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                         } catch (InterruptedException ex) {
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {
+                            
                             for(String id : updatedPlayers){
                                 Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
                                 Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(BetterCharacterControl.class).getWalkDirection());
@@ -125,12 +126,13 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                                 PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
                                 movements.add(pm);
                             }
-                            if (!movements.isEmpty()) {
+                            if (movements.size() > 0) { //isEmpty fucking sucks
                                 broadcast(movements);
                                 //Clear movements
-                                movements.clear();
-                                updatedPlayers.clear(); //changed from within the loop.           
                             }
+                            movements.clear();
+                            updatedPlayers.clear(); //changed from within the loop.           
+                            
                         }
                     }
                 }            

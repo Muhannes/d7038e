@@ -46,12 +46,13 @@ public class WorldCreator {
     
     public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
-        Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
+//        Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
+        
         if (type == EntityType.Human) {
-            return new HumanNode(name, tmpPos, bulletAppState, model);
+            return new HumanNode(name, position, bulletAppState, model);
             
         } else if (type == EntityType.Monster){
-            return new MonsterNode(name, tmpPos, bulletAppState, model);
+            return new MonsterNode(name, position, bulletAppState, model);
             
         } else {
             return null;
@@ -64,7 +65,9 @@ public class WorldCreator {
         monsterModel.scale(0.01f);
         Spatial model = monsterModel.clone();
                     
-        Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
+        //Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
+        Vector3f tmpPos = new Vector3f(-16f, 2.0f, 0.0f);
+        
         return new MonsterNode(name, tmpPos, bulletAppState, model);
     }
     

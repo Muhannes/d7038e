@@ -87,6 +87,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     protected void onEnable() {     
+        LOGGER.log(Level.INFO, "enabling client");
+
         gameStatsListener = this;
         
         this.root = app.getRootNode();   
@@ -120,13 +122,17 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         camNode.setLocalTranslation(new Vector3f(0, 1, 0));
         //camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
         player.attachChild(camNode);
-        //chaseCamera = new ChaseCamera(camera, player, input);
-        //chaseCamera.setMaxDistance(0);
-        //chaseCamera.setDefaultDistance(0);
+        
+        /*
+        chaseCamera = new ChaseCamera(camera, player, input);
+        chaseCamera.setMaxDistance(0);
+        chaseCamera.setDefaultDistance(0);
         
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
+        */
+        
         HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService, camera);
         player.addControl(inputControl);
         inputControl.initKeys(input);  
@@ -150,35 +156,41 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     
     @Override
     public void notifyPlayersKilled(List<String> victims, List<String> killers) {
-        LOGGER.log(Level.INFO, "Victim list : " + victims + "\nKiller list : " + killers);
-/*        for(int i = 0; i < victims.size(); i++){
-           //Print out to GUI that killer slaughtered the victim
-            if(victims.get(i).equals(player.getName())){
-               //TODO: change the player to new monsterNode and change position
+        LOGGER.log(Level.INFO, "\nVictim list : " + victims + "\nKiller list : " + killers);
+        app.enqueue(() -> {            
+            for(int i = 0; i < victims.size(); i++){
+                //Print out to GUI that killer slaughtered the victim
+                
+                if(victims.get(i).equals(player.getName())){
+                   //TODO: change the player to new monsterNode and change position
+                   LOGGER.log(Level.INFO, "you have died!");
+/*
+                    // set forward camera node that follows the character
+                    CameraNode camNode = new CameraNode("CamNode", camera);
+                    camNode.setControlDir(ControlDirection.SpatialToCamera);
+                    camNode.setLocalTranslation(new Vector3f(0, 1, 0));
+                    player.attachChild(camNode);
 
-                // set forward camera node that follows the character
-                CameraNode camNode = new CameraNode("CamNode", camera);
-                camNode.setControlDir(ControlDirection.SpatialToCamera);
-                camNode.setLocalTranslation(new Vector3f(0, 1, 0));
-                player.attachChild(camNode);
+                    if(chaseCamera == null){
+                        LOGGER.log(Level.SEVERE, "chaseCamera is null");
+                    }
+                    monster = new Monster(player, app, clientMovementService, clientGameStatsService);
+                    monster.initKeys(input); 
 
-                if(chaseCamera == null){
-                    LOGGER.log(Level.SEVERE, "chaseCamera is null");
-                }
-                monster = new Monster(player, app, clientMovementService, clientGameStatsService);
-                monster.initKeys(input); 
-
-//                playerNode.detachChildNamed(victims.get(i));
-//                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
-//                playerNode.attachChild(newMonster);
-//               //TODO: Set new camera
-            } else {
-             //TODO: change the player to new monsterNode and change position
-                playerNode.detachChildNamed(victims.get(i));
-                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
-                playerNode.attachChild(newMonster);
-           }
-        }*/
+    //                playerNode.detachChildNamed(victims.get(i));
+    //                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+    //                playerNode.attachChild(newMonster);
+    //               //TODO: Set new camera
+                */
+                } else {
+                    LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
+                    //TODO: change the player to new monsterNode and change position
+//                    playerNode.detachChildNamed(victims.get(i));
+//                    EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+//                    playerNode.attachChild(newMonster);
+               }
+            }
+        });
     }
 
     @Override

@@ -215,6 +215,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void sendOutKilled(){
+        LOGGER.log(Level.INFO, "sendOutKilled()");
         new Thread(
             new Runnable(){
                 @Override
@@ -226,9 +227,9 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                             java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {                         
                             if(victims.size() > 0 && killers.size() > 0){
-                                LOGGER.log(Level.INFO, "boardcasting out dead player");
+                                LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victims + "\n" + killers);
                                 broadcastPlayersKilled(victims, killers);  
-                            }   
+                            }  
                             victims.clear();
                             killers.clear();     
                         }
@@ -239,6 +240,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void broadcastPlayersKilled(List <String> victims, List<String> killers){
+        LOGGER.log(Level.INFO, victims + "\n" + killers);
         players.forEach(l -> l.getCallback().notifyPlayersKilled(victims, killers));
     }
 

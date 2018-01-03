@@ -46,5 +46,8 @@ public class Player{
         return position;
     }
     
+    public void setPosition(Vector3f pos){
+        this.position = pos;
+    }
     
 }

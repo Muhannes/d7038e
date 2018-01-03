@@ -48,6 +48,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private CollisionController collisionController;
     private BulletAppState bulletAppState;
     
+    private final Vector3f monsterSpawn = new Vector3f(-6.4f, 1.0f, 8.4f);
+    
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;
@@ -114,8 +116,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         } else {
             playersNode.detachChildNamed(victim);
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
+            newMonster.setLocalTranslation(monsterSpawn);
             playersNode.attachChild(newMonster);
-            LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName());
+            LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
         } 
     }
     

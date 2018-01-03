@@ -100,6 +100,7 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyPlayersKilled(List<String> victims, List<String> killers) {
+            LOGGER.log(Level.INFO, "received dead player from server\nVictims"+ victims + "\nKillers" + killers);
             listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
         }
 

@@ -143,6 +143,7 @@ public class HumanInputControl extends AbstractInputControl{
         if(name.equals("trap") && isPressed){
             if(traps > 0){
                 sendTrapsToServer();
+                traps--;
             }
         }
     }
