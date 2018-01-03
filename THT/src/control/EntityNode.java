@@ -11,7 +11,9 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -27,14 +29,14 @@ public abstract class EntityNode extends Node{
         private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
 
     // TODO: Init variables for different trap status, i.e. isFrozen.
-    CharacterControl charControl;
+    BetterCharacterControl charControl;
     Spatial model;
     AnimControl animationControl;
     AnimChannel animationChannel;
     
     BulletAppState bulletAppState;
     
-    public static float MOVEMENT_SPEED = 3.0f;
+    public float movementSpeed = NORMAL_MOVEMENT_SPEED;
     public static float SLOWED_MOVEMENT_SPEED = 1.0f;
     public static float NORMAL_MOVEMENT_SPEED = 3.0f;
     private long timer;
@@ -60,19 +62,19 @@ public abstract class EntityNode extends Node{
         //charControl.setWalkDirection(vectorPointingAtPosition);
     }
     
-    public void convergeSnap(Vector3f position, Vector3f walkDirection, Quaternion rotation){
-        charControl.setPhysicsLocation(position);
+    public void convergeSnap(Vector3f position, Vector3f walkDirection, Vector3f rotation){
+        charControl.warp(position);
         setWalkDirection(walkDirection);
-        if(walkDirection.length() > 0){
-            Vector3f viewDirection = new Vector3f(walkDirection).normalize();
-            viewDirection.y = 0;
-            setViewDirection(viewDirection);
-        }
+        setViewDirection(rotation);
     }
     
     
     public Vector3f getWalkDirection(){
         return charControl.getWalkDirection();
+    }
+    
+    public Vector3f getViewDirection(){
+        return charControl.getViewDirection();
     }
     
     /**
@@ -85,29 +87,40 @@ public abstract class EntityNode extends Node{
         charControl.setViewDirection(walkDirection);
     }
     
-    /**
-     * Scales the movementSpeed depending on tpf
-     * @param tpf 
-     */
-    public void scaleWalkDirection(float tpf){
-        if(slowed){
-            int tmpTimer = (int) ((System.currentTimeMillis() - timer)/1000);
-            if(tmpTimer > slowTime){
-                MOVEMENT_SPEED = NORMAL_MOVEMENT_SPEED;
-                slowed = false;
-            }            
-        }
-        Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(MOVEMENT_SPEED).mult(tpf);
-        setWalkDirection(scaledSpeed);
+    public void rotateY(float rotationRad){
+        Vector3f oldRot = charControl.getViewDirection();
+        float x = (FastMath.cos(rotationRad) * oldRot.x) + (FastMath.sin(rotationRad) * oldRot.z);
+        float z = (FastMath.cos(rotationRad) * oldRot.z) - (FastMath.sin(rotationRad) * oldRot.x);
+        charControl.setViewDirection(new Vector3f(x, oldRot.y, z));
     }
-
+    
+    
     
     public void slowDown(){
         if(!slowed){
             LOGGER.log(Level.INFO, "Sloooowing down");
             timer = System.currentTimeMillis();
             slowed = true;
-            MOVEMENT_SPEED = SLOWED_MOVEMENT_SPEED;
+            movementSpeed = SLOWED_MOVEMENT_SPEED;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(EntityNode.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    slowed = false;
+                    movementSpeed = NORMAL_MOVEMENT_SPEED;
+                    Vector3f wd = getWalkDirection();
+                    if (wd.length() > 0) {
+                        wd.normalizeLocal();
+                        wd.multLocal(movementSpeed);
+                    }
+                }
+            }).start();
+            
+            
         }
     }
     

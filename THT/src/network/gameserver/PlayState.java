@@ -9,6 +9,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
@@ -19,7 +20,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
-import control.TrapController;
+import control.CollisionController;
+import control.WorldCreator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,7 +45,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private Node traps;
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
-    private TrapController trapController;
+    private CollisionController trapController;
     private BulletAppState bulletAppState;
     
     @Override
@@ -77,7 +79,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.sendOutMovements(playersNode);
         hostedGameStatsService.sendOutTraps(traps);        
 
-        trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
+        trapController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
     }
 
@@ -96,38 +98,50 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
-                    playersNode.getChild(playerMovement.id).setLocalTranslation(playerMovement.location);
-                    playersNode.getChild(playerMovement.id).getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
-                    playersNode.getChild(playerMovement.id).setLocalRotation(playerMovement.rotation);
+                    Spatial player = playersNode.getChild(playerMovement.id);
+                    //player.setLocalTranslation(playerMovement.location);
+                    player.getControl(BetterCharacterControl.class).setWalkDirection(playerMovement.direction);
+                    player.getControl(BetterCharacterControl.class).setViewDirection(playerMovement.rotation);
 
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }
             });
         }
     }
+
+    public void playerGotKilled(String victim, String killer){
+        if(playersNode.getChild(victim) == null){
+            LOGGER.severe("player does not exist");
+        } else {
+//            app.enqueue(new Runnable() {
+//                @Override
+//                public void run() {        
+            playersNode.detachChildNamed(victim);
+            EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
+            playersNode.attachChild(newMonster);
+//                }
+//            });
+        }
+    }
     
     @Override
     public void update(float tpf){
-        for (Spatial entity : playersNode.getChildren()) {
-            ((EntityNode) entity).scaleWalkDirection(tpf);
-        }
     }
 
     @Override
     public void notifyPlayerKilled(String victim, String killer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public void notifyPlayerEscaped(String name) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
         if (traps.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
-        }else {
+        } else {
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
@@ -161,11 +175,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapTriggered(String name, String trapName) { //should not be needed
- /*       System.out.println("nofityTrapTriggered in PlayState" + name + " - " + trapName);
-        traps.detachChildNamed(trapName);
-        EntityNode entity = (EntityNode) playersNode.getChild(name);
-        //Slow down entity.
-        entity.slowDown();*/
     }
 
     @Override

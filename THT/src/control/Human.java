@@ -13,10 +13,12 @@ import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import control.action.Jump;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
@@ -28,6 +30,7 @@ import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import com.sun.istack.internal.logging.Logger;
+import net.java.games.input.Component;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
@@ -161,14 +164,9 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         }
         
         moveDirection.normalizeLocal();
-        moveDirection.multLocal(EntityNode.MOVEMENT_SPEED);
+        moveDirection.multLocal(self.movementSpeed);
 
         self.setWalkDirection(moveDirection);
-        if (forward || backward || strafeLeft || strafeRight) {
-            Vector3f viewDirection = new Vector3f(moveDirection).normalize();
-            viewDirection.y = 0;
-            self.setViewDirection(viewDirection);
-        }
     }
     
     /**
@@ -176,7 +174,7 @@ public class Human extends AbstractController implements ActionListener, AnalogL
      */
     private void sendMovementToServer(){         
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
-                self.getWalkDirection(), self.getLocalRotation());
+                self.getWalkDirection(), self.getViewDirection());
         clientMovementService.sendMessage(pm);
     }
     
@@ -231,23 +229,30 @@ public class Human extends AbstractController implements ActionListener, AnalogL
         manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_D));        
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F));        
         manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap");
+        
+        manager.addMapping("rotateright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        manager.addMapping("rotateleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "trap", "rotateright", "rotateleft");
     }
 
     /**
-     * TODO: Make rotations here?
+     * TODO: makes rotations
      * @param name
      * @param value
      * @param tpf 
      */
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        /*if(name.equals("left")){
-            // TODO: Rotate left by tpf
-            self.charControl.getWalkDirection();
+        if(name.equals("rotateleft")){
+            self.rotateY(-value);
+            setNewMoveDirection();
+            sendMovementToServer();
         }
-        if(name.equals("right")){
-            self.charControl.getWalkDirection().addLocal(tpf, 0, 0);
-        }*/
+        if(name.equals("rotateright")){
+            self.rotateY(value);
+            setNewMoveDirection();
+            sendMovementToServer();
+            
+        }
     }
 }

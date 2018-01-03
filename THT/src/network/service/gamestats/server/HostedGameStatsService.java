@@ -12,14 +12,10 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
@@ -53,6 +49,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     private final List <String> updatedTraps = new ArrayList<>();
     private final List <String> deletedTraps = new ArrayList<>();
     private final List <String> slowedPlayers = new ArrayList<>();
+    
+    //When player dies
+    private final List <String> victims = new ArrayList<>();
+    private final List <String> killers = new ArrayList<>();
+    
     
     private int channel;
     
@@ -173,13 +174,11 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
                         } finally {                         
   
                             for(String id : deletedTraps){            
-//                                String trapName = trapNode.getChild(id).getName();
                                 if(!triggeredTraps.contains(id)){
                                     triggeredTraps.add(id);                                   
                                 }
                             }    
                             for(String playerId : slowedPlayers){
-                            //    String playerName = playersNode.getChild(playerId).getName();
                                 if(!triggers.contains(playerId)){
                                     triggers.add(playerId);                                    
                                 }
@@ -207,6 +206,39 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
 
     public void broadcastDeletedTraps(List<String> triggers, List<String> triggeredTraps){
         players.forEach(l -> l.getCallback().notifyTrapsTriggered(triggers, triggeredTraps));            
+    }
+    
+    public void playerGotKilled(String victim, String killer){
+        LOGGER.log(Level.INFO, killer + " slaughtered " + victim);
+        victims.add(victim);
+        killers.add(killer);        
+    }
+    
+    public void sendOutKilled(){
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    while(true){
+                        try {                    
+                            Thread.sleep(10);                    
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {                         
+                            if(!victims.isEmpty() && !killers.isEmpty()){
+                                broadcastPlayersKilled(victims, killers);  
+                                victims.clear();
+                                killers.clear();
+                            }
+                        }
+                    }
+                }
+            }
+        ).start();
+    }
+    
+    public void broadcastPlayersKilled(List <String> victims, List<String> killers){
+        players.forEach(l -> l.getCallback().notifyPlayersKilled(victims, killers));
     }
 
     

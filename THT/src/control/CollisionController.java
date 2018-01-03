@@ -24,9 +24,9 @@ import network.service.gamestats.server.HostedGameStatsService;
  *
  * @author ted
  */
-public class TrapController extends GhostControl implements PhysicsCollisionListener{
+public class CollisionController extends GhostControl implements PhysicsCollisionListener{
 
-    private static final Logger LOGGER = Logger.getLogger(TrapController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CollisionController.class.getName());
     
     private final BulletAppState bulletAppState;
     private final Node root;
@@ -34,7 +34,7 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
     private PlayState playState;
     private List<String> triggeredTraps = new ArrayList<>();
     
-    public TrapController(PlayState playState, BulletAppState bullet, Node root, HostedGameStatsService hostedGameStatsService) {
+    public CollisionController(PlayState playState, BulletAppState bullet, Node root, HostedGameStatsService hostedGameStatsService) {
         this.playState = playState;
         this.bulletAppState = bullet;
         this.root = root;
@@ -85,13 +85,15 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
 
             LOGGER.log(Level.INFO, "Node A : " + event.getNodeA().getName() + " - " + event.getNodeA().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getName() + " - " + event.getNodeA().getParent().getParent().getParent().getName());
             LOGGER.log(Level.INFO, "Node B : " + event.getNodeB().getName() + " - " + event.getNodeB().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getName() + " - " + event.getNodeB().getParent().getParent().getParent().getName());
-//            if(event.getNodeA().getParent().getParent().getName("playersNode"))
                 
             if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
-                /* Check if any of the two are monster, and if so, the other is killed */
-            //    EntityNode player1 = (EntityNode) root.getChild(event.getNodeA().getName());
-            //    EntityNode player2 = (EntityNode) root.getChild(event.getNodeB().getName());
+                //Cant check entity type here, send collision to playState and hostedGameStatsService!
+                
                 LOGGER.log(Level.INFO, "Collision between" + event.getNodeA().getName() + " and " + event.getNodeB().getName());
+                playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
+                
+                hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
+                hostedGameStatsService.sendOutKilled();
             }
         }
     }

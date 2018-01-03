@@ -48,18 +48,24 @@ public class WorldCreator {
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
         if (type == EntityType.Human) {
-            HumanNode human = new HumanNode(name, tmpPos, bulletAppState, model);
-//            human.getControl(GhostControl.class).setSpatial(model);            
-            return human;
-
+            return new HumanNode(name, tmpPos, bulletAppState, model);
+            
         } else if (type == EntityType.Monster){
-            MonsterNode monster = new MonsterNode(name, tmpPos, bulletAppState, model);
-//            monster.getControl(GhostControl.class).setSpatial(model);
-            return monster;
+            return new MonsterNode(name, tmpPos, bulletAppState, model);
             
         } else {
             return null;
         }
+    }
+    
+    public static EntityNode createMonster(AssetManager assetManager, String name, BulletAppState bulletAppState){
+        LOGGER.log(Level.INFO, "creating new monster");
+        Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
+        monsterModel.scale(0.01f);
+        Spatial model = monsterModel.clone();
+                    
+        Vector3f tmpPos = new Vector3f(-5.5f,5f, -9.5f);
+        return new MonsterNode(name, tmpPos, bulletAppState, model);
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 
