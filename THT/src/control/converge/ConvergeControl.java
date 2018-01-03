@@ -51,20 +51,13 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         
         Vector3f currentPos = getSpatial().getLocalTranslation();
         Vector3f dif = currentPos.subtract(tempSetpoint);
-        
-        System.out.println(tempSetpoint + ", " + currentPos);
              
         //METHOD 1: Takes a small fraction of difference towards the setpoint
         if(dif.length() > SNAP_LIMIT){
             character.warp(tempSetpoint);
-            System.out.println("SNAP length = " + dif.length());
         }else{
             character.warp(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
-            System.out.println("LINEAR length = " + dif.length());
         }
-        
-        System.out.println(getSpatial().getWorldTranslation().toString());
-        
         
         // METHOD 2: Changes the walkdirection based on the difference vector
         /*if(dif.length() > SNAP_LIMIT){
@@ -88,11 +81,9 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     @Override
     public void notifyPlayerMovement(List<PlayerMovement> playerMovements) {
         for(PlayerMovement pm : playerMovements){
-            //System.out.println("pm.id = " + pm.id);
             if(pm.id.equals(getSpatial().getName())){
                 synchronized(LOCK){
                     setpoint = pm.location;
-                    System.out.println("new setpoint: " + setpoint.toString());
                 }
                 return;
             }
