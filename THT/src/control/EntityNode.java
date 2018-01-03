@@ -29,7 +29,7 @@ public abstract class EntityNode extends Node{
         private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
 
     // TODO: Init variables for different trap status, i.e. isFrozen.
-    BetterCharacterControl charControl;
+    CharacterControl charControl;
     Spatial model;
     AnimControl animationControl;
     AnimChannel animationChannel;
@@ -95,6 +95,14 @@ public abstract class EntityNode extends Node{
     }
     
     
+    /**
+     * Scales the movementSpeed depending on tpf
+     * @param tpf 
+     */
+    public void scaleWalkDirection(float tpf){
+        Vector3f scaledSpeed = charControl.getWalkDirection().normalize().mult(movementSpeed).mult(tpf);
+        setWalkDirection(scaledSpeed);
+    }
     
     public void slowDown(){
         if(!slowed){

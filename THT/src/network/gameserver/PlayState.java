@@ -110,6 +110,10 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     
     @Override
     public void update(float tpf){
+        // Scale walking speed by tpf
+        for (Spatial entity : ((Node)app.getRootNode().getChild("players")).getChildren()) {
+            ((EntityNode) entity).scaleWalkDirection(tpf);
+        }
     }
 
     @Override

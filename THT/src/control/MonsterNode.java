@@ -57,8 +57,9 @@ public class MonsterNode extends EntityNode{
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         model.rotate(0, FastMath.DEG_TO_RAD * 180, 0);
-        //CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-        charControl = new BetterCharacterControl(radius, height, 1.0f);
+        model.setLocalTranslation(model.getLocalTranslation().add(0, - height*3/4, 0));
+        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
+        charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
         
                 
