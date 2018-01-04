@@ -32,10 +32,18 @@ public class WorldCreator {
         // TODO: make different models for each character type
         Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
         Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
+        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
         humanModel.scale(0.15f);
         monsterModel.scale(0.01f);
         listOfPlayers.forEach(p -> {
-            Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
+            Spatial model;
+            if (p.getType() == EntityType.Human) {
+                model = humanModel;
+            } else if (p.getType() == EntityType.Monster) {
+                model = monsterModel;
+            } else {
+                model = monkeyModel;
+            }
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
         
@@ -49,6 +57,9 @@ public class WorldCreator {
             return new HumanNode(name, tmpPos, bulletAppState, model);
         } else if (type == EntityType.Monster){
             return new MonsterNode(name, tmpPos, bulletAppState, model);
+        } else if (type == EntityType.Ghost){
+            System.out.println("Creating monkey!");
+            return new MonkeyNode(name, tmpPos, bulletAppState, model);
         } else {
             return null;
         }

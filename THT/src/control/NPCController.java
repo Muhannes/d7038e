@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package api.models;
+package control;
 
 /**
  *
  * @author hannes
  */
-public enum EntityType {
-    Human,
-    Monster,
-    Ghost,
+public class NPCController {
+    
 }
-
-
