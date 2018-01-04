@@ -163,6 +163,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 
         @Override
         public void sendPlayerMovement(PlayerMovement playerMovement) {
+            LOGGER.log(Level.INFO, "server received new movement message\nid : " + playerMovement.id + " direction : " + playerMovement.direction);
             movementSessions.forEach(l -> l.sendPlayerMovement(playerMovement));
         }
         

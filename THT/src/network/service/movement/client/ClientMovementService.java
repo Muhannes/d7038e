@@ -63,7 +63,7 @@ public class ClientMovementService extends AbstractClientService implements Move
 
     @Override
     public void sendPlayerMovement(PlayerMovement playerMovement) {
-        //LOGGER.log(Level.INFO, "Sending playerMovement message");
+        LOGGER.log(Level.INFO, "Sending playerMovement message");
         getDelegate().sendPlayerMovement(playerMovement);
     }
     
@@ -75,7 +75,7 @@ public class ClientMovementService extends AbstractClientService implements Move
 
         @Override
         public void notifyPlayerMovement(List<PlayerMovement> playerMovements) { //Are these all the new movements that server broadcasted out?
-            //LOGGER.info("Movements received from server.\nSize of listeners : " + listeners.size());
+            LOGGER.info("Movements received from server.\nSize of listeners : " + listeners.size());
             listeners.forEach(l -> l.notifyPlayerMovement(playerMovements)); 
         }
 

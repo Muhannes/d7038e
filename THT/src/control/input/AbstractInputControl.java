@@ -22,6 +22,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;
+import java.util.logging.Level;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
@@ -125,7 +126,8 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     /**
      * Sends information about model to server
      */
-    private void sendMovementToServer(){         
+    private void sendMovementToServer(){       
+//        LOGGER.log(Level.INFO, "sending new movement message");
         Spatial self = getSpatial();
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
