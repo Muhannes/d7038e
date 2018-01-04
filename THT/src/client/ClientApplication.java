@@ -69,7 +69,7 @@ public class ClientApplication extends SimpleApplication{
         // Start app at login Screen
         loginScreen.setEnabled(true);
         
-        //setFlyCamEnabled(false);
+        setFlyCamEnabled(false);
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
