@@ -129,10 +129,9 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                             if (movements.size() > 0) { //isEmpty fucking sucks
                                 broadcast(movements);
                                 //Clear movements
-                            }
-                            movements.clear();
-                            updatedPlayers.clear(); //changed from within the loop.           
-                            
+                                movements.clear();
+                                updatedPlayers.clear(); //changed from within the loop.           
+                            }                        
                         }
                     }
                 }            
