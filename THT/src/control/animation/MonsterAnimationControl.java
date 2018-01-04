@@ -7,6 +7,8 @@ package control.animation;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.scene.Spatial;
 
@@ -14,7 +16,10 @@ import com.jme3.scene.Spatial;
  *
  * @author Hannes
  */
-public class MonsterAnimationControl extends AbstractAnimationControl{
+public class MonsterAnimationControl extends AbstractAnimationControl implements AnimEventListener{
+    private static String ATTACK_TYPE = "Attack3";
+    private static String STAND = "Idle2";
+    private static String WALK = "Walk";
     
     CharacterControl charControl;
     AnimControl animationControl;
@@ -22,8 +27,12 @@ public class MonsterAnimationControl extends AbstractAnimationControl{
     
     public MonsterAnimationControl(Spatial model){
         animationControl = model.getControl(AnimControl.class);
+        for (String anim : animationControl.getAnimationNames()) {
+            System.out.println(anim);
+        }
+        animationControl.addListener(this);
         animationChannel = animationControl.createChannel();
-        animationChannel.setAnim("Idle2");
+        animationChannel.setAnim(STAND);
     }
     
     @Override
@@ -42,14 +51,32 @@ public class MonsterAnimationControl extends AbstractAnimationControl{
     }
     
     private void walkAnimation(){
-         if (!animationChannel.getAnimationName().equals("Walk")) {
-            animationChannel.setAnim("Walk", 1f);
+         if (!animationChannel.getAnimationName().equals(WALK) && !animationChannel.getAnimationName().equals(ATTACK_TYPE)) {
+            animationChannel.setAnim(WALK, 1f);
         }
     }
     
     private void standAnimation(){
-        if (!animationChannel.getAnimationName().equals("Idle2")) {
-            animationChannel.setAnim("Idle2");
+        if (!animationChannel.getAnimationName().equals(STAND) && !animationChannel.getAnimationName().equals(ATTACK_TYPE)) {
+            animationChannel.setAnim(STAND);
         }
+    }
+    
+    public void swordSlash(){
+        animationChannel.setAnim(ATTACK_TYPE, 1.0f);
+        animationChannel.setLoopMode(LoopMode.DontLoop);
+    }
+
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        System.out.println("Cycle done: " + animName);
+        if (animName.equals(ATTACK_TYPE)) {
+            animationChannel.setAnim(STAND);
+        }
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        // Nothing
     }
 }

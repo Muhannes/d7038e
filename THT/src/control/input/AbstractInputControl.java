@@ -88,6 +88,9 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         else if(name.equals("backward")) backward = !backward;
         else if(name.equals("strafeLeft")) strafeLeft = !strafeLeft;
         else if(name.equals("strafeRight")) strafeRight = !strafeRight;
+        else if(name.equals("jump") && isPressed){
+           character.jump();
+        }
         setNewMoveDirection(tpf);
         sendMovementToServer();
     }
