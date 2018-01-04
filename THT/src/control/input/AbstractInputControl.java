@@ -112,7 +112,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
             rotateY(value);
             //sendMovementToServer();          
         }else if(name.equals("rotateup")){
-            System.out.println("Rotating up");
             ((Node) getSpatial()).getChild("CamNode").rotate(value, 0, 0);
         }else if(name.equals("rotatedown")){
             ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
