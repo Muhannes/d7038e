@@ -175,7 +175,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                    //TODO: change the player to new monsterNode and change position
                     LOGGER.log(Level.INFO, "you have died!");
                 
-                //    player.removeControl(HumanInputControl.class); //reset controller
+//                    player.removeControl(HumanInputControl.class); //reset controller (causes nullpointException, dont use)
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
                     

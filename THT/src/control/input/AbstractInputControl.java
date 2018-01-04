@@ -108,17 +108,14 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         
         if(name.equals("rotateleft")){
             rotateY(-value);
-            //sendMovementToServer();
         }else if(name.equals("rotateright")){
             rotateY(value);
-            //sendMovementToServer();          
         }else if(name.equals("rotateup")){
             ((Node) getSpatial()).getChild("CamNode").rotate(value, 0, 0);
         }else if(name.equals("rotatedown")){
             ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
         }
-        
-        
+                
         setNewMoveDirection(tpf);
         sendMovementToServer();
     }
@@ -127,8 +124,8 @@ public abstract class AbstractInputControl extends AbstractControl implements An
      * Sends information about model to server
      */
     private void sendMovementToServer(){       
-//        LOGGER.log(Level.INFO, "sending new movement message");
         Spatial self = getSpatial();
+        LOGGER.log(Level.INFO, "sending new movement message\nid : " + self.getName() + " postion : " + self.getLocalTranslation() + " direction : " + character.getWalkDirection()); 
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);

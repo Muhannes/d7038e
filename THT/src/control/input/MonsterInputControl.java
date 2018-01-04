@@ -31,34 +31,12 @@ import java.util.logging.Level;
 public class MonsterInputControl extends AbstractInputControl{
 
     private static final Logger LOGGER = Logger.getLogger(MonsterInputControl.class);
-
-    private CharacterControl character;
-
-    // Physical body that we use to control movment of spatial
-    
-    private Camera camera;
-    // Camera chasing the player
-    
-    private Vector3f moveDirection;
-    // Used to set walking direction
-    
-    private Vector3f camDir;
-    // Used to set new movement direction
-    
-    private Vector3f camLeft;
-    // Used to set new movement direction
-    
-    private final float updatePeriod = 0.1f;
-    private float lastUpdate = 0f;
     
     private EntityNode self;
 
     public MonsterInputControl(EntityNode self, ClientMovementService movementService, ClientGameStatsService gameStatsService) {
         super(movementService, gameStatsService);
         this.self = self;
-        this.camera = camera;
-        this.moveDirection = new Vector3f(0, 0, 0);
-
     }
 
     @Override
@@ -72,6 +50,7 @@ public class MonsterInputControl extends AbstractInputControl{
     public void onAction(String name, boolean isPressed, float tpf) {
         super.onAction(name, isPressed, tpf);
         if (name.equals("slash") && isPressed) {
+            LOGGER.log(Level.INFO, "monster SLASH!");
             getSpatial().getControl(MonsterAnimationControl.class).swordSlash();
         }
     }
