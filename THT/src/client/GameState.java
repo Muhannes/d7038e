@@ -14,7 +14,6 @@ import com.jme3.input.InputManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
@@ -165,15 +164,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                    //TODO: change the player to new monsterNode and change position
                    LOGGER.log(Level.INFO, "you have died!");
 /*
-                    // set forward camera node that follows the character
-                    CameraNode camNode = new CameraNode("CamNode", camera);
-                    camNode.setControlDir(ControlDirection.SpatialToCamera);
-                    camNode.setLocalTranslation(new Vector3f(0, 1, 0));
-                    player.attachChild(camNode);
-
-                    if(chaseCamera == null){
-                        LOGGER.log(Level.SEVERE, "chaseCamera is null");
-                    }
                     monster = new Monster(player, app, clientMovementService, clientGameStatsService);
                     monster.initKeys(input); 
 
