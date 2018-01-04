@@ -36,7 +36,7 @@ public class MonsterNode extends EntityNode{
         float height = boundingBox.getYExtent();
         model.rotate(0, FastMath.DEG_TO_RAD * 180, 0);
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-        charControl = new CharacterControl(shape, 1.0f);
+        charControl = new CharacterControl(shape, 1f);
         this.addControl(charControl);
         
         bulletAppState.getPhysicsSpace().add(charControl);

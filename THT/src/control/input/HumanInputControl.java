@@ -79,7 +79,8 @@ public class HumanInputControl extends AbstractInputControl{
     
     @Override
     protected void controlUpdate(float tpf) {
-        moveDirection.normalizeLocal().multLocal(EntityNode.NORMAL_MOVEMENT_SPEED);
+        moveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
+
         if(character != null) {
             character.setWalkDirection(moveDirection);
             //character.setViewDirection(moveDirection);
