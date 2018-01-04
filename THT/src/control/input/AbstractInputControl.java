@@ -56,6 +56,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     }
     
     private void setNewMoveDirection(float tpf) {
+        LOGGER.log(Level.INFO, "Something in here that is direction (0,0,0)!");
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
