@@ -79,7 +79,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                             root.detachChildNamed(event.getNodeB().getParent().getName());                    
                         }
                     } else {                    
-                        //LOGGER.log(Level.INFO, event.getNodeA().getName() + " and " + event.getNodeB().getName());
+                        LOGGER.log(Level.INFO, event.getNodeA().getName() + " and " + event.getNodeB().getName());
                         if(event.getNodeA() instanceof HumanNode && event.getNodeB() instanceof MonsterNode){                
                             //LOGGER.log(Level.INFO, event.getNodeA().getName() + " is the victim \n" + event.getNodeB().getName() + " is the killer");                        
                             playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());

@@ -10,6 +10,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -35,8 +36,9 @@ public class MonsterNode extends EntityNode{
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         model.rotate(0, FastMath.DEG_TO_RAD * 180, 0);
+        model.setLocalTranslation(model.getLocalTranslation().add(0, -(height*3)/4, 0));        
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-        charControl = new CharacterControl(shape, 1f);
+        charControl = new CharacterControl(shape, height);
         this.addControl(charControl);
         
         bulletAppState.getPhysicsSpace().add(charControl);
