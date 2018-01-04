@@ -23,7 +23,7 @@ import network.service.movement.client.ClientMovementService;
  * @author truls
  */
 public class ConvergeControl extends AbstractControl implements MovementSessionListener{
-
+    private static final int MAX_CONVERGE_STEPS = 10;
     private static final float SNAP_LIMIT = 1.0f;
     // Will snap a spatial if its further away than this value from its setpoint
     
@@ -35,6 +35,11 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     
     private Vector3f rotSetpoint;
     // Rotational setpoint 
+    
+    private boolean snapConverge = false;
+    
+    private Vector3f convergeVector;
+    private int convergeCounter;
     
     private final boolean convRot;
     // Used to determing if the rotation should be converged.
@@ -64,13 +69,21 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         
         Vector3f tempPosSetpoint;
         Vector3f tempRotSetpoint;
+        Vector3f tempConvVector;
+        int tempConvCounter;
+        boolean tempSnapConv;
         synchronized(LOCK){
             tempPosSetpoint = posSetpoint.clone();
             tempRotSetpoint = rotSetpoint.clone();
+            tempConvVector = convergeVector.clone();
+            tempConvCounter = convergeCounter;
+            if (convergeCounter < MAX_CONVERGE_STEPS) this.convergeCounter++;
+            tempSnapConv = snapConverge;
+            if (snapConverge) snapConverge = false;
         }
         
         convergeRotation(tempRotSetpoint);
-        convergePosition(tempPosSetpoint);
+        convergePosition(tempPosSetpoint, tempConvVector, tempConvCounter, tempSnapConv);
     }
     
     private void convergeRotation(Vector3f setpoint){
@@ -80,17 +93,19 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         }
     }
     
-    private void convergePosition(Vector3f setpoint){
+    private void convergePosition(Vector3f setpoint, Vector3f convergeVector, int convergeCounter, boolean snapConverge){
         CharacterControl character = getSpatial().getControl(CharacterControl.class);
         
         Vector3f currentPos = getSpatial().getLocalTranslation();
         Vector3f dif = currentPos.subtract(setpoint);
              
         //METHOD 1: Takes a small fraction of difference towards the setpoint
-        if(dif.length() > SNAP_LIMIT){
+        if(snapConverge){
             character.warp(setpoint);
-        }else{
-            character.warp(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
+            
+        }else if (convergeCounter < MAX_CONVERGE_STEPS){
+            character.warp(currentPos.add(convergeVector));
+            //character.warp(currentPos.add(dif.multLocal(0.1f * dif.length()/SNAP_LIMIT).negate()));
         }
         
         // METHOD 2: Changes the walkdirection based on the difference vector
@@ -106,6 +121,13 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
             character.setWalkDirection(walk);
         }*/
     }
+    
+    private void newConvergeVector(Vector3f setpoint){
+        Vector3f currentPos = getSpatial().getLocalTranslation();
+        Vector3f dif = currentPos.subtract(setpoint).negate();
+        convergeVector = dif.mult(1.0f/MAX_CONVERGE_STEPS);
+        convergeCounter = 0;
+    }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
@@ -119,6 +141,16 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
                 synchronized(LOCK){
                     posSetpoint = pm.location;
                     rotSetpoint = pm.rotation;
+                    
+                    Vector3f currentPos = getSpatial().getLocalTranslation();
+                    Vector3f dif = currentPos.subtract(posSetpoint);
+                    if (dif.length() > SNAP_LIMIT){
+                        snapConverge = true;
+                        convergeVector = Vector3f.ZERO;
+                    } else {
+                        newConvergeVector(posSetpoint);
+                    }
+                    getSpatial().getControl(CharacterControl.class).setWalkDirection(pm.direction);
                 }
                 return;
             }

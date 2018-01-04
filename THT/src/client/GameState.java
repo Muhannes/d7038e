@@ -130,7 +130,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService, camera);
+        HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
         player.addControl(inputControl);
         inputControl.initKeys(input);  
         
