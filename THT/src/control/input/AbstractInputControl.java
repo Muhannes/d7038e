@@ -17,6 +17,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.sun.istack.internal.logging.Logger;
@@ -107,12 +108,16 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         if(name.equals("rotateleft")){
             rotateY(-value);
             //sendMovementToServer();
-        }
-        
-        if(name.equals("rotateright")){
+        }else if(name.equals("rotateright")){
             rotateY(value);
             //sendMovementToServer();          
+        }else if(name.equals("rotateup")){
+            System.out.println("Rotating up");
+            ((Node) getSpatial()).getChild("CamNode").rotate(value, 0, 0);
+        }else if(name.equals("rotatedown")){
+            ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
         }
+        
         
         setNewMoveDirection(tpf);
         sendMovementToServer();
@@ -166,7 +171,10 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         
         manager.addMapping("rotateright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         manager.addMapping("rotateleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", "jump", "rotateleft", "rotateright");
+        manager.addMapping("rotateup", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        manager.addMapping("rotatedown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", "jump", 
+                "rotateleft", "rotateright", "rotateup", "rotatedown");
     
     }
     
