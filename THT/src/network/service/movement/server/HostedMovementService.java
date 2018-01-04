@@ -18,9 +18,11 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.movement.MovementSession;
@@ -47,7 +49,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
 //    private AssetManager asset;
 //    private BulletAppState bulletAppState;
     
-    private List<String> updatedPlayers = new ArrayList<>();
+    private CopyOnWriteArrayList<String> updatedPlayers = new CopyOnWriteArrayList<>();
 //    private MovementSession session;
     private int channel;
     private int playerId;
@@ -70,6 +72,12 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         if (!updatedPlayers.contains(id)) {
             updatedPlayers.add(id);
         }
+    }
+    
+    public void clear(){
+        updatedPlayers.clear();
+        movements.clear();
+        players.clear();
     }
     
     @Override
@@ -104,38 +112,30 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));
     }
     
-    public void sendOutMovements(Node playersNode){
+    public Runnable getMovementSender(Node playersNode){
+        
         //Send out movements everything 10ms 
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run() {
-                    while(true){
-                        try {                    
-                            Thread.sleep(20);
-                        } catch (InterruptedException ex) {
-                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {
-                            for(String id : updatedPlayers){
-                                Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
-                                Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
-                                Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                for(String id : updatedPlayers){
+                    Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
+                    Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
+                    Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
 
-                                //do same for location
-                                PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
-                                movements.add(pm);
-                            }
-                            if (!movements.isEmpty()) {
-                                broadcast(movements);
-                                //Clear movements
-                                movements.clear();
-                                updatedPlayers.clear(); //changed from within the loop.           
-                            }
-                        }
-                    }
-                }            
-            }
-        ).start();        
+                    //do same for location
+                    PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
+                    movements.add(pm);
+                }
+                if (!movements.isEmpty()) {
+                    broadcast(movements);
+                    //Clear movements
+                    movements.clear();
+                    updatedPlayers.clear(); //changed from within the loop.           
+                }
+            }           
+        };
+        return r;
     }
 
     @Override
@@ -171,4 +171,5 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         }
         
     }
+    
 }

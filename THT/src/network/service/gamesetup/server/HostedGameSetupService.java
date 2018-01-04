@@ -86,6 +86,9 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
     
     public void setInitialized(List<Player> playerInitInfo, List<Account> accounts){
         players = playerInitInfo;
+        sessions.clear();
+        readyPlayers.clear();
+        positions.clear();
         this.accounts = accounts;
         initialized = true;
     }
@@ -195,11 +198,18 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
 
         @Override
         public void ready() {
+            System.out.println("Ready Received: " + globalID);
             if (globalID != -1 && authenticated) { // it has joined.
                 if (!readyPlayers.contains(globalID)) { // Cannot be ready twice :/
+                    
+                    System.out.println("Added Ready: " + globalID);
                     readyPlayers.add(globalID);
                 }
+                
+                System.out.println("Ready size: " + readyPlayers.size());
                 if (readyPlayers.size() == players.size()) {
+                    
+                    System.out.println("All ready");
                     //Send start to clients.
                     postAllReady();
                 }

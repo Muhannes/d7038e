@@ -48,8 +48,6 @@ public class SetupState extends BaseAppState implements
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;  
-        world = new Node("world");
-        this.app.getRootNode().attachChild(world);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
     }
@@ -63,6 +61,8 @@ public class SetupState extends BaseAppState implements
 
     @Override
     protected void onEnable() {
+        world = new Node("world");
+        this.app.getRootNode().attachChild(world);
         gameSetupService = app.getGameSetupService();
         asset = app.getAssetManager();
         

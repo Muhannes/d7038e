@@ -122,34 +122,26 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     public void sendOutTraps(Node trapNode){
         //Send out movements everything 10ms 
-        new Thread(
-            new Runnable(){
+        new Thread(new Runnable(){
                 @Override
-                public void run() {
-                    while(true){
-                        try {                    
-                            Thread.sleep(10);                    
-                        } catch (InterruptedException ex) {
-                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                         
-                            for(String newTrapId : updatedTraps){            
-                                Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
-                                String trapName = trapNode.getChild(newTrapId).getName();
-                                
-                                trapNames.add(trapName);
-                                trapPositions.add(position);
-                            }    
-                            
-                            if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
-                                broadcast(trapNames, trapPositions);
+                public void run() {                         
+                    for(String newTrapId : updatedTraps){            
+                        Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
+                        String trapName = trapNode.getChild(newTrapId).getName();
 
-                                //Clearing old lists
-                                trapNames.clear();
-                                trapPositions.clear();
-                                updatedTraps.clear(); 
-                            }                            
-                        }                    
-                    }
+                        trapNames.add(trapName);
+                        trapPositions.add(position);
+                    }    
+
+                    if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
+                        broadcast(trapNames, trapPositions);
+
+                        //Clearing old lists
+                        trapNames.clear();
+                        trapPositions.clear();
+                        updatedTraps.clear(); 
+                    }                            
+
                 }            
             }
         ).start();
@@ -165,42 +157,32 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
             new Runnable(){
                 @Override
                 public void run() {
-                    while(true){
-                        try {                    
-                            Thread.sleep(10);                    
-                        } catch (InterruptedException ex) {
-                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                         
-  
-                            for(String id : deletedTraps){            
+                    for(String id : deletedTraps){            
 //                                String trapName = trapNode.getChild(id).getName();
-                                if(!triggeredTraps.contains(id)){
-                                    triggeredTraps.add(id);                                   
-                                }
-                            }    
-                            for(String playerId : slowedPlayers){
-                            //    String playerName = playersNode.getChild(playerId).getName();
-                                if(!triggers.contains(playerId)){
-                                    triggers.add(playerId);                                    
-                                }
-                            }
-                            if(triggers.size() > 0 && triggeredTraps.size() > 0){
-                                LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
-                                broadcastDeletedTraps(triggers, triggeredTraps);
-
-                                //Clearing old lists
-                                triggers.clear();
-                                triggeredTraps.clear();
-                                slowedPlayers.clear();
-                                deletedTraps.clear();                                
-                                if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
-                                    LOGGER.log(Level.SEVERE, "Clear not functional");
-                                }
-                            }
-                            
-                        }                    
+                        if(!triggeredTraps.contains(id)){
+                            triggeredTraps.add(id);                                   
+                        }
+                    }    
+                    for(String playerId : slowedPlayers){
+                    //    String playerName = playersNode.getChild(playerId).getName();
+                        if(!triggers.contains(playerId)){
+                            triggers.add(playerId);                                    
+                        }
                     }
-                }            
+                    if(triggers.size() > 0 && triggeredTraps.size() > 0){
+                        LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
+                        broadcastDeletedTraps(triggers, triggeredTraps);
+
+                        //Clearing old lists
+                        triggers.clear();
+                        triggeredTraps.clear();
+                        slowedPlayers.clear();
+                        deletedTraps.clear();                                
+                        if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
+                            LOGGER.log(Level.SEVERE, "Clear not functional");
+                        }
+                    }
+                }
             }
         ).start();
     }
