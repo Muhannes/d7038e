@@ -69,7 +69,6 @@ public class MonsterAnimationControl extends AbstractAnimationControl implements
 
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        System.out.println("Cycle done: " + animName);
         if (animName.equals(ATTACK_TYPE)) {
             animationChannel.setAnim(STAND);
         }
