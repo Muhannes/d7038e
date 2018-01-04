@@ -51,37 +51,41 @@ public class TrapController extends GhostControl implements PhysicsCollisionList
 
             if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
  
-                if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
-                   
-                    String trap = event.getNodeB().getName();
-                    String[] list = trap.split(":");
-                    String owner = list[0];
-                   
-                    if(!event.getNodeA().getName().equals(owner)){
+                if(event.getNodeA().getParent().getName().equals("playersNode")){
+                    if (event.getNodeB().getParent().getParent() != null && event.getNodeB().getParent().getParent().getName().equals("traps")) {
+                        String trap = event.getNodeB().getName();
+                        String[] list = trap.split(":");
+                        String owner = list[0];
 
-                        LOGGER.log(Level.INFO, "removing trap : " + event.getNodeB().getParent().getName());
-                        hostedGameStatsService.triggeredTrap(event.getNodeA().getName(), event.getNodeB().getName());
-                        hostedGameStatsService.sendOutDeletedTraps();
-                        playState.deleteTrap(event.getNodeA().getName(), event.getNodeB().getName());
+                        if(!event.getNodeA().getName().equals(owner)){
 
-                        triggeredTraps.add(event.getNodeB().getParent().getName());
-                        root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                            LOGGER.log(Level.INFO, "removing trap : " + event.getNodeB().getParent().getName());
+                            hostedGameStatsService.triggeredTrap(event.getNodeA().getName(), event.getNodeB().getName());
+                            hostedGameStatsService.sendOutDeletedTraps();
+                            playState.deleteTrap(event.getNodeA().getName(), event.getNodeB().getName());
+
+                            triggeredTraps.add(event.getNodeB().getParent().getName());
+                            root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                        }
                     }
-                } else if(event.getNodeB().getParent().getName().equals("playersNode") && event.getNodeA().getParent().getParent().getName().equals("traps")){
+                    
+                } else if(event.getNodeB().getParent().getName().equals("playersNode")){
+                    if (event.getNodeA().getParent().getParent() != null && event.getNodeA().getParent().getParent().getName().equals("traps")) {
+                    
+                        String trap = event.getNodeB().getName();
+                        String[] list = trap.split(":");
+                        String owner = list[0];
 
-                    String trap = event.getNodeB().getName();
-                    String[] list = trap.split(":");
-                    String owner = list[0];
-                   
-                    if(!event.getNodeB().getName().equals(owner)){
+                        if(!event.getNodeB().getName().equals(owner)){
 
-                        LOGGER.log(Level.INFO, "removing trap : " + event.getNodeA().getParent().getName());
-                        hostedGameStatsService.triggeredTrap(event.getNodeB().getName(), event.getNodeA().getName());
-                        hostedGameStatsService.sendOutDeletedTraps();
-                        playState.deleteTrap(event.getNodeB().getName(), event.getNodeA().getName());
+                            LOGGER.log(Level.INFO, "removing trap : " + event.getNodeA().getParent().getName());
+                            hostedGameStatsService.triggeredTrap(event.getNodeB().getName(), event.getNodeA().getName());
+                            hostedGameStatsService.sendOutDeletedTraps();
+                            playState.deleteTrap(event.getNodeB().getName(), event.getNodeA().getName());
 
-                        triggeredTraps.add(event.getNodeB().getParent().getName());
-                        root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                            triggeredTraps.add(event.getNodeB().getParent().getName());
+                            root.detachChildNamed(event.getNodeB().getParent().getName());                    
+                        }
                     }
                 }
             

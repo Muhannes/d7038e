@@ -7,6 +7,9 @@ package network.gameserver;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.network.ConnectionListener;
+import com.jme3.network.HostedConnection;
+import com.jme3.network.Server;
 import com.jme3.system.JmeContext;
 import java.util.logging.Logger;
 import network.GameNetworkHandler;
@@ -17,7 +20,7 @@ import network.service.movement.server.HostedMovementService;
 /**
  * @author hannes
  */
-public class GameServer extends SimpleApplication{
+public class GameServer extends SimpleApplication implements ConnectionListener{
     
     private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
@@ -42,6 +45,7 @@ public class GameServer extends SimpleApplication{
         // Do intialization here.
         
         gnh.startServer();
+        gnh.addConnectionListener(this);
         
         
         WaitingState waitingState = new WaitingState();
@@ -79,5 +83,25 @@ public class GameServer extends SimpleApplication{
     
     public HostedGameStatsService getHostedGameStatsService(){
         return gnh.getHostedGameStatsService();
+    }
+
+    @Override
+    public void connectionAdded(Server server, HostedConnection conn) {
+        // conn added
+    }
+
+    @Override
+    public void connectionRemoved(Server server, HostedConnection conn) {
+        if (!server.hasConnections()) {
+            this.enqueue(new Runnable() {
+                @Override
+                public void run() {
+                    stateManager.getState(SetupState.class).setEnabled(false);
+                    stateManager.getState(PlayState.class).setEnabled(false);
+                    stateManager.getState(WaitingState.class).setEnabled(true);
+                }
+            });
+            
+        }
     }
 }

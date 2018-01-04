@@ -23,6 +23,9 @@ import control.EntityNode;
 import control.TrapController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
@@ -46,6 +49,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private HostedGameStatsService hostedGameStatsService;
     private TrapController trapController;
     private BulletAppState bulletAppState;
+    
+    private ScheduledExecutorService movementSender;
     
     @Override
     protected void initialize(Application app) {
@@ -74,8 +79,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
-        hostedMovementService.sendOutMovements(playersNode);
-        hostedGameStatsService.sendOutTraps(traps);        
+        movementSender = Executors.newScheduledThreadPool(1);
+        movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode), 20, 20, TimeUnit.MILLISECONDS);
+        //hostedGameStatsService.sendOutTraps(traps);        
 
         trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
@@ -85,6 +91,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     protected void onDisable() {
         hostedMovementService.removeSessions(this);
         hostedGameStatsService.removeSessions(this);
+        root.detachAllChildren();
+        hostedMovementService.clear();
+        movementSender.shutdownNow();
+        trapController.destroy();
+        
     }
 
     @Override
@@ -126,6 +137,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (traps.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
         }else {
+            
+            LOGGER.info("Placing trap: " + trapName);
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
@@ -152,8 +165,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     bulletAppState.getPhysicsSpace().add(ghost);
                     traps.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
+                                
+                    LOGGER.info("Sending trap info: " + trapName);
+                    hostedGameStatsService.sendOutTraps(traps);
                 }
             });
+
         }
     }
 
