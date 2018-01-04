@@ -111,7 +111,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
             //sendMovementToServer();          
         }
         
-        //setNewMoveDirection(tpf);
+        setNewMoveDirection(tpf);
         sendMovementToServer();
     }
     
@@ -141,11 +141,13 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     protected void controlUpdate(float tpf) {
         // Scale every frame, since tpf changes.
         setNewMoveDirection(tpf);
-        lastUpdate += tpf;
+        
+        // Comment out to send updates to server regularly
+        /*lastUpdate += tpf;
         if(lastUpdate > updatePeriod){
             sendMovementToServer();
             lastUpdate -= updatePeriod;
-        }
+        }*/
     }
     
     /**
