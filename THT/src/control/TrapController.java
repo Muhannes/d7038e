@@ -6,6 +6,8 @@
 package control;
 
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.control.GhostControl;
@@ -21,9 +23,9 @@ import network.service.gamestats.server.HostedGameStatsService;
  *
  * @author ted
  */
-public class CollisionController extends GhostControl implements PhysicsCollisionListener{
+public class TrapController extends GhostControl implements PhysicsCollisionListener, PhysicsTickListener {
 
-    private static final Logger LOGGER = Logger.getLogger(CollisionController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TrapController.class.getName());
     
     private final BulletAppState bulletAppState;
     private final Node root;
@@ -31,7 +33,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
     private PlayState playState;
     private List<String> triggeredTraps = new ArrayList<>();
     
-    public CollisionController(PlayState playState, BulletAppState bullet, Node root, HostedGameStatsService hostedGameStatsService) {
+    public TrapController(PlayState playState, BulletAppState bullet, Node root, HostedGameStatsService hostedGameStatsService) {
         this.playState = playState;
         this.bulletAppState = bullet;
         this.root = root;
@@ -39,15 +41,18 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
     }
 
+    /*
+    * TODO: Somehow update the tree so that the traps triggered are removed.
+    * TODO: Somehow update the players so that they are slowed when triggering traps.
+    */
     @Override
     public void collision(PhysicsCollisionEvent event) {
         if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
-            try{
-                
-                if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
 
-                    if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
-
+            if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
+ 
+                if(event.getNodeA().getParent().getName().equals("playersNode")){
+                    if (event.getNodeB().getParent().getParent() != null && event.getNodeB().getParent().getParent().getName().equals("traps")) {
                         String trap = event.getNodeB().getName();
                         String[] list = trap.split(":");
                         String owner = list[0];
@@ -62,8 +67,11 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                             triggeredTraps.add(event.getNodeB().getParent().getName());
                             root.detachChildNamed(event.getNodeB().getParent().getName());                    
                         }
-                    } else if(event.getNodeB().getParent().getName().equals("playersNode") && event.getNodeA().getParent().getParent().getName().equals("traps")){
-
+                    }
+                    
+                } else if(event.getNodeB().getParent().getName().equals("playersNode")){
+                    if (event.getNodeA().getParent().getParent() != null && event.getNodeA().getParent().getParent().getName().equals("traps")) {
+                    
                         String trap = event.getNodeB().getName();
                         String[] list = trap.split(":");
                         String owner = list[0];
@@ -78,25 +86,25 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                             triggeredTraps.add(event.getNodeB().getParent().getName());
                             root.detachChildNamed(event.getNodeB().getParent().getName());                    
                         }
-                    } else {                    
-                        if(event.getNodeA() instanceof HumanNode && event.getNodeB() instanceof MonsterNode){                
-                            //LOGGER.log(Level.INFO, event.getNodeA().getName() + " is the victim \n" + event.getNodeB().getName() + " is the killer");                        
-                            playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
-                            hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
-                            hostedGameStatsService.sendOutKilled(); 
-
-                        } else if(event.getNodeA() instanceof MonsterNode && event.getNodeB() instanceof HumanNode){
-                            //LOGGER.log(Level.INFO, event.getNodeB().getName() + " is the victim \n" + event.getNodeA().getName() + " is the killer");                        
-                            playState.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
-                            hostedGameStatsService.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
-                            hostedGameStatsService.sendOutKilled(); 
-
-                        } else {}
                     }
-                } 
-            } catch(NullPointerException e){
-                LOGGER.log(Level.SEVERE, e.getMessage());
+                }
+            
+            } else if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){
+                /* Check if any of the two are monster, and if so, the other is killed */
+                EntityNode player1 = (EntityNode) root.getChild(event.getNodeA().getName());
+                EntityNode player2 = (EntityNode) root.getChild(event.getNodeB().getName());
+                LOGGER.log(Level.INFO, "Collision between players");
             }
         }
+    }
+
+    @Override
+    public void prePhysicsTick(PhysicsSpace space, float tpf) {
+        System.out.println("prePhysicsTick");
+    }
+
+    @Override
+    public void physicsTick(PhysicsSpace space, float tpf) {
+        System.out.println("PhysicsTick");
     }
 }

@@ -50,9 +50,6 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;  
-        world = new Node("world");
-        LOGGER.log(Level.INFO, "world node : " + world);
-        this.app.getRootNode().attachChild(world);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
     }
@@ -67,6 +64,9 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     @Override
     protected void onEnable() {
         LOGGER.info("SETUP STATE ENABLED");
+        world = new Node("world");
+        LOGGER.log(Level.INFO, "world node : " + world);
+        this.app.getRootNode().attachChild(world);
         hostedGameSetupService = app.getHostedGameSetupService();
         asset = app.getAssetManager();
         hostedGameSetupService.addListener(this);

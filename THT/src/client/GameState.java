@@ -22,9 +22,13 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
+import com.sun.scenario.Settings;
 import control.EntityNode;
+import control.HumanNode;
+import control.MonsterNode;
 import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
+import control.input.MonsterInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ import network.service.gamestats.GameStatsSessionListener;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.login.client.ClientLoginService;
 import network.service.movement.client.ClientMovementService;
+import org.lwjgl.opengl.Display;
 
 /**
  *
@@ -117,6 +122,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         
         // set forward camera node that follows the character
         CameraNode camNode = new CameraNode("CamNode", camera);
+        // so that walls are not invisible
+        camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         camNode.setLocalTranslation(new Vector3f(0, 1, 0));
         //camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
@@ -131,13 +138,25 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
         */
-        
-        HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService, camera);
-        player.addControl(inputControl);
-        inputControl.initKeys(input);  
+
+        if (player instanceof HumanNode) {
+            HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
+            player.addControl(inputControl);
+            inputControl.initKeys(input);
+        } else if (player instanceof MonsterNode) {
+            MonsterInputControl inputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
+            player.addControl(inputControl);
+            inputControl.initKeys(input);
+            
+        }
         
         playerNode.getChildren().forEach((p) -> {   
-            ConvergeControl converger = new ConvergeControl(clientMovementService);
+            ConvergeControl converger;
+            if(p.getName().equals(player.getName())){
+                converger = new ConvergeControl(clientMovementService, false);
+            }else{
+                converger = new ConvergeControl(clientMovementService);
+            }
             p.addControl(converger);
         });
 
@@ -150,7 +169,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     
     @Override
     public void update(float tpf){
-        
     }
     
     @Override

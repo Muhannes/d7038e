@@ -23,6 +23,9 @@ import control.CollisionController;
 import control.WorldCreator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
@@ -48,6 +51,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private BulletAppState bulletAppState;
     
     private final Vector3f monsterSpawn = new Vector3f(-6.4f, 1.0f, 8.4f);
+    private ScheduledExecutorService movementSender;
     
     @Override
     protected void initialize(Application app) {
@@ -76,8 +80,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
-        hostedMovementService.sendOutMovements(playersNode);
-        hostedGameStatsService.sendOutTraps(traps);        
+        movementSender = Executors.newScheduledThreadPool(1);
+        movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode), 20, 20, TimeUnit.MILLISECONDS);
+        //hostedGameStatsService.sendOutTraps(traps);        
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
@@ -87,6 +92,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     protected void onDisable() {
         hostedMovementService.removeSessions(this);
         hostedGameStatsService.removeSessions(this);
+        root.detachAllChildren();
+        hostedMovementService.clear();
+        movementSender.shutdownNow();
+        collisionController.destroy();
+        
     }
 
     @Override
@@ -123,6 +133,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     
     @Override
     public void update(float tpf){
+        // Scale walking speed by tpf
     }
 
     @Override
@@ -138,7 +149,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
         if (traps.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
-        } else {
+        }else {
+            
+            LOGGER.info("Placing trap: " + trapName);
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
@@ -165,8 +178,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     bulletAppState.getPhysicsSpace().add(ghost);
                     traps.attachChild(node);
                     hostedGameStatsService.trapUpdated(geom.getName());
+                                
+                    LOGGER.info("Sending trap info: " + trapName);
+                    hostedGameStatsService.sendOutTraps(traps);
                 }
             });
+
         }
     }
 

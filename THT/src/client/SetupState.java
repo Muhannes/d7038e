@@ -48,8 +48,6 @@ public class SetupState extends BaseAppState implements
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;  
-        world = new Node("world");
-        this.app.getRootNode().attachChild(world);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
     }
@@ -63,6 +61,8 @@ public class SetupState extends BaseAppState implements
 
     @Override
     protected void onEnable() {
+        world = new Node("world");
+        this.app.getRootNode().attachChild(world);
         gameSetupService = app.getGameSetupService();
         asset = app.getAssetManager();
         
@@ -74,7 +74,6 @@ public class SetupState extends BaseAppState implements
         gameSetupService.join(acc.id, acc.key, acc.name);
         
         loadStaticGeometry();
-        initGlobalLightSource();
     }
 
     @Override
@@ -96,22 +95,6 @@ public class SetupState extends BaseAppState implements
             this.setEnabled(false);
             app.getStateManager().getState(GameState.class).setEnabled(true);
         });         
-    }
-    
-    /**
-     * Some models require light to not only be black.
-     */
-    private void initGlobalLightSource(){
-        //Directional light
-        DirectionalLight dl = new DirectionalLight();
-        dl.setColor(ColorRGBA.White);
-        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
-        app.getRootNode().addLight(dl);
-        
-        // Ambient light
-        AmbientLight al = new AmbientLight();
-        al.setColor(ColorRGBA.White.mult(0.3f));
-        app.getRootNode().addLight(al);
     }
     
     private void loadStaticGeometry(){   

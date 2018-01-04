@@ -8,6 +8,10 @@ package control;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.bullet.BulletAppState;
+<<<<<<< HEAD
+=======
+import com.jme3.bullet.control.BetterCharacterControl;
+>>>>>>> 47b259175df64b4a5e8d74c10fabe1f6e379c218
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -49,7 +53,9 @@ public abstract class EntityNode extends Node{
      * @param position 
      */
     public abstract void initEntity(Vector3f position);
-        
+
+    
+    
     public void slowDown(){
         if(!slowed){
             LOGGER.log(Level.INFO, "Sloooowing down");

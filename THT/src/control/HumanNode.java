@@ -30,11 +30,11 @@ public class HumanNode extends EntityNode{
         
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
-        float radius = boundingBox.getXExtent() / 2;
-        float height = boundingBox.getYExtent();    
-        model.setLocalTranslation(model.getLocalTranslation().add(0, height/2, 0));
-        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-        charControl = new CharacterControl(shape, height);        
+        float radius = boundingBox.getXExtent() / 2; 
+        
+        float height = boundingBox.getYExtent() * 1.15f;
+        CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
+        charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
         
         bulletAppState.getPhysicsSpace().add(charControl);

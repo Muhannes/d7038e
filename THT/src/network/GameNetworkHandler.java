@@ -6,6 +6,7 @@
 package network;
 
 import com.jme3.network.Client;
+import com.jme3.network.ConnectionListener;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import com.jme3.network.service.rmi.RmiClientService;
@@ -60,6 +61,10 @@ public class GameNetworkHandler {
             LOGGER.log(Level.SEVERE, null, ex);
             server.close();
         }
+    }
+    
+    public void addConnectionListener(ConnectionListener connectionListener){
+        server.addConnectionListener(connectionListener);
     }
     
     
