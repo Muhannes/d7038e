@@ -64,7 +64,7 @@ public class WorldCreator {
         monsterModel.scale(0.01f);
         Spatial model = monsterModel.clone();
                     
-        Vector3f tmpPos = new Vector3f(-3.16f, 2f, -6f);
+        Vector3f tmpPos = new Vector3f(-3.16f, 2.0f, -8.9f); //monster spawn
         
         return new MonsterNode(name, tmpPos, bulletAppState, model);
     }

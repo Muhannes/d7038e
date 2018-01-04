@@ -9,6 +9,9 @@ import static api.models.EntityType.Monster;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.material.Material;
@@ -26,6 +29,7 @@ import com.sun.scenario.Settings;
 import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
+import control.WorldCreator;
 import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
@@ -126,18 +130,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         camNode.setLocalTranslation(new Vector3f(0, 1, 0));
-        //camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
-        player.attachChild(camNode);
-        
-        /*
-        chaseCamera = new ChaseCamera(camera, player, input);
-        chaseCamera.setMaxDistance(0);
-        chaseCamera.setDefaultDistance(0);
-        
-        if(chaseCamera == null){
-            LOGGER.log(Level.SEVERE, "chaseCamera is null");
-        }
-        */
+        player.attachChild(camNode);        
 
         if (player instanceof HumanNode) {
             HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
@@ -180,22 +173,40 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 
                 if(victims.get(i).equals(player.getName())){
                    //TODO: change the player to new monsterNode and change position
-                   LOGGER.log(Level.INFO, "you have died!");
-/*
-                    monster = new Monster(player, app, clientMovementService, clientGameStatsService);
-                    monster.initKeys(input); 
+                    LOGGER.log(Level.INFO, "you have died!");
+                
+                //    player.removeControl(HumanInputControl.class); //reset controller
+                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
+                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
+                    
+                    Camera newCamera = app.getCamera();
+                    CameraNode camNode = new CameraNode("CamNode", newCamera);
+                    // so that walls are not invisible
+                    newCamera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
+                    camNode.setControlDir(ControlDirection.SpatialToCamera);
+                    camNode.setLocalTranslation(new Vector3f(0, 1, 0));
+                    LOGGER.log(Level.INFO, "camera set");
+                    
+                    playerNode.detachChildNamed(victims.get(i));
+                    EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+                    newMonster.attachChild(camNode);
+                    player = newMonster; //might be usedful for other methods.
+                    
+                    MonsterInputControl monsterInputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
+                    player.addControl(monsterInputControl);
+                    monsterInputControl.initKeys(input);
+                    LOGGER.log(Level.INFO, "created monster inputControl");
+                    
+                    playerNode.attachChild(newMonster);
+                    LOGGER.log(Level.INFO, "created monster entity");
 
-    //                playerNode.detachChildNamed(victims.get(i));
-    //                EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
-    //                playerNode.attachChild(newMonster);
-    //               //TODO: Set new camera
-                */
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
-                    //TODO: change the player to new monsterNode and change position
-//                    playerNode.detachChildNamed(victims.get(i));
-//                    EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
-//                    playerNode.attachChild(newMonster);
+                    playerNode.detachChildNamed(victims.get(i));
+                    EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+                    playerNode.attachChild(newMonster);                    
+                    LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
+
                }
             }
         });

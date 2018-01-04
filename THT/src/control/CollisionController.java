@@ -78,21 +78,21 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                             triggeredTraps.add(event.getNodeB().getParent().getName());
                             root.detachChildNamed(event.getNodeB().getParent().getName());                    
                         }
-                    } else {                    
+                    } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
                         if(event.getNodeA() instanceof HumanNode && event.getNodeB() instanceof MonsterNode){                
-                            //LOGGER.log(Level.INFO, event.getNodeA().getName() + " is the victim \n" + event.getNodeB().getName() + " is the killer");                        
+                            LOGGER.log(Level.INFO, event.getNodeA().getName() + " is the victim \n" + event.getNodeB().getName() + " is the killer");                        
                             playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
                             hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
                             hostedGameStatsService.sendOutKilled(); 
 
                         } else if(event.getNodeA() instanceof MonsterNode && event.getNodeB() instanceof HumanNode){
-                            //LOGGER.log(Level.INFO, event.getNodeB().getName() + " is the victim \n" + event.getNodeA().getName() + " is the killer");                        
+                            LOGGER.log(Level.INFO, event.getNodeB().getName() + " is the victim \n" + event.getNodeA().getName() + " is the killer");                        
                             playState.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
                             hostedGameStatsService.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
                             hostedGameStatsService.sendOutKilled(); 
 
                         } else {}
-                    }
+                    } else {}
                 } 
             } catch(NullPointerException e){
                 LOGGER.log(Level.SEVERE, e.getMessage());

@@ -7,8 +7,10 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
@@ -50,7 +52,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private CollisionController collisionController;
     private BulletAppState bulletAppState;
     
-    private final Vector3f monsterSpawn = new Vector3f(-6.4f, 1.0f, 8.4f);
     private ScheduledExecutorService movementSender;
     
     @Override
@@ -123,9 +124,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
+            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
+            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(CharacterControl.class)); //reset bulletAppState
+
             playersNode.detachChildNamed(victim);
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
-            newMonster.setLocalTranslation(monsterSpawn);
+            
             playersNode.attachChild(newMonster);
             LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
         } 
@@ -230,6 +234,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if(traps.getChild(trapName) != null){
             //remove trap from root
             traps.detachChildNamed(trapName);
+            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(traps.getChild(trapName).getControl(GhostControl.class)); //reset bulletAppState
+
             if(traps.getChild(trapName) != null){
                 LOGGER.log(Level.INFO, "trap was not removed");                
             }

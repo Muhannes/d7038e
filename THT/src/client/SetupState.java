@@ -9,7 +9,10 @@ import api.models.Player;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
@@ -17,6 +20,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import control.EntityNode;
 import control.WorldCreator;
 import java.util.List;
 import java.util.logging.Level;
@@ -118,7 +122,20 @@ public class SetupState extends BaseAppState implements
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         
         Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
+        /*for(Spatial player : players.getChildren()){
+            BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         
+            float radius = boundingBox.getXExtent();
+            float height = boundingBox.getYExtent();
+            player.setLocalTranslation(player.getLocalTranslation().add(0, - height*3/4, 0));
+            CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
+            
+            //Ghost
+            GhostControl ghost = new GhostControl(shape);
+            player.addControl(ghost);
+            bulletAppState.getPhysicsSpace().add(ghost);
+
+        }*/
         world.attachChild(players);
         
         // Tell server we are ready

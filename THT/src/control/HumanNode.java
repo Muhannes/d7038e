@@ -9,6 +9,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import control.animation.HumanAnimationControl;
@@ -36,6 +37,11 @@ public class HumanNode extends EntityNode{
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
+        
+        //ghost
+        GhostControl ghost = new GhostControl(shape);
+        this.addControl(ghost);
+        bulletAppState.getPhysicsSpace().add(ghost);
         
         bulletAppState.getPhysicsSpace().add(charControl);
                         
