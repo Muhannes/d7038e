@@ -10,7 +10,6 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.scene.Node;
-import static java.beans.Beans.isInstanceOf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

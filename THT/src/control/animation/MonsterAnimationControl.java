@@ -7,7 +7,7 @@ package control.animation;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
-import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.scene.Spatial;
 
 /**
@@ -16,7 +16,7 @@ import com.jme3.scene.Spatial;
  */
 public class MonsterAnimationControl extends AbstractAnimationControl{
     
-    BetterCharacterControl charControl;
+    CharacterControl charControl;
     AnimControl animationControl;
     AnimChannel animationChannel;
     
@@ -29,9 +29,9 @@ public class MonsterAnimationControl extends AbstractAnimationControl{
     @Override
     protected void controlUpdate(float tpf) {
         if(charControl == null){
-            charControl = getSpatial().getControl(BetterCharacterControl.class);
+            charControl = getSpatial().getControl(CharacterControl.class);
             if(charControl == null){
-                throw new RuntimeException("MonsterAnimationControl requires BetterCharacterControl");
+                throw new RuntimeException("MonsterAnimationControl requires CharacterControl");
             }
         }
         if(charControl.getWalkDirection().lengthSquared() > 0){

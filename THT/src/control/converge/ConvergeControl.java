@@ -5,7 +5,7 @@
  */
 package control.converge;
 
-import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -47,7 +47,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         }
         
         
-        BetterCharacterControl character = getSpatial().getControl(BetterCharacterControl.class);
+        CharacterControl character = getSpatial().getControl(CharacterControl.class);
         
         Vector3f currentPos = getSpatial().getLocalTranslation();
         Vector3f dif = currentPos.subtract(tempSetpoint);

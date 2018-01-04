@@ -9,7 +9,6 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
@@ -100,8 +99,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 @Override
                 public void run() {
                     Spatial player = playersNode.getChild(playerMovement.id);
-                    player.getControl(BetterCharacterControl.class).setWalkDirection(playerMovement.direction);
-                    player.getControl(BetterCharacterControl.class).setViewDirection(playerMovement.rotation);
+                    player.getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
+                    player.getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
 
                     hostedMovementService.playerUpdated(playerMovement.id);
                 }

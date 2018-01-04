@@ -8,7 +8,7 @@ package control;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -23,7 +23,7 @@ public abstract class EntityNode extends Node{
         private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
 
     // TODO: Init variables for different trap status, i.e. isFrozen.
-    BetterCharacterControl charControl;
+    CharacterControl charControl;
     Spatial model;
     AnimControl animationControl;
     AnimChannel animationChannel;

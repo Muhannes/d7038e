@@ -5,7 +5,6 @@
  */
 package control.input;
 
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -33,7 +32,7 @@ public class HumanInputControl extends AbstractInputControl{
     
     private static final Logger LOGGER = Logger.getLogger(HumanInputControl.class);
 
-    private BetterCharacterControl character;
+    private CharacterControl character;
 
     // Physical body that we use to control movment of spatial
     
@@ -98,9 +97,9 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(BetterCharacterControl.class);
+            character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         
@@ -131,9 +130,9 @@ public class HumanInputControl extends AbstractInputControl{
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(BetterCharacterControl.class);
+            character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
+                throw new RuntimeException("HumanInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         
@@ -162,7 +161,7 @@ public class HumanInputControl extends AbstractInputControl{
      * Sends information about model to server
      */
     private void sendMovementToServer(){         
-        Spatial self = getSpatial();
+//        Spatial self = getSpatial();
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);
