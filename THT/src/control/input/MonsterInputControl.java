@@ -26,7 +26,7 @@ public class MonsterInputControl extends AbstractInputControl{
 
     private static final Logger LOGGER = Logger.getLogger(MonsterInputControl.class);
     
-    private EntityNode self;
+    private EntityNode self; //Will be used for decoy 
 
     public MonsterInputControl(EntityNode self, ClientMovementService movementService, ClientGameStatsService gameStatsService) {
         super(movementService, gameStatsService);

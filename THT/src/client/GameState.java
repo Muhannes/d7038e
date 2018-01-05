@@ -169,16 +169,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         LOGGER.log(Level.INFO, "\nVictim list : " + victims + "\nKiller list : " + killers);
         app.enqueue(() -> {            
             for(int i = 0; i < victims.size(); i++){
-                //Print out to GUI that killer slaughtered the victim
+                //TODO: Print out to GUI that killer slaughtered the victim
                 
                 if(victims.get(i).equals(player.getName())){
                     LOGGER.log(Level.INFO, "you have died!");
-                    
-                    
-                    LOGGER.log(Level.INFO, "before zero direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
-                    
-                    playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).setWalkDirection(Vector3f.ZERO); //maybe
-                    LOGGER.log(Level.INFO, "after zero direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
                     
                     //bullet reset and player removal
                     input.clearMappings();
@@ -226,8 +220,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
-
-                    playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).setWalkDirection(Vector3f.ZERO); //maybe
 
                     //reset bullet
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState

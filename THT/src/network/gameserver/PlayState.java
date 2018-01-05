@@ -125,8 +125,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             LOGGER.severe("players does not exist");
         } else {
 
-            playersNode.getChild(victim).getControl(CharacterControl.class).setWalkDirection(Vector3f.ZERO); //maybe
-
             //reset the player bullet
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(CharacterControl.class)); //reset bulletAppState
