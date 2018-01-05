@@ -104,7 +104,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
                 throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
             }
         }
-        
         if(name.equals("rotateleft")){
             rotateY(-value);
             //sendMovementToServer();

@@ -9,9 +9,15 @@ import api.models.EntityType;
 import api.models.Player;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.material.MatParam;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.List;
@@ -32,10 +38,19 @@ public class WorldCreator {
         // TODO: make different models for each character type
         Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
         Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
+        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
+        
         humanModel.scale(0.15f);
         monsterModel.scale(0.01f);
         listOfPlayers.forEach(p -> {
-            Spatial model = (p.getType() == EntityType.Human) ? humanModel.clone() : monsterModel.clone();
+            Spatial model;
+            if (p.getType() == EntityType.Human) {
+                model = humanModel;
+            } else if (p.getType() == EntityType.Monster) {
+                model = monsterModel;
+            } else {
+                model = monkeyModel;
+            }
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
         
@@ -49,6 +64,8 @@ public class WorldCreator {
             return new HumanNode(name, tmpPos, bulletAppState, model);
         } else if (type == EntityType.Monster){
             return new MonsterNode(name, tmpPos, bulletAppState, model);
+        } else if (type == EntityType.Monkey){
+            return new MonkeyNode(name, tmpPos, bulletAppState, model);
         } else {
             return null;
         }
@@ -61,7 +78,10 @@ public class WorldCreator {
                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             
             b.setKinematic(true); // This for some reason makes the rigid align with the Mesh...
-            
+            if (wall.getName().equals("longside")) {
+                // Collisions with npc monkey
+                b.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+            }
             wall.addControl(b);  
             
             bulletAppState.getPhysicsSpace().add(b);  
@@ -70,7 +90,8 @@ public class WorldCreator {
         Spatial floors = ((Node)mapModel).getChild("floor");
         ((Node)floors).getChildren().forEach((floor) -> {
             RigidBodyControl b = new RigidBodyControl(0); // 0 Mass = static
-            
+            // Collisions with npc monkey
+            b.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
             floor.addControl(b);
 
             bulletAppState.getPhysicsSpace().add(b);

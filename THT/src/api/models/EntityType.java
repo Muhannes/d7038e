@@ -12,6 +12,7 @@ package api.models;
 public enum EntityType {
     Human,
     Monster,
+    Monkey,
 }
 
 

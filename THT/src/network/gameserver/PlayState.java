@@ -20,6 +20,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
+import control.NPCController;
 import control.TrapController;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
     private TrapController trapController;
+    private NPCController npcController;
     private BulletAppState bulletAppState;
     
     private ScheduledExecutorService movementSender;
@@ -84,7 +86,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         //hostedGameStatsService.sendOutTraps(traps);        
 
         trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
-
+        npcController = new NPCController(root, hostedMovementService, bulletAppState);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.clear();
         movementSender.shutdownNow();
         trapController.destroy();
-        
+        npcController.stopControlling();
     }
 
     @Override

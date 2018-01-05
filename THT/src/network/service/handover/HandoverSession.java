@@ -10,5 +10,5 @@ package network.service.handover;
  * @author hannes
  */
 public interface HandoverSession {
-    boolean join(int key, int port);
+    boolean join(int key, String ip, int port);
 }
