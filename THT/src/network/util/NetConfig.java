@@ -22,18 +22,18 @@ import network.service.movement.PlayerMovement;
 public class NetConfig {
     
     private static final Logger LOGGER = Logger.getLogger(NetConfig.class.getName());
-    
-    public static String LOBBY_SERVER_NAME = "localhost";
+    private static final String SERVER_IP = "localhost";
+    public static String LOBBY_SERVER_NAME = SERVER_IP;
     public static int LOBBY_PLAYER_SERVER_PORT = 7999;
     public static int LOBBY_HANDOVER_SERVER_PORT = 8000;
     
-    public static String GAME_SERVER_NAME = "localhost";
+    public static String GAME_SERVER_NAME = SERVER_IP;
     public static int GAME_SERVER_PORT = 8001;
     
-    public static String LOGIN_SERVER_NAME = "localhost";
+    public static String LOGIN_SERVER_NAME = SERVER_IP;
     public static int LOGIN_SERVER_PORT = 8002;
     
-    public static String CHAT_SERVER_NAME = "localhost";
+    public static String CHAT_SERVER_NAME = SERVER_IP;
     public static int CHAT_SERVER_PORT = 8003;
     
     public static void initSerializables(){
