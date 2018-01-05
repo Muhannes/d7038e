@@ -25,8 +25,11 @@ import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
 import com.sun.scenario.Settings;
 import control.EntityNode;
+import control.HumanNode;
+import control.MonsterNode;
 import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
+import control.input.MonsterInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
 import java.util.ArrayList;
@@ -130,9 +133,16 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         if(chaseCamera == null){
             LOGGER.log(Level.SEVERE, "chaseCamera is null");
         }
-        HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
-        player.addControl(inputControl);
-        inputControl.initKeys(input);  
+        if (player instanceof HumanNode) {
+            HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
+            player.addControl(inputControl);
+            inputControl.initKeys(input);
+        } else if (player instanceof MonsterNode) {
+            MonsterInputControl inputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
+            player.addControl(inputControl);
+            inputControl.initKeys(input);
+            
+        }
         
         playerNode.getChildren().forEach((p) -> {   
             ConvergeControl converger;

@@ -44,9 +44,6 @@ public class HumanInputControl extends AbstractInputControl{
     public void onAction(String name, boolean isPressed, float tpf) {
         super.onAction(name, isPressed, tpf);
         
-        if(name.equals("jump") && isPressed){
-           character.jump();
-        }
         if(name.equals("trap") && isPressed){
             if(traps > 0){
                 sendTrapsToServer();

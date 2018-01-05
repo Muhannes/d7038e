@@ -7,8 +7,11 @@ package control.input;
 
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import control.EntityNode;
+import control.animation.MonsterAnimationControl;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
 
@@ -27,31 +30,17 @@ public class MonsterInputControl extends AbstractInputControl{
 
     @Override
     public void initKeys(InputManager manager) {
-       manager.addMapping("left", new KeyTrigger(KeyInput.KEY_A));
-        manager.addMapping("forward", new KeyTrigger(KeyInput.KEY_W));
-        manager.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
-        manager.addMapping("right", new KeyTrigger(KeyInput.KEY_D));   
-        manager.addMapping("strafeLeft", new KeyTrigger(KeyInput.KEY_Q));
-        manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_E));        
-        manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        manager.addMapping("decoy", new KeyTrigger(KeyInput.KEY_F));
-        
-        manager.addListener(this, "left", "right", "forward", "backward", "strafeLeft", "strafeRight", "jump", "decoy");
-    }
-
-    @Override
-    protected void controlUpdate(float tpf) {
-        
-    }
-
-    @Override
-    public void onAnalog(String name, float value, float tpf) {
-        
+       super.initKeys(manager);
+       manager.addMapping("slash", new KeyTrigger(KeyInput.KEY_F));
+       manager.addListener(this, "slash");
     }
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-       
+        super.onAction(name, isPressed, tpf);
+        if (name.equals("slash") && isPressed) {
+            getSpatial().getControl(MonsterAnimationControl.class).swordSlash();
+        }
     }
     
 }
