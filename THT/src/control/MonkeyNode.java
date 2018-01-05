@@ -18,6 +18,7 @@ import com.jme3.scene.Spatial;
  */
 public class MonkeyNode extends EntityNode {
 
+    private static final float MONKEY_MOVEMENT_SPEED = 5;
     public MonkeyNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name, position, bulletAppState, model);
     }
@@ -29,13 +30,17 @@ public class MonkeyNode extends EntityNode {
         
         BoundingBox boundingBox = (BoundingBox) model.getWorldBound();
         
-        float radius = boundingBox.getXExtent() / 2; 
+        float radius = boundingBox.getXExtent() / 4; 
         
-        float height = boundingBox.getYExtent() * 1.15f;
+        float height = boundingBox.getYExtent() / 2;
+        model.setLocalTranslation(model.getLocalTranslation().subtract(0, height, 0));
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
         bulletAppState.getPhysicsSpace().add(charControl);
+        
+        // Speed scaling
+        this.addControl(new SpeedController(MONKEY_MOVEMENT_SPEED));
         
         // Animation
         //this.addControl(new HumanAnimationControl(model));

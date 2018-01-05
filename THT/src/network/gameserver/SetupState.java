@@ -131,7 +131,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         int monsterID = RANDOM.nextInt(players.size());
         players.get(monsterID).setType(EntityType.Monster);
         // Add monkey
-        players.add(new Player(EntityType.Ghost, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), -1));
+        players.add(new Player(EntityType.Monkey, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), 0));
         return players;
     }
 

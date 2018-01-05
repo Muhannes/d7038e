@@ -57,7 +57,7 @@ public class WorldCreator {
             return new HumanNode(name, tmpPos, bulletAppState, model);
         } else if (type == EntityType.Monster){
             return new MonsterNode(name, tmpPos, bulletAppState, model);
-        } else if (type == EntityType.Ghost){
+        } else if (type == EntityType.Monkey){
             System.out.println("Creating monkey!");
             return new MonkeyNode(name, tmpPos, bulletAppState, model);
         } else {
