@@ -24,19 +24,21 @@ import network.service.movement.server.HostedMovementService;
  *
  * @author hannes
  */
-public class NPCController implements PhysicsCollisionListener {
-    private static final Random RANDOM = new Random();
+public class NPCController implements PhysicsCollisionListener{
+    private static final Random RANDOM = new Random(System.currentTimeMillis());
     private Node root;
     private HostedMovementService hostedMovementService;
     private final List<Node> npcNodes = new ArrayList<>();
     private ScheduledExecutorService executor;
+    private BulletAppState bulletAppState;
     
     
     public NPCController(Node root, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
         this.root = root;
         this.hostedMovementService = hostedMovementService;
+        this.bulletAppState = bulletAppState;
         npcNodes.add((Node) root.getChild("0"));
-        bulletAppState.getPhysicsSpace().addCollisionListener(this);
+        this.bulletAppState.getPhysicsSpace().addCollisionListener(this);
         startControlling();
     }
     
@@ -51,6 +53,7 @@ public class NPCController implements PhysicsCollisionListener {
     public void stopControlling(){
         executor.shutdownNow();
         npcNodes.clear();
+        bulletAppState.getPhysicsSpace().removeCollisionListener(this);
     }
     
     private Runnable getRunnableController(final CharacterControl cc, final String id){
@@ -71,11 +74,25 @@ public class NPCController implements PhysicsCollisionListener {
     public void collision(PhysicsCollisionEvent event) {
         Spatial a = event.getNodeA();
         Spatial b = event.getNodeB();
-        System.out.println("A: " + a.getName());
-        System.out.println("B: " + b.getName());
-        if (a.getName().equals("Box") || b.getName().equals("Box")) {
-            System.out.println("Collision with inner wall");
+        if (a.getName().equals("longside") && b.getName().equals("0")) {
+            for (Node npcNode : npcNodes) {
+                if (b == npcNode) {
+                    turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());
+                }
+            }
+        } else if (b.getName().equals("longside") && a.getName().equals("0")) {
+            for (Node npcNode : npcNodes) {
+                if (a == npcNode) {
+                    turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());
+                }
+            }
         }
+    }
+    
+    private void turnAround(CharacterControl cc, String id){
+        cc.setWalkDirection(cc.getWalkDirection().negate());
+        cc.setViewDirection(cc.getWalkDirection());
+        hostedMovementService.playerUpdated(id);
     }
     
 }

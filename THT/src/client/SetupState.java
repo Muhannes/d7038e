@@ -50,6 +50,7 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
+        
     }
 
     @Override

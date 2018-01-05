@@ -22,6 +22,10 @@ public class HumanAnimationControl extends AbstractAnimationControl{
     
     public HumanAnimationControl(Spatial model){
         animationControl = model.getControl(AnimControl.class);
+        // Prints out the different kinds of animations
+        //for (String anim : animationControl.getAnimationNames()) {
+        //    System.out.println(anim);
+        //}
         animationChannel = animationControl.createChannel();
         animationChannel.setAnim("stand");
     }
