@@ -172,7 +172,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 //Print out to GUI that killer slaughtered the victim
                 
                 if(victims.get(i).equals(player.getName())){
-                   //TODO: change the player to new monsterNode and change position
+                    //TODO: change the player to new monsterNode and change position
+                    //TODO : Cant see updates on the other player after becoming monster.
                     LOGGER.log(Level.INFO, "you have died!");
                 
                     //bullet reset and player removal
@@ -180,15 +181,20 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     if(input.hasMapping("trap")){
                         LOGGER.log(Level.SEVERE, "mapping not removed");
                     }
+                    LOGGER.log(Level.SEVERE, "Clearing mappings via inputManager");
 
-                    player.removeControl(CharacterControl.class); //might cause problem
+                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
+                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
+                    LOGGER.log(Level.SEVERE, "Clearing character and ghost control from bullet");
+
+/*                    player.removeControl(CharacterControl.class); //might cause problem
                     if(player.getControl(CharacterControl.class) != null){
                         LOGGER.log(Level.SEVERE, "The HumanCharacterControl was not removed");
                     }
-                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
-                    app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
+*/                  //put this on the new monster
                     playerNode.detachChildNamed(victims.get(i));
-                    
+                    LOGGER.log(Level.SEVERE, "deleting character from playerNode");
+
                     //new camera
                     Camera newCamera = app.getCamera();
                     CameraNode camNode = new CameraNode("CamNode", newCamera);
@@ -201,31 +207,36 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     //create monster 
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
                     newMonster.attachChild(camNode);
-                    player = newMonster; //might be usedful for other methods.
-                    
+                    LOGGER.log(Level.SEVERE, "Created monster and set camNode");
+
                     //monster control
-                    MonsterInputControl monsterInputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
-                    player.addControl(monsterInputControl);
+                    MonsterInputControl monsterInputControl = new MonsterInputControl(newMonster, clientMovementService, clientGameStatsService);
+                    newMonster.addControl(monsterInputControl);
                     monsterInputControl.initKeys(input);
-                    LOGGER.log(Level.INFO, "created monster inputControl");
+                    LOGGER.log(Level.INFO, "Created monster inputControl");
                     
                     //converge control
-                    ConvergeControl converger = new ConvergeControl(clientMovementService, false);
-                    player.addControl(converger);
+
+                    ConvergeControl converge = new ConvergeControl(clientMovementService, false);
+                    newMonster.addControl(converge);
                     
                     //attach new monster to playground
+                    player = newMonster; //might be usedful for other methods.
                     playerNode.attachChild(player);
                     LOGGER.log(Level.INFO, "created monster entity");
 
                 } else {
+                    //TODO : can not see new positions or directions.
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
                     //reset bullet
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
                     //delete node
                     playerNode.detachChildNamed(victims.get(i));
+                    
                     //create monster
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+                    
                     //attach new convergeControl
                     newMonster.addControl(new ConvergeControl(clientMovementService));
                     //attach new monster

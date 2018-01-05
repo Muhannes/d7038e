@@ -177,17 +177,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     }
     
     public void disableKeys(InputManager manager){
-        manager.deleteMapping("forward");
-        manager.deleteMapping("backward");
-        manager.deleteMapping("strafeLeft");
-        manager.deleteMapping("strafeRight");
-        manager.deleteMapping("jump");
-        
-        manager.deleteMapping("rotateright");
-        manager.deleteMapping("rotateleft");
-        manager.deleteMapping("rotateup");
-        manager.deleteMapping("rotatedown");
-        
+        manager.clearMappings();
         manager.removeListener(this);        
     }
     
