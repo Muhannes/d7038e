@@ -125,7 +125,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
      */
     private void sendMovementToServer(){       
         Spatial self = getSpatial();
-        LOGGER.log(Level.INFO, "sending new movement message\nid : " + self.getName() + " postion : " + self.getLocalTranslation() + " direction : " + character.getWalkDirection()); 
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);

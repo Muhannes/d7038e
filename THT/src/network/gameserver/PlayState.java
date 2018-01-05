@@ -133,7 +133,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             
             //create new monster
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
-            
+
             //attach the new monster
             playersNode.attachChild(newMonster);
             LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
