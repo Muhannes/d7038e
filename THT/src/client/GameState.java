@@ -175,10 +175,21 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                    //TODO: change the player to new monsterNode and change position
                     LOGGER.log(Level.INFO, "you have died!");
                 
-//                    player.removeControl(HumanInputControl.class); //reset controller (causes nullpointException, dont use)
+                    //bullet reset and player removal
+                    input.clearMappings();
+                    if(input.hasMapping("trap")){
+                        LOGGER.log(Level.SEVERE, "mapping not removed");
+                    }
+
+                    player.removeControl(CharacterControl.class); //might cause problem
+                    if(player.getControl(CharacterControl.class) != null){
+                        LOGGER.log(Level.SEVERE, "The HumanCharacterControl was not removed");
+                    }
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
+                    playerNode.detachChildNamed(victims.get(i));
                     
+                    //new camera
                     Camera newCamera = app.getCamera();
                     CameraNode camNode = new CameraNode("CamNode", newCamera);
                     // so that walls are not invisible
@@ -187,26 +198,39 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     camNode.setLocalTranslation(new Vector3f(0, 1, 0));
                     LOGGER.log(Level.INFO, "camera set");
                     
-                    playerNode.detachChildNamed(victims.get(i));
+                    //create monster 
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
                     newMonster.attachChild(camNode);
                     player = newMonster; //might be usedful for other methods.
                     
+                    //monster control
                     MonsterInputControl monsterInputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
                     player.addControl(monsterInputControl);
                     monsterInputControl.initKeys(input);
                     LOGGER.log(Level.INFO, "created monster inputControl");
                     
-                    playerNode.attachChild(newMonster);
+                    //converge control
+                    ConvergeControl converger = new ConvergeControl(clientMovementService, false);
+                    player.addControl(converger);
+                    
+                    //attach new monster to playground
+                    playerNode.attachChild(player);
                     LOGGER.log(Level.INFO, "created monster entity");
 
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
+                    //reset bullet
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
+                    //delete node
                     playerNode.detachChildNamed(victims.get(i));
+                    //create monster
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+                    //attach new convergeControl
+                    newMonster.addControl(new ConvergeControl(clientMovementService));
+                    //attach new monster
                     playerNode.attachChild(newMonster);                    
+                    
                     LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
 
                }

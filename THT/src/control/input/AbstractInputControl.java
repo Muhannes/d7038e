@@ -56,11 +56,10 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     }
     
     private void setNewMoveDirection(float tpf) {
-        LOGGER.log(Level.INFO, "Something in here that is direction (0,0,0)!");
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
+                throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         Vector3f moveDir = character.getViewDirection().clone();
@@ -103,7 +102,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
             if(character == null){
-                throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
+                throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
         
@@ -175,6 +174,21 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", "jump", 
                 "rotateleft", "rotateright", "rotateup", "rotatedown");
     
+    }
+    
+    public void disableKeys(InputManager manager){
+        manager.deleteMapping("forward");
+        manager.deleteMapping("backward");
+        manager.deleteMapping("strafeLeft");
+        manager.deleteMapping("strafeRight");
+        manager.deleteMapping("jump");
+        
+        manager.deleteMapping("rotateright");
+        manager.deleteMapping("rotateleft");
+        manager.deleteMapping("rotateup");
+        manager.deleteMapping("rotatedown");
+        
+        manager.removeListener(this);        
     }
     
 }

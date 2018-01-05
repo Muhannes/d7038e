@@ -5,17 +5,11 @@
  */
 package control.input;
 
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;  
-import com.jme3.renderer.Camera;
-import control.EntityNode;
 import control.animation.MonsterAnimationControl;
 import network.service.gamestats.client.ClientGameStatsService;
-import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
 import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;

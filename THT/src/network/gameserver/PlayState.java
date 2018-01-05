@@ -124,12 +124,17 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
+            //reset the player bullet
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(victim).getControl(CharacterControl.class)); //reset bulletAppState
 
+            //remove old player
             playersNode.detachChildNamed(victim);
+            
+            //create new monster
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
             
+            //attach the new monster
             playersNode.attachChild(newMonster);
             LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
         } 

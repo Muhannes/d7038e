@@ -27,7 +27,7 @@ public class HumanInputControl extends AbstractInputControl{
     
     private EntityNode self;
     private int traps = 5;
-
+    
     public HumanInputControl(EntityNode self, ClientMovementService movementService, ClientGameStatsService gameStatsService) {
         super(movementService, gameStatsService); 
         this.self = self;
@@ -38,6 +38,12 @@ public class HumanInputControl extends AbstractInputControl{
         super.initKeys(manager);
         manager.addMapping("trap", new KeyTrigger(KeyInput.KEY_F)); 
         manager.addListener(this, "trap");
+    }
+    
+    public void disableMapping(InputManager manager){
+        super.disableKeys(manager);
+        manager.deleteMapping("trap");
+        manager.removeListener(this);
     }
 
     @Override

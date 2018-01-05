@@ -39,6 +39,8 @@ public class MonsterNode extends EntityNode{
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
+        
+        charControl.setWalkDirection(new Vector3f(0f,0f,0f)); //set initial stand still
 
         //Ghost
         GhostControl ghost = new GhostControl(shape);

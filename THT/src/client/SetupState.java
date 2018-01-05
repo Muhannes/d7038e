@@ -122,20 +122,7 @@ public class SetupState extends BaseAppState implements
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         
         Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
-        /*for(Spatial player : players.getChildren()){
-            BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
         
-            float radius = boundingBox.getXExtent();
-            float height = boundingBox.getYExtent();
-            player.setLocalTranslation(player.getLocalTranslation().add(0, - height*3/4, 0));
-            CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-            
-            //Ghost
-            GhostControl ghost = new GhostControl(shape);
-            player.addControl(ghost);
-            bulletAppState.getPhysicsSpace().add(ghost);
-
-        }*/
         world.attachChild(players);
         
         // Tell server we are ready
