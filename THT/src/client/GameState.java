@@ -27,6 +27,7 @@ import com.sun.scenario.Settings;
 import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
+import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
 import control.converge.ConvergeControl;
@@ -92,7 +93,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     }
 
     @Override
-    protected void onEnable() {     
+    protected void onEnable() {    
         gameStatsListener = this;
         
         this.root = app.getRootNode();   
@@ -164,10 +165,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             p.addControl(converger);
         });
 
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playGameMusic();
     }
 
     @Override
-    protected void onDisable() {        
+    protected void onDisable() {  
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
         app.stop();
     }
     

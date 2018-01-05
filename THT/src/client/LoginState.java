@@ -8,6 +8,7 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import control.audio.AmbientAudioService;
 import gui.login.LoginGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,6 +94,8 @@ public class LoginState extends BaseAppState implements
 
     @Override
     protected void onEnable() {
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playPreGameMusic();
+        
         clientLoginService = app.getClientLoginService();
         gui = new LoginGUI(niftyDisplay);
         gui.addLoginScreeenListener(this);
