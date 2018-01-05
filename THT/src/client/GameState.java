@@ -172,8 +172,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 //Print out to GUI that killer slaughtered the victim
                 
                 if(victims.get(i).equals(player.getName())){
-                    //TODO: change the player to new monsterNode and change position
-                    //TODO : Cant see updates on the other player after becoming monster.
                     LOGGER.log(Level.INFO, "you have died!");
                 
                     //bullet reset and player removal
@@ -187,11 +185,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
                     LOGGER.log(Level.SEVERE, "Clearing character and ghost control from bullet");
 
-/*                    player.removeControl(CharacterControl.class); //might cause problem
-                    if(player.getControl(CharacterControl.class) != null){
-                        LOGGER.log(Level.SEVERE, "The HumanCharacterControl was not removed");
-                    }
-*/                  //put this on the new monster
+                    //put this on the new monster
                     playerNode.detachChildNamed(victims.get(i));
                     LOGGER.log(Level.SEVERE, "deleting character from playerNode");
 
@@ -216,7 +210,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     LOGGER.log(Level.INFO, "Created monster inputControl");
                     
                     //converge control
-
                     ConvergeControl converge = new ConvergeControl(clientMovementService, false);
                     newMonster.addControl(converge);
                     
@@ -226,7 +219,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     LOGGER.log(Level.INFO, "created monster entity");
 
                 } else {
-                    //TODO : can not see new positions or directions.
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
                     //reset bullet
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
