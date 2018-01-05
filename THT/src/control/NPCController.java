@@ -5,9 +5,13 @@
  */
 package control;
 
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,18 +24,19 @@ import network.service.movement.server.HostedMovementService;
  *
  * @author hannes
  */
-public class NPCController  {
-    private static final Random RANDOM = new Random(37);
+public class NPCController implements PhysicsCollisionListener {
+    private static final Random RANDOM = new Random();
     private Node root;
     private HostedMovementService hostedMovementService;
     private final List<Node> npcNodes = new ArrayList<>();
     private ScheduledExecutorService executor;
     
     
-    public NPCController(Node root, HostedMovementService hostedMovementService) {
+    public NPCController(Node root, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
         this.root = root;
         this.hostedMovementService = hostedMovementService;
         npcNodes.add((Node) root.getChild("0"));
+        bulletAppState.getPhysicsSpace().addCollisionListener(this);
         startControlling();
     }
     
@@ -60,6 +65,17 @@ public class NPCController  {
             }
         };
         return r;
+    }
+
+    @Override
+    public void collision(PhysicsCollisionEvent event) {
+        Spatial a = event.getNodeA();
+        Spatial b = event.getNodeB();
+        System.out.println("A: " + a.getName());
+        System.out.println("B: " + b.getName());
+        if (a.getName().equals("Box") || b.getName().equals("Box")) {
+            System.out.println("Collision with inner wall");
+        }
     }
     
 }

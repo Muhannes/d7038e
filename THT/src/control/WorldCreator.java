@@ -9,6 +9,7 @@ import api.models.EntityType;
 import api.models.Player;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.math.Vector3f;
@@ -72,7 +73,10 @@ public class WorldCreator {
                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             
             b.setKinematic(true); // This for some reason makes the rigid align with the Mesh...
-            
+            if (wall.getName().equals("longside")) {
+                System.out.println("Adding wall to collisionGroup2");
+                b.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+            }
             wall.addControl(b);  
             
             bulletAppState.getPhysicsSpace().add(b);  

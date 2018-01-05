@@ -86,7 +86,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         //hostedGameStatsService.sendOutTraps(traps);        
 
         trapController = new TrapController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
-        npcController = new NPCController(root, hostedMovementService);
+        npcController = new NPCController(root, hostedMovementService, bulletAppState);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.clear();
         movementSender.shutdownNow();
         trapController.destroy();
-        
+        npcController.stopControlling();
     }
 
     @Override

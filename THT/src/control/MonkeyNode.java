@@ -7,9 +7,11 @@ package control;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.CollisionData;
 import com.jme3.scene.Spatial;
 
 /**
@@ -36,6 +38,9 @@ public class MonkeyNode extends EntityNode {
         model.setLocalTranslation(model.getLocalTranslation().subtract(0, height, 0));
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);
+        charControl.removeCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_01);
+        //charControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+        //charControl.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
         this.addControl(charControl);
         bulletAppState.getPhysicsSpace().add(charControl);
         
