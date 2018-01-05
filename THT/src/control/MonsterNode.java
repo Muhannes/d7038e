@@ -13,13 +13,18 @@ import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import com.sun.istack.internal.logging.Logger;
 import control.animation.MonsterAnimationControl;
+import java.util.logging.Level;
 
 /**
  *
  * @author hannes
  */
 public class MonsterNode extends EntityNode{
+    
+    private static final Logger LOGGER = Logger.getLogger(MonsterNode.class);
+
     
     public MonsterNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name, position, bulletAppState, model);
@@ -40,8 +45,8 @@ public class MonsterNode extends EntityNode{
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
         
-        charControl.setWalkDirection(new Vector3f(0f,0f,0f)); //set initial stand still
-
+        //charControl.setWalkDirection(new Vector3f(0f,0f,0f)); //set initial stand still
+        
         //Ghost
         GhostControl ghost = new GhostControl(shape);
         this.addControl(ghost);

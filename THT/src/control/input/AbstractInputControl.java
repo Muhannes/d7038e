@@ -85,7 +85,9 @@ public abstract class AbstractInputControl extends AbstractControl implements An
                 throw new RuntimeException("HumanInputControl requires a BetterCharacterControl to be attached to spatial");
             }
         }
-        
+
+        LOGGER.log(Level.INFO, " dir : " + character.getWalkDirection());
+
         if(name.equals("forward")) forward = !forward;
         else if(name.equals("backward")) backward = !backward;
         else if(name.equals("strafeLeft")) strafeLeft = !strafeLeft;
@@ -94,7 +96,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
            character.jump();
         }
         setNewMoveDirection(tpf);
-        sendMovementToServer();
+        sendMovementToServer();                    
     }
     
     @Override
@@ -125,6 +127,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
      */
     private void sendMovementToServer(){       
         Spatial self = getSpatial();
+        LOGGER.log(Level.INFO, "walking direction : " + character.getWalkDirection());
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);

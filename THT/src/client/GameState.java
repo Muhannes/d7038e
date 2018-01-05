@@ -173,7 +173,13 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 
                 if(victims.get(i).equals(player.getName())){
                     LOGGER.log(Level.INFO, "you have died!");
-                
+                    
+                    
+                    LOGGER.log(Level.INFO, "before zero direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
+                    
+                    playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).setWalkDirection(Vector3f.ZERO); //maybe
+                    LOGGER.log(Level.INFO, "after zero direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
+                    
                     //bullet reset and player removal
                     input.clearMappings();
                     if(input.hasMapping("trap")){
@@ -216,10 +222,13 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     //attach new monster to playground
                     player = newMonster; //might be usedful for other methods.
                     playerNode.attachChild(player);
-                    LOGGER.log(Level.INFO, "created monster entity");
+                    LOGGER.log(Level.INFO, "created monster direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
 
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
+
+                    playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).setWalkDirection(Vector3f.ZERO); //maybe
+
                     //reset bullet
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
