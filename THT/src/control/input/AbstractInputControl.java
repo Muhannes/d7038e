@@ -91,10 +91,10 @@ public abstract class AbstractInputControl extends AbstractControl implements An
 
         LOGGER.log(Level.INFO, " dir : " + character.getWalkDirection());
 
-        if(name.equals("forward")) forward = !forward;
-        else if(name.equals("backward")) backward = !backward;
-        else if(name.equals("strafeLeft")) strafeLeft = !strafeLeft;
-        else if(name.equals("strafeRight")) strafeRight = !strafeRight;
+        if(name.equals("forward")) forward = isPressed;
+        else if(name.equals("backward")) backward = isPressed;
+        else if(name.equals("strafeLeft")) strafeLeft = isPressed;
+        else if(name.equals("strafeRight")) strafeRight = isPressed;
         else if(name.equals("jump") && isPressed){
            character.jump();
         }
