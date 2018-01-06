@@ -199,20 +199,19 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
         for(int i = 0; i < trapNames.size(); i++){
             if(traps.getChild(trapNames.get(i)) == null){
-                //Create a trap at the location with the name given.
-                Box box = new Box(0.1f,0.1f,0.1f);
-                Geometry geom = new Geometry(trapNames.get(i), box);
-                Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-                material.setColor("Color", ColorRGBA.Red);
-                geom.setMaterial(material);
-
+                
+                Spatial trap = asset.loadModel("Models/trap/trap.j3o");
+                
+                Material mat = new Material(asset, "Common/MatDefs/Light/Lighting.j3md");
+                trap.setMaterial(mat);
+                
                 Vector3f position = newTraps.get(i);
                 position.y = 0.1f;
-                geom.setLocalTranslation(position);        
+                trap.setLocalTranslation(position);        
 
                 //Create node for each Trap (Only server needs to control check ghosts)
                 Node node = new Node(trapNames.get(i));
-                node.attachChild(geom);
+                node.attachChild(trap);
                 traps.attachChild(node);
             }
         }

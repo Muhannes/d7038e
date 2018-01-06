@@ -105,8 +105,17 @@ public class SetupState extends BaseAppState implements
         
         
         //Create a static node for traps
+        Node traplight = new Node();
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.Red);
+        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        traplight.addLight(dl);
+        
         Node traps = new Node("traps");
-        app.getRootNode().attachChild(traps);
+        
+        traplight.attachChild(traps);
+        
+        app.getRootNode().attachChild(traplight);
         
         if (bulletAppState != null) {
             WorldCreator.addPhysicsToMap(bulletAppState, creepyhouse);
