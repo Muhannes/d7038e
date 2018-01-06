@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 public class WorldCreator {
     private static final Logger LOGGER = Logger.getLogger(WorldCreator.class.getName());
     
-    
     public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         Node players = new Node("players");

@@ -11,6 +11,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -109,8 +111,14 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        
+
         Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
+        for(Spatial player : players.getChildren()){            
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(0.5f,1f,0.5f))); //test vector
+            player.addControl(ghost);            
+            bulletAppState.getPhysicsSpace().add(ghost);
+        }
+
         players.setName("playersNode");
         
         world.attachChild(players);        

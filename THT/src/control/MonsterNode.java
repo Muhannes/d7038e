@@ -15,7 +15,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import control.animation.MonsterAnimationControl;
-import java.util.logging.Level;
 
 /**
  *
@@ -44,14 +43,12 @@ public class MonsterNode extends EntityNode{
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
-        
-        //charControl.setWalkDirection(new Vector3f(0f,0f,0f)); //set initial stand still
-        
+                
         //Ghost
-        GhostControl ghost = new GhostControl(shape);
+/*        GhostControl ghost = new GhostControl(shape);
         this.addControl(ghost);
         bulletAppState.getPhysicsSpace().add(ghost);
-        
+*/        
         bulletAppState.getPhysicsSpace().add(charControl);
         
         this.addControl(new MonsterAnimationControl(model));

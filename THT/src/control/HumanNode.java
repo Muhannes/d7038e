@@ -39,10 +39,10 @@ public class HumanNode extends EntityNode{
         this.addControl(charControl);
         
         //ghost
-        GhostControl ghost = new GhostControl(shape);
+/*        GhostControl ghost = new GhostControl(shape);
         this.addControl(ghost);
         bulletAppState.getPhysicsSpace().add(ghost);
-        
+*/        
         bulletAppState.getPhysicsSpace().add(charControl);
                         
         this.addControl(new HumanAnimationControl(model));

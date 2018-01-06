@@ -83,7 +83,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedGameStatsService.addSessions(this);
         movementSender = Executors.newScheduledThreadPool(1);
         movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode), 20, 20, TimeUnit.MILLISECONDS);
-        //hostedGameStatsService.sendOutTraps(traps);        
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
@@ -135,6 +134,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             //create new monster
             EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victim, bulletAppState);
 
+            //ghost
+            GhostControl ghost = new GhostControl(new BoxCollisionShape(new Vector3f(1f,2f,1f))); //test vector
+            newMonster.addControl(ghost);            
+            bulletAppState.getPhysicsSpace().add(ghost);
+            
             //attach the new monster
             playersNode.attachChild(newMonster);
             LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
