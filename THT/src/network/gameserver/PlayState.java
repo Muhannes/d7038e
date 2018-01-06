@@ -22,6 +22,9 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.CollisionController;
+import control.HumanNode;
+import control.MonkeyNode;
+import control.MonsterNode;
 import control.WorldCreator;
 import control.NPCController;
 import java.util.ArrayList;
@@ -56,6 +59,10 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     
     private ScheduledExecutorService movementSender;
     
+    //Game Over : When all players are monsters, when all monkeys are caught.
+    private int monkeys = 0;
+    private int humans = 0;
+    
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;
@@ -80,6 +87,16 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (playersNode == null || root == null || traps == null) {
             LOGGER.severe("root, trapNode or playersNode is null");
         }
+        for(Spatial child : playersNode.getChildren()){
+            //Count all the monkeys
+            if(child instanceof MonkeyNode){
+                monkeys++;
+            }
+            if(child instanceof HumanNode){
+                humans++;
+            }
+        }
+        LOGGER.log(Level.INFO, "Amount of humans " + humans + "\nmonkeys " + monkeys);
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
@@ -121,8 +138,29 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         }
     }
 
+    public boolean allCaught(){
+        monkeys--;
+        if(monkeys == 0){
+            //GAME OVER
+            LOGGER.log(Level.SEVERE, "Game Over!");
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean allDead(){
+        humans--;
+        if(humans == 0){
+            //GAME OVER
+            LOGGER.log(Level.SEVERE, "Game over!");
+            return true;
+        }
+        return false;
+    }
+    
     public void playerGotKilled(String victim, String killer){
         LOGGER.log(Level.INFO, victim + " got slaughtered by " + killer);
+        
         if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
@@ -254,4 +292,20 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             }
         }
     }    
+    
+    public void monkeyGotCaught(String monkey){
+        LOGGER.log(Level.INFO, monkey + " got caught " );
+        
+        if(playersNode.getChild(monkey) == null){
+            LOGGER.severe("players does not exist");
+        } else {
+            //reset the player bullet
+            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(monkey).getControl(GhostControl.class)); //reset bulletAppState
+            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(monkey).getControl(CharacterControl.class)); //reset bulletAppState
+
+            //remove old player
+            playersNode.detachChildNamed(monkey);
+            
+        } 
+    }
 }

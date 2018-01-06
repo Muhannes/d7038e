@@ -16,10 +16,13 @@ import java.util.List;
 public interface GameStatsSessionListener {
     
     @Asynchronous
+    void notifyGameOver();
+    
+    @Asynchronous
     void notifyPlayersKilled(List <String> victims, List <String> killers);
     
     @Asynchronous
-    void notifyPlayersEscaped(List <String> names);
+    void notifyMonkeysCaught(List <String> catchers, List<String> monkeys);
     
     @Asynchronous
     void notifyTrapsPlaced(List <String> trapNames, List <Vector3f> newTraps);

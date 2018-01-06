@@ -65,6 +65,7 @@ public class WorldCreator {
         } else if (type == EntityType.Monster){
             return new MonsterNode(name, position, bulletAppState, model);
         } else if (type == EntityType.Monkey){
+            LOGGER.log(Level.INFO, "Monkey name : " + name);
             return new MonkeyNode(name, position, bulletAppState, model);
         } else {
             return null;

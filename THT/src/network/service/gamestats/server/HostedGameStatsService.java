@@ -54,6 +54,10 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     private final List <String> victims = new ArrayList<>();
     private final List <String> killers = new ArrayList<>();
     
+    //when monkey is caught
+    private final List<String> monkeys = new ArrayList<>();
+    private final List<String> catchers = new ArrayList<>();
+    
     
     private int channel;
     
@@ -226,6 +230,51 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         players.forEach(l -> l.getCallback().notifyPlayersKilled(victims, killers));
     }
 
+    public void playerCaughtMonkey(String catcher, String monkey){
+        LOGGER.log(Level.INFO, catcher + " caught " + monkey);
+        catchers.add(catcher);
+        monkeys.add(monkey);
+    }
+    
+    public void sendOutMonkeyInfo(){
+        //broadcast out that a monkey got caught
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    while(true){
+                        try {                    
+                            Thread.sleep(10);                    
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {                         
+                            if(victims.size() > 0 && killers.size() > 0){
+                                broadcastMonkeysCaught(catchers, monkeys);  
+                            }  
+                            catchers.clear();
+                            monkeys.clear();
+                        }
+                    }
+                }
+            }
+        ).start();
+    }
+
+    public void broadcastMonkeysCaught(List<String> catchers, List<String> monkeys){
+        players.forEach(l -> l.getCallback().notifyMonkeysCaught(catchers, monkeys));        
+    }
+    
+    public void gameover(){
+        LOGGER.log(Level.SEVERE, "Sending out gameover from server!");
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run() {
+                    players.forEach(l -> l.getCallback().notifyGameOver());
+                }
+            }
+        ).start();
+    }
     
     private class GameStatsSessionImpl implements GameStatsSession {
         
@@ -245,12 +294,12 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         }
         
         @Override
-        public void notifyPlayerKilled(String victim, String killer) { //Never happens
+        public void notifyPlayerKilled(String victim, String killer) { 
             gameStatsSessions.forEach(l -> l.notifyPlayerKilled(victim, killer));
         }
 
         @Override
-        public void notifyPlayerEscaped(String name) { //Never happens
+        public void notifyPlayerEscaped(String name) { 
             gameStatsSessions.forEach(l -> l.notifyPlayerEscaped(name));
         }
 

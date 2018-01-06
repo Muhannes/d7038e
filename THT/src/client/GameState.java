@@ -256,11 +256,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     }
 
     @Override
-    public void notifyPlayersEscaped(List<String> names) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
         app.enqueue(() -> {
             updateTreeWithNewTraps(trapNames, newTraps);
@@ -315,5 +310,32 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 entity.slowDown();
             }
         }        
+    }
+
+    @Override
+    public void notifyMonkeysCaught(List<String> catchers, List<String> monkeys) {
+        LOGGER.log(Level.INFO, monkeys + " got caught " );
+        for(String c : monkeys){
+            if(playerNode.getChild(c) == null){
+                LOGGER.severe("players does not exist");
+            } else {
+                //reset the player bullet
+                app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(GhostControl.class)); //reset bulletAppState
+                app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(CharacterControl.class)); //reset bulletAppState
+
+                //remove old player
+                playerNode.detachChildNamed(c);
+                
+                //Do somthing with all the catchers (send out to GUI)
+
+            } 
+            
+        }
+    }
+
+
+    @Override
+    public void notifyGameOver() {
+        LOGGER.log(Level.SEVERE, "\nGame Over!\n");
     }
 }

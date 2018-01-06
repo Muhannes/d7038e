@@ -49,6 +49,8 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private HostedMovementService hostedMovementService;
     private List<Account> accounts;
     
+    private final int monkeys = 1;
+    
     @Override
     protected void initialize(Application app) {
         this.app = (GameServer) app;  
@@ -146,7 +148,9 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         }
         players.get(monsterID).setType(EntityType.Monster);
         // Add monkey
-        players.add(new Player(EntityType.Monkey, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), 0));
+//        for(int m = 0; m < monkeys; m++){
+        players.add(new Player(EntityType.Monkey, new Vector3f(-random.nextInt(20),2,0), new Quaternion(0, 0, 0, 0), 0));            
+  //      }
         return players;
     }
 

@@ -57,8 +57,11 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                             commitMurder(nodeA, nodeB);
                         } else if(isMurder(nodeB, nodeA)){
                             commitMurder(nodeB, nodeA);
-
-                        }
+                        } else if(caughtMonkey(nodeA, nodeB)){
+                            gotHim(nodeA, nodeB);
+                        } else if(caughtMonkey(nodeB, nodeA)){
+                            gotHim(nodeB, nodeA);
+                        } else {}
                     }
                 } 
             } catch(NullPointerException e){
@@ -95,9 +98,28 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
     
     private void commitMurder(Spatial nodeA, Spatial nodeB){
         LOGGER.log(Level.INFO, nodeA.getName() + " is the victim \n" + nodeB.getName() + " is the killer");                        
-        playState.playerGotKilled(nodeA.getName(), nodeB.getName());
-        hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
-        hostedGameStatsService.sendOutKilled();  
-
+        if(!playState.allDead()){
+            playState.playerGotKilled(nodeA.getName(), nodeB.getName());
+            hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
+            hostedGameStatsService.sendOutKilled();  
+        } else {
+            hostedGameStatsService.gameover();
+        }
     }
+    
+    
+    private boolean caughtMonkey(Spatial nodeA, Spatial nodeB){
+        return (nodeA instanceof HumanNode && nodeB instanceof MonkeyNode);
+    }
+    
+    private void gotHim(Spatial nodeA, Spatial nodeB){
+        LOGGER.log(Level.INFO, nodeA.getName() + " caught " + nodeB.getName());
+        if(!playState.allCaught()){
+            playState.monkeyGotCaught(nodeA.getName());
+            hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
+            hostedGameStatsService.sendOutMonkeyInfo();  
+        } else {
+            hostedGameStatsService.gameover();
+        }
+    }    
 }
