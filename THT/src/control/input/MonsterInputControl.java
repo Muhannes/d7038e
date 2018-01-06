@@ -44,6 +44,13 @@ public class MonsterInputControl extends AbstractInputControl{
     public void onAction(String name, boolean isPressed, float tpf) {
         super.onAction(name, isPressed, tpf);
         if (name.equals("slash") && isPressed) {
+            if(getSpatial() == null){
+                LOGGER.log(Level.SEVERE, "spatial is null");
+            }
+            if(getSpatial().getControl(MonsterAnimationControl.class) == null){
+                LOGGER.log(Level.SEVERE, "monster control is null");
+            }
+            LOGGER.log(Level.INFO, "onAction \n\n\n");
             getSpatial().getControl(MonsterAnimationControl.class).swordSlash();
         }
     }

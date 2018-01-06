@@ -11,6 +11,7 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.scene.Spatial;
+import java.util.logging.Level;
 
 /**
  *
@@ -64,6 +65,7 @@ public class MonsterAnimationControl extends AbstractAnimationControl implements
     }
     
     public void swordSlash(){
+        System.out.println("Slash!");
         animationChannel.setAnim(ATTACK_TYPE, 1.0f);
         animationChannel.setLoopMode(LoopMode.DontLoop);
     }
