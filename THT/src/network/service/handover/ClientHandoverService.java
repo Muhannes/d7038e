@@ -11,9 +11,15 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.login.Account;
 import network.util.NetConfig;
 import utils.eventbus.EventBus;
@@ -54,7 +60,27 @@ public class ClientHandoverService extends AbstractClientService implements Hand
     }
     
     public void joinLobby(){
-        getDelegate().join(-1, NetConfig.GAME_SERVER_PORT);
+        String ip = null;
+        Enumeration e;
+        try {
+            e = NetworkInterface.getNetworkInterfaces();
+            while(e.hasMoreElements())
+            {
+                NetworkInterface n = (NetworkInterface) e.nextElement();
+                Enumeration ee = n.getInetAddresses();
+                while (ee.hasMoreElements())
+                {
+                    InetAddress i = (InetAddress) ee.nextElement();
+                    if (i.getHostAddress().startsWith("192.168.")) {
+                        System.out.println("MyIP: " + i.getHostAddress());
+                        ip = i.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Logger.getLogger(ClientHandoverService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        getDelegate().join(-1, ip, NetConfig.GAME_SERVER_PORT);
     }
     
     private HandoverSession getDelegate(){

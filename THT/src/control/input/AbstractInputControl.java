@@ -113,7 +113,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
-        
         if(name.equals("rotateleft")){
             rotateY(-value);
         }else if(name.equals("rotateright")){

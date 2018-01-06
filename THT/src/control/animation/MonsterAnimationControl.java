@@ -27,9 +27,10 @@ public class MonsterAnimationControl extends AbstractAnimationControl implements
     
     public MonsterAnimationControl(Spatial model){
         animationControl = model.getControl(AnimControl.class);
-        for (String anim : animationControl.getAnimationNames()) {
-            System.out.println(anim);
-        }
+        // Prints out the different kinds of animations
+        //for (String anim : animationControl.getAnimationNames()) {
+        //    System.out.println(anim);
+        //}
         animationControl.addListener(this);
         animationChannel = animationControl.createChannel();
         animationChannel.setAnim(STAND);

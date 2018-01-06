@@ -207,7 +207,7 @@ public class HostedGameSetupService extends AbstractHostedConnectionService impl
                 }
                 
                 System.out.println("Ready size: " + readyPlayers.size());
-                if (readyPlayers.size() == players.size()) {
+                if (readyPlayers.size() == accounts.size()) {
                     
                     System.out.println("All ready");
                     //Send start to clients.

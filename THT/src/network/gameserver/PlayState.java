@@ -23,6 +23,7 @@ import com.jme3.scene.shape.Box;
 import control.EntityNode;
 import control.CollisionController;
 import control.WorldCreator;
+import control.NPCController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -50,6 +51,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     private HostedMovementService hostedMovementService;
     private HostedGameStatsService hostedGameStatsService;
     private CollisionController collisionController;
+    private NPCController npcController;
     private BulletAppState bulletAppState;
     
     private ScheduledExecutorService movementSender;
@@ -86,6 +88,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
+        npcController = new NPCController(root, hostedMovementService, bulletAppState);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.clear();
         movementSender.shutdownNow();
         collisionController.destroy();
-        
+        npcController.stopControlling();
     }
 
     @Override

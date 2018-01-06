@@ -54,6 +54,7 @@ public class SetupState extends BaseAppState implements
         this.app = (ClientApplication) app;  
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
         
+        
     }
 
     @Override
@@ -103,7 +104,9 @@ public class SetupState extends BaseAppState implements
     
     private void loadStaticGeometry(){   
         Spatial creepyhouse = asset.loadModel("Scenes/creepyhouse.j3o");
+        creepyhouse.setName("creepyhouse");
         world.attachChild(creepyhouse);
+        
         
         //Create a static node for traps
         Node traps = new Node("traps");
@@ -119,11 +122,18 @@ public class SetupState extends BaseAppState implements
     private void createPlayers(List<Player> listOfPlayers){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        
         Node players = WorldCreator.createPlayers(listOfPlayers, bulletAppState, app.getAssetManager());
         
-        world.attachChild(players);
+        Node playerLight = new Node();
+        playerLight.attachChild(players);
+        
+        //Directional light that only affect player models
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.White);
+        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        playerLight.addLight(dl);
+        
+        world.attachChild(playerLight);
         
         // Tell server we are ready
         gameSetupService.ready();

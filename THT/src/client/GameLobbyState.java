@@ -9,6 +9,7 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import control.audio.AmbientAudioService;
 import gui.gamelobby.GameLobbyGUI;
 import gui.gamelobby.GameLobbyGUIListener;
 import java.util.ArrayList;
@@ -86,6 +87,8 @@ public class GameLobbyState extends BaseAppState implements
 
     @Override
     protected void onDisable() {
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopPreGameMusic();
+        
         players.clear();
         gui.clearChat();
         if (chatService != null) {

@@ -30,6 +30,9 @@ import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
 import control.WorldCreator;
+import control.audio.AmbientAudioService;
+import control.audio.ListenerControl;
+import control.audio.MonsterAudioControl;
 import control.converge.ConvergeControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
@@ -96,7 +99,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     protected void onEnable() {     
         LOGGER.log(Level.INFO, "enabling client");
-
         gameStatsListener = this;
         
         this.root = app.getRootNode();   
@@ -143,6 +145,14 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             
         }
         
+        playerNode.getChildren().forEach((p) -> {
+            if( p instanceof MonsterNode ){
+                p.addControl(new MonsterAudioControl(app.getAssetManager()));
+            }
+        });
+        
+        player.addControl(new ListenerControl(app.getListener()));
+        
         playerNode.getChildren().forEach((p) -> {   
             ConvergeControl converger;
             if(p.getName().equals(player.getName())){
@@ -153,15 +163,18 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             p.addControl(converger);
         });
 
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playGameMusic();
     }
 
     @Override
-    protected void onDisable() {        
+    protected void onDisable() {  
+        AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
         app.stop();
     }
     
     @Override
     public void update(float tpf){
+        
     }
     
     @Override

@@ -99,9 +99,9 @@ public class HostedHandoverService extends AbstractHostedConnectionService imple
         
         
         @Override
-        public boolean join(int key, int port) {
-            String ip = connection.getAddress().split(":")[0];
-            ip = ip.split("/")[1];
+        public boolean join(int key, String ip, int port) {
+            //String ip = connection.getAddress().split(":")[0];
+            //ip = ip.split("/")[1];
             gameServers.add(new GameServer(ip, port, getCallback(connection)));
             return true;
         }

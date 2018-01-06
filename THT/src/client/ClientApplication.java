@@ -63,7 +63,7 @@ public class ClientApplication extends SimpleApplication{
         
         //Bullet physics for players, walls, objects
         BulletAppState bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);  
+        //bulletAppState.setDebugEnabled(true);  
         stateManager.attach(bulletAppState);
         
         // Start app at login Screen
