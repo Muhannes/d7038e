@@ -10,6 +10,7 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,62 +42,62 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
 
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        if(!event.getNodeA().getName().equals("Quad") && !event.getNodeB().getName().equals("Quad")){   
+        Spatial nodeA = event.getNodeA();
+        Spatial nodeB = event.getNodeB();
+        if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){   
             try{
-                
-                if(!triggeredTraps.contains(event.getNodeB().getParent().getName()) && !triggeredTraps.contains(event.getNodeA().getParent().getName())){            
+                if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
 
-                    if(event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getParent().getName().equals("traps")){
-
-                        String trap = event.getNodeB().getName();
-                        String[] list = trap.split(":");
-                        String owner = list[0];
-
-                        if(!event.getNodeA().getName().equals(owner)){
-
-                            LOGGER.log(Level.INFO, "removing trap : " + event.getNodeB().getParent().getName());
-                            hostedGameStatsService.triggeredTrap(event.getNodeA().getName(), event.getNodeB().getName());
-                            hostedGameStatsService.sendOutDeletedTraps();
-                            playState.deleteTrap(event.getNodeA().getName(), event.getNodeB().getName());
-
-                            triggeredTraps.add(event.getNodeB().getParent().getName());
-                            root.detachChildNamed(event.getNodeB().getParent().getName());                    
-                        }
-                    } else if(event.getNodeB().getParent().getName().equals("playersNode") && event.getNodeA().getParent().getParent().getName().equals("traps")){
-
-                        String trap = event.getNodeB().getName();
-                        String[] list = trap.split(":");
-                        String owner = list[0];
-
-                        if(!event.getNodeB().getName().equals(owner)){
-
-                            LOGGER.log(Level.INFO, "removing trap : " + event.getNodeA().getParent().getName());
-                            hostedGameStatsService.triggeredTrap(event.getNodeB().getName(), event.getNodeA().getName());
-                            hostedGameStatsService.sendOutDeletedTraps();
-                            playState.deleteTrap(event.getNodeB().getName(), event.getNodeA().getName());
-
-                            triggeredTraps.add(event.getNodeB().getParent().getName());
-                            root.detachChildNamed(event.getNodeB().getParent().getName());                    
-                        }
+                    if(isTrapCollision(nodeA, nodeB)){
+                        triggerTrap(nodeA, nodeB);
+                    } else if(isTrapCollision(nodeB, nodeA)){
+                        triggerTrap(nodeB, nodeA);
                     } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
-                        if(event.getNodeA() instanceof HumanNode && event.getNodeB() instanceof MonsterNode){                
-                            LOGGER.log(Level.INFO, event.getNodeA().getName() + " is the victim \n" + event.getNodeB().getName() + " is the killer");                        
-                            playState.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
-                            hostedGameStatsService.playerGotKilled(event.getNodeA().getName(), event.getNodeB().getName());
-                            hostedGameStatsService.sendOutKilled(); 
+                        if(isMurder(nodeA, nodeB)){    
+                            commitMurder(nodeA, nodeB);
+                        } else if(isMurder(nodeB, nodeA)){
+                            commitMurder(nodeB, nodeA);
 
-                        } else if(event.getNodeA() instanceof MonsterNode && event.getNodeB() instanceof HumanNode){
-                            LOGGER.log(Level.INFO, event.getNodeB().getName() + " is the victim \n" + event.getNodeA().getName() + " is the killer");                        
-                            playState.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
-                            hostedGameStatsService.playerGotKilled(event.getNodeB().getName(), event.getNodeA().getName());
-                            hostedGameStatsService.sendOutKilled(); 
-
-                        } else {}
-                    } else {}
+                        }
+                    }
                 } 
             } catch(NullPointerException e){
                 LOGGER.log(Level.SEVERE, e.getMessage());
             }
         }
+    }
+    
+    private boolean isTrapCollision(Spatial a, Spatial b){
+        return (a.getParent().getName().equals("playersNode") && b.getParent().getParent().getName().equals("traps"));
+        
+    }
+    
+    private void triggerTrap(Spatial nodeA, Spatial nodeB){
+        String trap = nodeB.getName();
+        String[] list = trap.split(":");
+        String owner = list[0];
+
+        if(!nodeA.getName().equals(owner)){
+
+            LOGGER.log(Level.INFO, "removing trap : " + nodeB.getParent().getName());
+            hostedGameStatsService.triggeredTrap(nodeA.getName(), nodeB.getName());
+            hostedGameStatsService.sendOutDeletedTraps();
+            playState.deleteTrap(nodeA.getName(), nodeB.getName());
+
+            triggeredTraps.add(nodeB.getParent().getName());
+            root.detachChildNamed(nodeB.getParent().getName());                    
+        }
+    }
+    
+    private boolean isMurder(Spatial nodeA, Spatial nodeB){
+        return (nodeA instanceof HumanNode && nodeB instanceof MonsterNode);
+    }
+    
+    private void commitMurder(Spatial nodeA, Spatial nodeB){
+        LOGGER.log(Level.INFO, nodeA.getName() + " is the victim \n" + nodeB.getName() + " is the killer");                        
+        playState.playerGotKilled(nodeA.getName(), nodeB.getName());
+        hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
+        hostedGameStatsService.sendOutKilled();  
+
     }
 }
