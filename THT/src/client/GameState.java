@@ -10,20 +10,14 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.scene.shape.Box;
-import com.sun.scenario.Settings;
 import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
@@ -201,9 +195,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             if(traps.getChild(trapNames.get(i)) == null){
                 
                 Spatial trap = asset.loadModel("Models/trap/trap.j3o");
-                
-                Material mat = new Material(asset, "Common/MatDefs/Light/Lighting.j3md");
-                trap.setMaterial(mat);
                 
                 Vector3f position = newTraps.get(i);
                 position.y = 0.1f;
