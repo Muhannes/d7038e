@@ -14,18 +14,19 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
+<<<<<<< HEAD
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+=======
+
+>>>>>>> 632be89c7f3db7c55e7c9704d3a73345b53bb62c
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.scene.shape.Box;
-import com.sun.scenario.Settings;
 import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
@@ -265,20 +266,16 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
         for(int i = 0; i < trapNames.size(); i++){
             if(traps.getChild(trapNames.get(i)) == null){
-                //Create a trap at the location with the name given.
-                Box box = new Box(0.1f,0.1f,0.1f);
-                Geometry geom = new Geometry(trapNames.get(i), box);
-                Material material = new Material(asset, "Common/MatDefs/Misc/Unshaded.j3md");
-                material.setColor("Color", ColorRGBA.Red);
-                geom.setMaterial(material);
-
+                
+                Spatial trap = asset.loadModel("Models/trap/trap.j3o");
+                
                 Vector3f position = newTraps.get(i);
                 position.y = 0.1f;
-                geom.setLocalTranslation(position);        
+                trap.setLocalTranslation(position);        
 
                 //Create node for each Trap (Only server needs to control check ghosts)
                 Node node = new Node(trapNames.get(i));
-                node.attachChild(geom);
+                node.attachChild(trap);
                 traps.attachChild(node);
             }
         }
