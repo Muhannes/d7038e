@@ -183,17 +183,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 
                 if(victims.get(i).equals(player.getName())){
                     LOGGER.log(Level.INFO, "you have died!");
-                    
-                    
-                    LOGGER.log(Level.SEVERE, player.getControl(ListenerControl.class).toString());
- //                   player.removeControl(ListenerControl.class);
-                    
-                    //Clear mappings (have to add new listener as it is cleared too)
-/*                    input.clearMappings();
-                    if(input.hasMapping("trap")){
-                        LOGGER.log(Level.SEVERE, "mapping not removed");
-                    }
-*/                                     
+                   
+                    //Clearing human player settings
                     input.deleteMapping("forward");
                     input.deleteMapping("backward");
                     input.deleteMapping("strafeLeft");
@@ -203,8 +194,11 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     input.deleteMapping("rotateleft");
                     input.deleteMapping("rotateup");
                     input.deleteMapping("rotatedown");
-                    
-                    
+                    try{
+                        input.deleteMapping("trap");
+                    }catch(NullPointerException e){
+                        LOGGER.log(Level.SEVERE, "Could not find trap mapping," + e.toString());
+                    }
                     
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
