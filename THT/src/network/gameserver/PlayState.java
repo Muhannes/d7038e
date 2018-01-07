@@ -286,6 +286,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if(traps.getChild(trapName) != null){
             //remove trap from root
             traps.detachChildNamed(trapName);
+            // TODO: Got error here once
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(traps.getChild(trapName).getControl(GhostControl.class)); //reset bulletAppState
 
             if(traps.getChild(trapName) != null){
