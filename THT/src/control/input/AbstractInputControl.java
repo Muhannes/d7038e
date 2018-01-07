@@ -76,20 +76,20 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
         newMoveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
         character.setWalkDirection(newMoveDirection);
-        LOGGER.log(Level.INFO, " setNewMoveDirection direction : " + character.getWalkDirection());
+        //LOGGER.log(Level.INFO, " setNewMoveDirection direction : " + character.getWalkDirection());
         
     }
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
-            LOGGER.log(Level.INFO, "Fetched the char control\n direction (onAction): " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
+            //LOGGER.log(Level.INFO, "Fetched the char control\n direction (onAction): " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
 
-        LOGGER.log(Level.INFO, " dir : " + character.getWalkDirection());
+        //LOGGER.log(Level.INFO, " dir : " + character.getWalkDirection());
 
         if(name.equals("forward")) forward = isPressed;
         else if(name.equals("backward")) backward = isPressed;
@@ -99,7 +99,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
            character.jump();
         }
         
-        LOGGER.log(Level.INFO, "onAction update");
+        //LOGGER.log(Level.INFO, "onAction update");
         setNewMoveDirection(tpf);
         sendMovementToServer();                    
     }
@@ -122,7 +122,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         }else if(name.equals("rotatedown")){
             ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
         }
-        LOGGER.log(Level.INFO, "onAnalog update");
+        //LOGGER.log(Level.INFO, "onAnalog update");
         setNewMoveDirection(tpf);
         sendMovementToServer();
     }
@@ -132,7 +132,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
      */
     private void sendMovementToServer(){       
         Spatial self = getSpatial();
-        LOGGER.log(Level.INFO, "walking direction (sendMovementToServer): " + character.getWalkDirection());
+        //LOGGER.log(Level.INFO, "walking direction (sendMovementToServer): " + character.getWalkDirection());
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);

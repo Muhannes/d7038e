@@ -205,21 +205,14 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         new Thread(
             new Runnable(){
                 @Override
-                public void run() {
-                    while(true){
-                        try {                    
-                            Thread.sleep(10);                    
-                        } catch (InterruptedException ex) {
-                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                         
-                            if(victims.size() > 0 && killers.size() > 0){
-                                LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victims + "\n" + killers);
-                                broadcastPlayersKilled(victims, killers);  
-                            }  
-                            victims.clear();
-                            killers.clear();     
-                        }
-                    }
+                public void run() {                        
+                    if(victims.size() > 0 && killers.size() > 0){
+                        LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victims + "\n" + killers);
+                        broadcastPlayersKilled(victims, killers);  
+                    }  
+                    victims.clear();
+                    killers.clear();     
+
                 }
             }
         ).start();
@@ -241,20 +234,12 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         new Thread(
             new Runnable(){
                 @Override
-                public void run() {
-                    while(true){
-                        try {                    
-                            Thread.sleep(10);                    
-                        } catch (InterruptedException ex) {
-                            java.util.logging.Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally {                         
-                            if(victims.size() > 0 && killers.size() > 0){
-                                broadcastMonkeysCaught(catchers, monkeys);  
-                            }  
-                            catchers.clear();
-                            monkeys.clear();
-                        }
-                    }
+                public void run() {                        
+                    if(victims.size() > 0 && killers.size() > 0){
+                        broadcastMonkeysCaught(catchers, monkeys);  
+                    }  
+                    catchers.clear();
+                    monkeys.clear();
                 }
             }
         ).start();

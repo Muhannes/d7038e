@@ -123,7 +123,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public void sendPlayerMovement(PlayerMovement playerMovement) {
 
         if (playersNode.getChild(playerMovement.id) == null) {
-            LOGGER.severe("ID was wrong!");
+            LOGGER.severe("ID was wrong! ID: " + playerMovement.id);
+            
         }else {
             app.enqueue(new Runnable() {
                 @Override
