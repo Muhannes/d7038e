@@ -14,19 +14,6 @@ import java.util.List;
  * @author hannes
  */
 public interface GameStatsSession {
-    
-    @Asynchronous
-    void notifyPlayerKilled(String victim, String killer);
-    
-    @Asynchronous
-    void notifyPlayerEscaped(String name);
-    
     @Asynchronous
     void notifyTrapPlaced(String trapName, Vector3f newTrap);
-    
-    @Asynchronous
-    void notifyTrapTriggered(String name, String trapName);
-
-    @Asynchronous
-    void notifyTrapsTriggered(List<String> names, List<String> trapNames);
 }

@@ -191,15 +191,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public void update(float tpf){
         // Scale walking speed by tpf
     }
-
-    @Override
-    public void notifyPlayerKilled(String victim, String killer) { //not used
-    }
-    
-    @Override
-    public void notifyPlayerEscaped(String name) { //not used
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
@@ -241,15 +232,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             });
 
         }
-    }
-
-    @Override
-    public void notifyTrapTriggered(String name, String trapName) { //should not be needed
-    }
-
-    @Override
-    public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-        LOGGER.log(Level.INFO, "Does this happen even steven? ");
     }
 
     public void deleteTrap(String name, String trapName){

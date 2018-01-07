@@ -65,7 +65,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                     }
                 } 
             } catch(NullPointerException e){
-                LOGGER.log(Level.SEVERE, e.getMessage());
+//                LOGGER.log(Level.SEVERE, e.getMessage());
             }
         }
     }

@@ -71,29 +71,9 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
     }
     
     @Override
-    public void notifyPlayerKilled(String victim, String killer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void notifyPlayerEscaped(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
         LOGGER.log(Level.INFO, "new trap " + trapName + " - " + newTrap);
         getDelegate().notifyTrapPlaced(trapName, newTrap);
-    }
-
-    @Override
-    public void notifyTrapTriggered(String name, String trapName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-        LOGGER.log(Level.INFO, "new trigger that is empty");
     }
     
     private class GameStatsSessionCallback implements GameStatsSessionListener {

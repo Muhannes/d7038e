@@ -37,7 +37,7 @@ public class NPCController implements PhysicsCollisionListener{
         this.root = root;
         this.hostedMovementService = hostedMovementService;
         this.bulletAppState = bulletAppState;
-        npcNodes.add((Node) root.getChild("0"));
+        npcNodes.add((Node) root.getChild("20")); //Not good to have static
         this.bulletAppState.getPhysicsSpace().addCollisionListener(this);
         startControlling();
     }
@@ -74,13 +74,13 @@ public class NPCController implements PhysicsCollisionListener{
     public void collision(PhysicsCollisionEvent event) {
         Spatial a = event.getNodeA();
         Spatial b = event.getNodeB();
-        if (a.getName().equals("longside") && b.getName().equals("0")) {
+        if (a.getName().equals("longside") && b.getName().equals("20")) {
             for (Node npcNode : npcNodes) {
                 if (b == npcNode) {
                     turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());
                 }
             }
-        } else if (b.getName().equals("longside") && a.getName().equals("0")) {
+        } else if (b.getName().equals("longside") && a.getName().equals("20")) {
             for (Node npcNode : npcNodes) {
                 if (a == npcNode) {
                     turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());

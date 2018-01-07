@@ -279,29 +279,9 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         }
         
         @Override
-        public void notifyPlayerKilled(String victim, String killer) { 
-            gameStatsSessions.forEach(l -> l.notifyPlayerKilled(victim, killer));
-        }
-
-        @Override
-        public void notifyPlayerEscaped(String name) { 
-            gameStatsSessions.forEach(l -> l.notifyPlayerEscaped(name));
-        }
-
-        @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
             LOGGER.log(Level.INFO, "trap received at server" + trapName + " - " + newTrap );
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
-        }
-
-        @Override
-        public void notifyTrapTriggered(String name, String trapName) {
-            gameStatsSessions.forEach(l -> l.notifyTrapTriggered(name, trapName));
-        }
-
-        @Override
-        public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-            gameStatsSessions.forEach(l -> l.notifyTrapsTriggered(names, trapNames));
         }
     } 
 }
