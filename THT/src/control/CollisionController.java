@@ -45,7 +45,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         Spatial nodeA = event.getNodeA();
         Spatial nodeB = event.getNodeB();
         if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){   
-            //try{
+            try{
                 if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
 
                     if(isTrapCollision(nodeA, nodeB)){
@@ -64,9 +64,9 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
                         } else {}
                     }
                 } 
-            //} catch(NullPointerException e){
-            //    LOGGER.log(Level.SEVERE, e.getMessage());
-            //}
+            } catch(NullPointerException e){
+                LOGGER.log(Level.SEVERE, e.getMessage());
+            }
         }
     }
     

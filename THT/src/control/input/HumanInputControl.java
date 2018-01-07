@@ -59,10 +59,8 @@ public class HumanInputControl extends AbstractInputControl{
     }
     
     private void sendTrapsToServer(){
-        LOGGER.log(Level.INFO, "new trap sent to server");
-
         Vector3f position = self.getLocalTranslation();
-        position.y = 0.1f;
+        LOGGER.log(Level.INFO, "creating trap at position : " + position);
         self.setLocalTranslation(position);
         String trapName = self.getName() + ":" + traps;
         gameStatsService.notifyTrapPlaced(trapName, position);

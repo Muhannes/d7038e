@@ -96,7 +96,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 humans++;
             }
         }
-        LOGGER.log(Level.INFO, "Amount of humans " + humans + "\nmonkeys " + monkeys);
+        LOGGER.log(Level.INFO, "Amount of humans " + humans + "\nAmount of monkeys " + monkeys);
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
@@ -249,34 +249,11 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-        app.enqueue(() -> {
-            updateTreeWithDeletedTraps(names, trapNames);
-        });    
+        LOGGER.log(Level.INFO, "Does this happen even steven? ");
     }
-    
-    public void updateTreeWithDeletedTraps(List<String> names, List<String> trapNames){
-        LOGGER.log(Level.INFO, names + " \n " + trapNames);
-        List<String> updatedNames = new ArrayList<>();
-        List<String> updatedTrapNames = new ArrayList<>();
-        
-        for(int i = 0; i < trapNames.size(); i++){
-            if(!updatedTrapNames.contains(trapNames.get(i))){
-                traps.detachChildNamed(trapNames.get(i));
-                updatedTrapNames.add(trapNames.get(i));
-            }
-        }
-
-        for(int j = 0; j < names.size(); j++){
-            if(!updatedNames.contains(names.get(j))){
-                EntityNode entity = (EntityNode) playersNode.getChild(names.get(j));
-                entity.slowDown();
-                updatedNames.add(names.get(j));
-            }
-        }    
-    }    
 
     public void deleteTrap(String name, String trapName){
-        LOGGER.log(Level.INFO, name + " \n " + trapName);
+        LOGGER.log(Level.INFO, name + " triggered  " + trapName + "!");
         if(playersNode.getChild(name) != null){
             //Slow down player 
             EntityNode entity = (EntityNode) playersNode.getChild(name);
@@ -284,11 +261,15 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             LOGGER.log(Level.INFO, entity.getName() + " is slowed");
         }
         if(traps.getChild(trapName) != null){
-            //remove trap from root
-            traps.detachChildNamed(trapName);
-            // TODO: Got error here once
-            app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(traps.getChild(trapName).getControl(GhostControl.class)); //reset bulletAppState
-
+            // TODO: Got error here once (detach removes the bulletAppState probably)
+            try{
+                app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(traps.getChild(trapName).getControl(GhostControl.class)); //reset bulletAppState            
+                //remove trap from root
+                traps.detachChildNamed(trapName);
+            } catch(NullPointerException e){
+                LOGGER.log(Level.SEVERE, trapName+"'s ghostControl is null in bulletAppState! \n " + e.toString());
+            }
+                    
             if(traps.getChild(trapName) != null){
                 LOGGER.log(Level.INFO, "trap was not removed");                
             }

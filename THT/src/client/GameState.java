@@ -14,18 +14,12 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
-<<<<<<< HEAD
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-=======
-
->>>>>>> 632be89c7f3db7c55e7c9704d3a73345b53bb62c
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import control.EntityNode;
 import control.HumanNode;
@@ -270,7 +264,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 Spatial trap = asset.loadModel("Models/trap/trap.j3o");
                 
                 Vector3f position = newTraps.get(i);
-                position.y = 0.1f;
+                LOGGER.log(Level.INFO, "New trap received from server at " + position);
                 trap.setLocalTranslation(position);        
 
                 //Create node for each Trap (Only server needs to control check ghosts)
@@ -326,10 +320,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 //Do somthing with all the catchers (send out to GUI)
 
             } 
-            
         }
     }
-
 
     @Override
     public void notifyGameOver() {
