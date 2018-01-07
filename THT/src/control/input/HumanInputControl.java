@@ -40,7 +40,7 @@ public class HumanInputControl extends AbstractInputControl{
         manager.addListener(this, "trap");
     }
     
-    public void disableMapping(InputManager manager){
+    public void disableKeys(InputManager manager){
         super.disableKeys(manager);
         manager.deleteMapping("trap");
         manager.removeListener(this);

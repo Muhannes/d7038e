@@ -119,7 +119,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
     private void gotHim(Spatial nodeA, Spatial nodeB){
         LOGGER.log(Level.INFO, nodeA.getName() + " caught " + nodeB.getName());
         if(!playState.allCaught()){
-            playState.monkeyGotCaught(nodeA.getName());
+            playState.monkeyGotCaught(nodeB.getName());
             hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
             hostedGameStatsService.sendOutMonkeyInfo();  
         } else {

@@ -7,10 +7,8 @@ package network.gameserver;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.material.Material;
@@ -24,11 +22,8 @@ import control.EntityNode;
 import control.CollisionController;
 import control.HumanNode;
 import control.MonkeyNode;
-import control.MonsterNode;
 import control.WorldCreator;
 import control.NPCController;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -137,16 +132,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 }
             });
         }
-    }
-
-    public boolean allCaught(){
-        monkeys--;
-        if(monkeys == 0){
-            //GAME OVER
-            LOGGER.log(Level.SEVERE, "Game Over!");
-            return true;
-        }
-        return false;
     }
     
     public boolean allDead(){
@@ -258,11 +243,21 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         }
     }    
     
+    public boolean allCaught(){
+        monkeys--;
+        if(monkeys == 0){
+            //GAME OVER
+            LOGGER.log(Level.SEVERE, "Game Over!");
+            return true;
+        }
+        return false;
+    }
+
     public void monkeyGotCaught(String monkey){
         LOGGER.log(Level.INFO, monkey + " got caught " );
         
         if(playersNode.getChild(monkey) == null){
-            LOGGER.severe("players does not exist");
+            LOGGER.severe("monkey does not exist");
         } else {
             //reset the player bullet
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(monkey).getControl(GhostControl.class)); //reset bulletAppState

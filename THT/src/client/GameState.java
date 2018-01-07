@@ -25,6 +25,7 @@ import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
 import control.WorldCreator;
+import control.animation.HumanAnimationControl;
 import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
@@ -67,6 +68,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private EntityNode player;
     private ChaseCamera chaseCamera;
     private Camera camera;
+    private CameraNode camNode;
     private int id;
         
     @Override
@@ -122,7 +124,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         }
         
         // set forward camera node that follows the character
-        CameraNode camNode = new CameraNode("CamNode", camera);
+        camNode = new CameraNode("CamNode", camera);
         // so that walls are not invisible
         camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
@@ -182,30 +184,37 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 if(victims.get(i).equals(player.getName())){
                     LOGGER.log(Level.INFO, "you have died!");
                     
-                    //bullet reset and player removal
-                    input.clearMappings();
+                    
+                    LOGGER.log(Level.SEVERE, player.getControl(ListenerControl.class).toString());
+ //                   player.removeControl(ListenerControl.class);
+                    
+                    //Clear mappings (have to add new listener as it is cleared too)
+/*                    input.clearMappings();
                     if(input.hasMapping("trap")){
                         LOGGER.log(Level.SEVERE, "mapping not removed");
                     }
-                    LOGGER.log(Level.SEVERE, "Clearing mappings via inputManager");
-
+*/                                     
+                    input.deleteMapping("forward");
+                    input.deleteMapping("backward");
+                    input.deleteMapping("strafeLeft");
+                    input.deleteMapping("strafeRight");
+                    input.deleteMapping("jump");
+                    input.deleteMapping("rotateright");
+                    input.deleteMapping("rotateleft");
+                    input.deleteMapping("rotateup");
+                    input.deleteMapping("rotatedown");
+                    
+                    
+                    
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
                     LOGGER.log(Level.SEVERE, "Clearing character and ghost control from bullet");
 
-                    //put this on the new monster
                     playerNode.detachChildNamed(victims.get(i));
                     LOGGER.log(Level.SEVERE, "deleting character from playerNode");
 
-                    //new camera
-                    Camera newCamera = app.getCamera();
-                    CameraNode camNode = new CameraNode("CamNode", newCamera);
-                    // so that walls are not invisible
-                    newCamera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
-                    camNode.setControlDir(ControlDirection.SpatialToCamera);
-                    camNode.setLocalTranslation(new Vector3f(0, 1, 0));
-                    LOGGER.log(Level.INFO, "camera set");
-                    
+                    /* -------------------------------------------------------------- */
+                                        
                     //create monster 
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
                     newMonster.attachChild(camNode);
@@ -216,13 +225,23 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     newMonster.addControl(monsterInputControl);
                     monsterInputControl.initKeys(input);
                     LOGGER.log(Level.INFO, "Created monster inputControl");
+
+                    newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
                     
+                    newMonster.addControl(new ListenerControl(app.getListener()));
+                    LOGGER.log(Level.SEVERE, newMonster.getControl(ListenerControl.class).toString());
+                    if(newMonster.getControl(ListenerControl.class) == null){
+                        LOGGER.log(Level.SEVERE, "There is no listenerControl!");
+                    } else {
+                        LOGGER.log(Level.SEVERE, "There is one listenerControl!");
+                    }
+
                     //converge control
                     ConvergeControl converge = new ConvergeControl(clientMovementService, false);
                     newMonster.addControl(converge);
                     
                     //attach new monster to playground
-                    player = newMonster; //might be usedful for other methods.
+                    player = newMonster; //might be usedful for other methods.        
                     playerNode.attachChild(player);
                     LOGGER.log(Level.INFO, "created monster direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
 
@@ -237,6 +256,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     
                     //create monster
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
+
+                    //monster sounds
+                    newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
                     
                     //attach new convergeControl
                     newMonster.addControl(new ConvergeControl(clientMovementService));
