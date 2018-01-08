@@ -49,7 +49,7 @@ import org.lwjgl.opengl.Display;
  *
  * @author ted
  */
-public class GameState extends BaseAppState implements GameStatsSessionListener, GameGUIListener{
+public class GameState extends BaseAppState implements GameStatsSessionListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private ClientApplication app;
     private NiftyJmeDisplay niftyDisplay; 
@@ -169,7 +169,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener,
     @Override
     protected void onDisable() {  
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
-        app.stop();
+        app.getStateManager().getState(BulletAppState.class).cleanup();
+        
+        root.detachAllChildren();
+        //app.stop();
     }
     
     @Override
@@ -343,14 +346,16 @@ public class GameState extends BaseAppState implements GameStatsSessionListener,
     }
 
     @Override
-    public void notifyGameOver(String winners) {
-        game.addLobbyGUIListener(this);
-        game.endGame(winners);
-    }
-
-    @Override
-    public void onQuit() {
-        //release everything
-        game.removeLobbyGUIListener(this);
+    public void notifyGameOver(String winner) {
+        LOGGER.log(Level.SEVERE, "\nGame Over!\n");
+        GameState gs = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                gs.setEnabled(false);
+                app.getStateManager().getState(GameOverState.class).setEnabled(true);
+                app.getStateManager().getState(GameOverState.class).setWinner(winner);
+            }
+        });
     }
 }

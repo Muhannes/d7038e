@@ -112,6 +112,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         movementSender.shutdownNow();
         collisionController.destroy();
         npcController.stopControlling();
+        npcController = null;
     }
 
     @Override
@@ -132,6 +133,17 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 }
             });
         }
+    }
+    
+    public void gameover(){
+        PlayState ps = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                ps.setEnabled(false);
+                app.getStateManager().getState(WaitingState.class).setEnabled(true);
+            }
+        });
     }
     
     public boolean allDead(){
