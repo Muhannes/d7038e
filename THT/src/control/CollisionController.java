@@ -126,7 +126,7 @@ public class CollisionController implements PhysicsCollisionListener{
         if(!playState.allCaught()){
             playState.monkeyGotCaught(nodeB.getName());
             hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutMonkeyInfo();  
+            hostedGameStatsService.sendOutMonkeyInfo();
         } else {
             hostedGameStatsService.gameover();
             playState.gameover();
