@@ -34,6 +34,7 @@ import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
 import de.lessvoid.nifty.Nifty;
 import gui.game.GameGUI;
+import gui.game.GameGUIListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ import org.lwjgl.opengl.Display;
  *
  * @author ted
  */
-public class GameState extends BaseAppState implements GameStatsSessionListener{
+public class GameState extends BaseAppState implements GameStatsSessionListener, GameGUIListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private ClientApplication app;
     private NiftyJmeDisplay niftyDisplay; 
@@ -70,7 +71,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private Camera camera;
     private CameraNode camNode;
     private int id;
-        
+            
+            
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
@@ -97,11 +99,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     protected void onEnable() {     
         LOGGER.log(Level.INFO, "enabling client");
         gameStatsListener = this;
-        
+                
         this.root = app.getRootNode();   
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
+                
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      
@@ -340,7 +343,14 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     }
 
     @Override
-    public void notifyGameOver() {
-        LOGGER.log(Level.SEVERE, "\nGame Over!\n");
+    public void notifyGameOver(String winners) {
+        game.addLobbyGUIListener(this);
+        game.endGame(winners);
+    }
+
+    @Override
+    public void onQuit() {
+        //release everything
+        game.removeLobbyGUIListener(this);
     }
 }

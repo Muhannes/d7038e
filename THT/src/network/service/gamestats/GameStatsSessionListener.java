@@ -16,7 +16,7 @@ import java.util.List;
 public interface GameStatsSessionListener {
     
     @Asynchronous
-    void notifyGameOver();
+    void notifyGameOver(String winners);
     
     @Asynchronous
     void notifyPlayersKilled(List <String> victims, List <String> killers);

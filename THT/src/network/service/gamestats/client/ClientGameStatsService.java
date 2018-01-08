@@ -103,9 +103,9 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
         }
 
         @Override
-        public void notifyGameOver() {
+        public void notifyGameOver(String winners) {
             LOGGER.log(Level.SEVERE, "Sending out gameover to clients!");
-            listeners.forEach(l -> l.notifyGameOver());
+            listeners.forEach(l -> l.notifyGameOver(winners));
         }
     }
 }

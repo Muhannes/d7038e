@@ -249,13 +249,13 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         players.forEach(l -> l.getCallback().notifyMonkeysCaught(catchers, monkeys));        
     }
     
-    public void gameover(){
+    public void gameover(String winners){
         LOGGER.log(Level.SEVERE, "Sending out gameover from server!");
         new Thread(
             new Runnable(){
                 @Override
                 public void run() {
-                    players.forEach(l -> l.getCallback().notifyGameOver());
+                    players.forEach(l -> l.getCallback().notifyGameOver(winners));
                 }
             }
         ).start();

@@ -107,7 +107,8 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
             hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
             hostedGameStatsService.sendOutKilled();  
         } else {
-            hostedGameStatsService.gameover();
+            String winners = "monsters";
+            hostedGameStatsService.gameover(winners);
         }
     }
     
@@ -123,7 +124,8 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
             hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
             hostedGameStatsService.sendOutMonkeyInfo();  
         } else {
-            hostedGameStatsService.gameover();
+            String winners = "humans";
+            hostedGameStatsService.gameover(winners);
         }
     }    
 }

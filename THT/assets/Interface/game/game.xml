@@ -7,6 +7,12 @@
             <panel childLayout="horizontal" valign="top" width="100%" height="10%">
                 <text id="txtPing" text="PING:"></text>
             </panel>
+            <panel childLayout="horizontal" align="middle" width="100">
+                <text id="gameover" text=""></text>
+            </panel>
+            <panel childLayout="horizontal" align="bottom">
+                <text id="quit" text="Press 'Enter' to return back to lobby!"></text>
+            </panel>
         </layer>
     </screen>
 </nifty>
