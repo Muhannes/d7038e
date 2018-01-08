@@ -166,7 +166,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     protected void onDisable() {  
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
-        app.stop();
+        app.getStateManager().getState(BulletAppState.class).cleanup();
+        
+        root.detachAllChildren();
+        //app.stop();
     }
     
     @Override
@@ -342,5 +345,13 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     public void notifyGameOver() {
         LOGGER.log(Level.SEVERE, "\nGame Over!\n");
+        GameState gs = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                gs.setEnabled(false);
+                app.getStateManager().getState(GameOverState.class).setEnabled(true);
+            }
+        });
     }
 }

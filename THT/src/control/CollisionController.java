@@ -108,6 +108,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
             hostedGameStatsService.sendOutKilled();  
         } else {
             hostedGameStatsService.gameover();
+            playState.gameover();
         }
     }
     
@@ -124,6 +125,7 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
             hostedGameStatsService.sendOutMonkeyInfo();  
         } else {
             hostedGameStatsService.gameover();
+            playState.gameover();
         }
     }    
 }
