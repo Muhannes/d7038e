@@ -9,6 +9,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import gui.game.GameGUI;
 import gui.game.GameGUIListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,6 +18,9 @@ import gui.game.GameGUIListener;
  */
 public class GameOverState extends BaseAppState implements GameGUIListener{
 
+    private static final Logger LOGGER = Logger.getLogger(GameOverState.class.getName());
+
+    
     ClientApplication app;
     private GameGUI game;
     
@@ -31,6 +36,7 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
 
     @Override
     protected void onEnable() {
+        LOGGER.log(Level.SEVERE, "GameOverState enabled");
         game.addLobbyGUIListener(this);
     }
 
@@ -39,13 +45,13 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     }
     
     @Override
-    protected void onDisable() {        
+    protected void onDisable() {     
+        game.removeLobbyGUIListener(this);
     }
 
     @Override
     public void onQuit() {
         //release everything
-        game.removeLobbyGUIListener(this);
         backToLobby();
     }
     

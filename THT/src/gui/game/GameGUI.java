@@ -30,7 +30,7 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
     private Element gameover;
     private Element quit;
     
-    private List<GameGUIListener> listeners;
+    private final List<GameGUIListener> listeners;
     
     public GameGUI(NiftyJmeDisplay display){
         nifty = display.getNifty();
@@ -68,7 +68,7 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
 
     @Override
     public void notifyPing(int ms) {
-        txtPing.getRenderer(TextRenderer.class).setText("PING:" + ms);
+//        txtPing.getRenderer(TextRenderer.class).setText("PING:" + ms);
     }
     
     public void endGame(String winners){
