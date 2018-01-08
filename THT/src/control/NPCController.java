@@ -5,6 +5,8 @@
  */
 package control;
 
+import client.ClientApplication;
+import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
@@ -30,10 +32,12 @@ public class NPCController implements PhysicsCollisionListener{
     private HostedMovementService hostedMovementService;
     private ScheduledExecutorService executor;
     private BulletAppState bulletAppState;
+    private SimpleApplication app;
     
     
-    public NPCController(Node root, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
+    public NPCController(Node root, SimpleApplication app, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
         this.root = root;
+        this.app = app;
         this.hostedMovementService = hostedMovementService;
         this.bulletAppState = bulletAppState;
         
@@ -57,6 +61,7 @@ public class NPCController implements PhysicsCollisionListener{
         Runnable r = new Runnable() {
             @Override
             public void run() {
+                
                 for (Spatial spatial : ((Node)root.getChild("playersNode")).getChildren()) {
                     if (spatial instanceof MonkeyNode) {
                         Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);

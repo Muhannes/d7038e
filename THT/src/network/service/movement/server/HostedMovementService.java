@@ -14,6 +14,7 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,20 +113,27 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         Runnable r = new Runnable(){
             @Override
             public void run() {
-                for(String id : updatedPlayers){
-                    Vector3f location = new Vector3f(playersNode.getChild(id).getLocalTranslation());
-                    Vector3f direction = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getWalkDirection());
-                    Vector3f rotation = new Vector3f(playersNode.getChild(id).getControl(CharacterControl.class).getViewDirection());
+                List<String> ups = new ArrayList<>(updatedPlayers);
+                updatedPlayers.clear(); //changed from within the loop.   
+                for(String id : ups){
+                    Spatial s = playersNode.getChild(id);
+                    if (s != null) {
+                        Vector3f location = new Vector3f(s.getLocalTranslation());
+                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
 
-                    //do same for location
-                    PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
-                    movements.add(pm);
+                        //do same for location
+                        PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
+                        movements.add(pm);
+                    } else {
+                        LOGGER.info("Spatial was null when trying to send info");
+                    }
+                    
                 }
                 if (!movements.isEmpty()) {
                     broadcast(movements);
                     //Clear movements
-                    movements.clear();
-                    updatedPlayers.clear(); //changed from within the loop.           
+                    movements.clear();        
                 }
             }           
         };

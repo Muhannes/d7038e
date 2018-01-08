@@ -65,7 +65,6 @@ public class MonsterAnimationControl extends AbstractAnimationControl implements
     }
     
     public void swordSlash(){
-        System.out.println("Slash!");
         animationChannel.setAnim(ATTACK_TYPE, 1.0f);
         animationChannel.setLoopMode(LoopMode.DontLoop);
     }
