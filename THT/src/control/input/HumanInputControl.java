@@ -40,10 +40,12 @@ public class HumanInputControl extends AbstractInputControl{
         manager.addListener(this, "trap");
     }
     
+    
+    @Override
     public void disableKeys(InputManager manager){
         super.disableKeys(manager);
         manager.deleteMapping("trap");
-        manager.removeListener(this);
+        //manager.removeListener(this);
     }
 
     @Override
@@ -65,4 +67,6 @@ public class HumanInputControl extends AbstractInputControl{
         String trapName = self.getName() + ":" + traps;
         gameStatsService.notifyTrapPlaced(trapName, position);
     }
+    
+    
 }
