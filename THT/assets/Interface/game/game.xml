@@ -5,7 +5,7 @@
     <screen id="game" controller="gui.game.GameGUI">
         <layer childLayout="horizontal">
             <panel childLayout="center" id="topPanel">
-                <text id="hello" text="Game Over" ></text>
+                <text id="hello" text="Game Over" label="title" ></text>
             </panel>
             <panel childLayout="center" id="middlePanel">
                 <text id="gameover"text=""></text>

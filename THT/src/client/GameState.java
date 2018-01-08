@@ -69,6 +69,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private Camera camera;
     private CameraNode camNode;
     private int id;
+    private Boolean sentGameOver = true;
             
             
     @Override
@@ -325,14 +326,17 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     public void notifyGameOver(String winner) {
         LOGGER.log(Level.SEVERE, "\nGame Over!\n");
-        GameState gs = this;
-        app.enqueue(new Runnable() {
-            @Override
-            public void run() {
-                gs.setEnabled(false);
-                app.getStateManager().getState(GameOverState.class).setEnabled(true);
-                app.getStateManager().getState(GameOverState.class).setWinner(winner);
-            }
-        });
+        if(sentGameOver){
+            GameState gs = this;
+            app.enqueue(new Runnable() {
+                @Override
+                public void run() {
+                    gs.setEnabled(false);
+                    app.getStateManager().getState(GameOverState.class).setEnabled(true);
+                    app.getStateManager().getState(GameOverState.class).setWinner(winner);
+                }
+            });   
+            sentGameOver = false;
+        }
     }
 }
