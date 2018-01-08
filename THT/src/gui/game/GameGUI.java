@@ -7,6 +7,7 @@ package gui.game;
 
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.controls.Label;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.input.NiftyInputEvent;
@@ -39,11 +40,12 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
         nifty = display.getNifty();
         this.listeners = new ArrayList<>();
         
-        nifty.fromXml("Interface/game/game.xml", "game");
+        nifty.fromXml("Interface/game/game.xml", "game", this);
     }
     
     @Override
     public void bind(Nifty nifty, Screen screen) {  
+        LOGGER.log(Level.INFO, "bind?");
         this.screen = screen;
     }
     
@@ -71,10 +73,16 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
 //        txtPing.getRenderer(TextRenderer.class).setText("PING:" + ms);
     }
     
+    @SuppressWarnings("null")
     public void endGame(String winners){
         LOGGER.log(Level.INFO, "The winners are : " + winners);
-        gameover = this.screen.findElementById("gameover");
-        quit = this.screen.findElementById("quit");
+        try{            
+            gameover = this.screen.findElementById("gameover");
+            quit = this.screen.findElementById("quit");
+            
+        } catch(NullPointerException e){
+            LOGGER.log(Level.SEVERE, e.toString());
+        }
 
         if(winners.equals("humans")){
             gameover.getRenderer(TextRenderer.class).setText("Humans win!\nAll the monkeys have been found.");            
