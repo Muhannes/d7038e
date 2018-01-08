@@ -30,6 +30,7 @@ import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
 import control.converge.ConvergeControl;
+import control.input.AbstractInputControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
 import de.lessvoid.nifty.Nifty;
@@ -165,8 +166,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     protected void onDisable() {  
+        player.getControl(AbstractInputControl.class).disableKeys(input);
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
-        app.getStateManager().getState(BulletAppState.class).cleanup();
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
         root.detachAllChildren();
         //app.stop();
@@ -187,21 +189,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 if(victims.get(i).equals(player.getName())){
                     LOGGER.log(Level.INFO, "you have died!");
                    
-                    //Clearing human player settings
-                    input.deleteMapping("forward");
-                    input.deleteMapping("backward");
-                    input.deleteMapping("strafeLeft");
-                    input.deleteMapping("strafeRight");
-                    input.deleteMapping("jump");
-                    input.deleteMapping("rotateright");
-                    input.deleteMapping("rotateleft");
-                    input.deleteMapping("rotateup");
-                    input.deleteMapping("rotatedown");
-                    try{
-                        input.deleteMapping("trap");
-                    }catch(NullPointerException e){
-                        LOGGER.log(Level.SEVERE, "Could not find trap mapping," + e.toString());
-                    }
+                    player.getControl(AbstractInputControl.class).disableKeys(input);
+                    
                     
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState

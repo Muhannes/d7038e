@@ -82,6 +82,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (playersNode == null || root == null || traps == null) {
             LOGGER.severe("root, trapNode or playersNode is null");
         }
+        monkeys = 0;
+        humans = 0;
         for(Spatial child : playersNode.getChildren()){
             //Count all the monkeys
             if(child instanceof MonkeyNode){
@@ -105,6 +107,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     protected void onDisable() {
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         hostedMovementService.removeSessions(this);
         hostedGameStatsService.removeSessions(this);
         root.detachAllChildren();

@@ -54,4 +54,10 @@ public class MonsterInputControl extends AbstractInputControl{
             getSpatial().getControl(MonsterAnimationControl.class).swordSlash();
         }
     }
+    
+    @Override
+    public void disableKeys(InputManager input){
+        super.disableKeys(input);
+        input.deleteMapping("slash");
+    }
 }
