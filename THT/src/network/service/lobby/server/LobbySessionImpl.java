@@ -35,6 +35,8 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
     private Account account;
     private String joinedRoom;
     
+    private boolean isReady = false;
+    
     LobbySessionImpl(HostedConnection connection, RmiHostedService rmi){
         this.connection = connection;
         this.rmi = rmi;
@@ -93,12 +95,14 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
         if(joinedRoom == null) {
             LOGGER.log(Level.INFO, "Player {0} can not leave lobby room because he hasnt joined any room",
                     new Object[]{account.name});
+            return;
         }
         
         LobbyRoomImpl room = (LobbyRoomImpl)LobbyRoomImpl.getRoom(joinedRoom);
-        room.leave(this);
+        room.leave(this, isReady);
         LOGGER.log(Level.INFO, "Player {0} left lobby room {1}", new Object[]{account.name, joinedRoom});
         joinedRoom = null;
+        isReady = false;
     }
 
     @Override
@@ -111,10 +115,18 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
         if(joinedRoom == null) {
             LOGGER.log(Level.INFO, "Player {0} can not be ready because he hasnt joined a lobby room",
                     new Object[]{account.name});
+            return;
         }
         
+        if(isReady == true) {
+            LOGGER.log(Level.INFO, "Player {0} is already ready.",
+                    new Object[]{account.name});
+            return;
+        }
+        isReady = true;
         LobbyRoomImpl room = (LobbyRoomImpl)LobbyRoomImpl.getRoom(joinedRoom);
         room.ready(this);
+        
     }
     
     @Override

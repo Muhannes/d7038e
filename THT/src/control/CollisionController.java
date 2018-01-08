@@ -44,29 +44,26 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
     public void collision(PhysicsCollisionEvent event) {
         Spatial nodeA = event.getNodeA();
         Spatial nodeB = event.getNodeB();
-        if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){   
-            try{
-                if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
+        if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){
+            if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
 
-                    if(isTrapCollision(nodeA, nodeB)){
-                        triggerTrap(nodeA, nodeB);
-                    } else if(isTrapCollision(nodeB, nodeA)){
-                        triggerTrap(nodeB, nodeA);
-                    } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
-                        if(isMurder(nodeA, nodeB)){    
-                            commitMurder(nodeA, nodeB);
-                        } else if(isMurder(nodeB, nodeA)){
-                            commitMurder(nodeB, nodeA);
-                        } else if(caughtMonkey(nodeA, nodeB)){
-                            gotHim(nodeA, nodeB);
-                        } else if(caughtMonkey(nodeB, nodeA)){
-                            gotHim(nodeB, nodeA);
-                        } else {}
-                    }
-                } 
-            } catch(NullPointerException e){
-//                LOGGER.log(Level.SEVERE, e.getMessage());
-            }
+                if(isTrapCollision(nodeA, nodeB)){
+                    triggerTrap(nodeA, nodeB);
+                } else if(isTrapCollision(nodeB, nodeA)){
+                    triggerTrap(nodeB, nodeA);
+                } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
+                    if(isMurder(nodeA, nodeB)){    
+                        commitMurder(nodeA, nodeB);
+                    } else if(isMurder(nodeB, nodeA)){
+                        commitMurder(nodeB, nodeA);
+                    } else if(caughtMonkey(nodeA, nodeB)){
+                        gotHim(nodeA, nodeB);
+                    } else if(caughtMonkey(nodeB, nodeA)){
+                        gotHim(nodeB, nodeA);
+                    } else {}
+                }
+            } 
+            
         }
     }
     

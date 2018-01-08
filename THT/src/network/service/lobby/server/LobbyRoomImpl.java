@@ -52,6 +52,10 @@ public class LobbyRoomImpl implements LobbyRoom {
         this.chatId = chatIdCounter++;
     }
     
+    private void decrementPlayersReady(){
+        playersReady--;
+    }
+    
     static LobbyRoom getRoom(String name){
         LobbyRoom room = rooms.get(name);
         if(room == null){
@@ -80,11 +84,13 @@ public class LobbyRoomImpl implements LobbyRoom {
         return null;
     }
     
-    synchronized void leave(LobbySessionImpl player){
+    synchronized void leave(LobbySessionImpl player, boolean wasReady){
         names.remove(player.getName());
         participants.remove(player);
         participants.forEach(p -> p.playerLeftLobby(player.getName()));
-        
+        if (wasReady){
+            decrementPlayersReady();
+        }
         if(participants.isEmpty()) rooms.remove(name);
         // If no players left in lobby room, remove it
     }
