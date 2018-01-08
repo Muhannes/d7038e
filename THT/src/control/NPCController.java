@@ -44,12 +44,7 @@ public class NPCController implements PhysicsCollisionListener{
     private void startControlling(){
         
         executor = Executors.newScheduledThreadPool(1);
-        for (Spatial spatial : ((Node)root.getChild("playersNode")).getChildren()) {
-            if (spatial instanceof MonkeyNode) {
-                executor.scheduleAtFixedRate(getRunnableController(spatial.getControl(CharacterControl.class), spatial.getName()), 
-                    1, 1, TimeUnit.SECONDS);
-            }
-        }
+        executor.scheduleAtFixedRate(getRunnableController(), 1, 1, TimeUnit.SECONDS);
         
     }
     
@@ -58,15 +53,20 @@ public class NPCController implements PhysicsCollisionListener{
         bulletAppState.getPhysicsSpace().removeCollisionListener(this);
     }
     
-    private Runnable getRunnableController(final CharacterControl cc, final String id){
+    private Runnable getRunnableController(){
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);
-                //newDir = newDir.normalize().mult(NPC_MOVEMENT_SPEED);
-                cc.setWalkDirection(newDir);
-                cc.setViewDirection(newDir);
-                hostedMovementService.playerUpdated(id);
+                for (Spatial spatial : ((Node)root.getChild("playersNode")).getChildren()) {
+                    if (spatial instanceof MonkeyNode) {
+                        Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);
+                        //newDir = newDir.normalize().mult(NPC_MOVEMENT_SPEED);
+                        CharacterControl cc = spatial.getControl(CharacterControl.class);
+                        cc.setWalkDirection(newDir);
+                        cc.setViewDirection(newDir);
+                        hostedMovementService.playerUpdated(spatial.getName());
+                    }
+                }
             }
         };
         return r;

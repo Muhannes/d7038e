@@ -99,7 +99,6 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyMonkeysCaught(List<String> catchers, List<String> monkeys) {
-            LOGGER.log(Level.INFO, monkeys + " got caught " );
             listeners.forEach(l -> l.notifyMonkeysCaught(catchers, monkeys));
         }
 
