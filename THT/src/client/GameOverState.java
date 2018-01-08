@@ -7,6 +7,7 @@ package client;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.game.GameGUI;
 import gui.game.GameGUIListener;
 import java.util.logging.Level;
@@ -20,13 +21,17 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(GameOverState.class.getName());
 
-    
+    private NiftyJmeDisplay niftyDisplay;
     ClientApplication app;
     private GameGUI game;
     
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
     }
 
     @Override
@@ -37,7 +42,11 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     @Override
     protected void onEnable() {
         LOGGER.log(Level.SEVERE, "GameOverState enabled");
+        
+        game = new GameGUI(niftyDisplay);
+        app.getGuiViewPort().addProcessor(niftyDisplay);
         game.addLobbyGUIListener(this);
+
     }
 
     public void setWinner(String winners){
@@ -46,6 +55,8 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     
     @Override
     protected void onDisable() {     
+        app.getViewPort().removeProcessor(niftyDisplay);
+        niftyDisplay.getNifty().exit();
         game.removeLobbyGUIListener(this);
     }
 

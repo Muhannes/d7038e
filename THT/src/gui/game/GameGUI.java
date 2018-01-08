@@ -16,6 +16,8 @@ import de.lessvoid.nifty.screen.ScreenController;
 import gui.event.EnterEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.ping.PingSessionListener;
 
 /**
@@ -24,9 +26,10 @@ import network.service.ping.PingSessionListener;
  */
 public class GameGUI implements ScreenController, PingSessionListener, KeyInputHandler{
 
+    private static final Logger LOGGER = Logger.getLogger(GameGUI.class.getName());
+
     private Screen screen;
     private Nifty nifty;
-    private Element txtPing;
     private Element gameover;
     private Element quit;
     
@@ -36,15 +39,12 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
         nifty = display.getNifty();
         this.listeners = new ArrayList<>();
         
-        nifty.fromXml("Interface/game/game.xml", "game", this);
+        nifty.fromXml("Interface/game/game.xml", "game");
     }
     
     @Override
     public void bind(Nifty nifty, Screen screen) {  
         this.screen = screen;
-        txtPing = screen.findElementById("txtPing");
-        gameover = screen.findElementById("gameover");
-        quit = screen.findElementById("quit");        
     }
     
     public void addLobbyGUIListener(GameGUIListener gameGUIListener){
@@ -72,6 +72,10 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
     }
     
     public void endGame(String winners){
+        LOGGER.log(Level.INFO, "The winners are : " + winners);
+        gameover = this.screen.findElementById("gameover");
+        quit = this.screen.findElementById("quit");
+
         if(winners.equals("humans")){
             gameover.getRenderer(TextRenderer.class).setText("Humans win!\nAll the monkeys have been found.");            
         }else{

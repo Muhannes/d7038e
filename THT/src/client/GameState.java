@@ -52,8 +52,6 @@ import org.lwjgl.opengl.Display;
 public class GameState extends BaseAppState implements GameStatsSessionListener{
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
     private ClientApplication app;
-    private NiftyJmeDisplay niftyDisplay; 
-    private Nifty nifty;
     private ClientMovementService clientMovementService;
     private ClientGameStatsService clientGameStatsService;
     
@@ -64,7 +62,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private Node playerNode;
     private AssetManager asset;
     private InputManager input;
-    private GameGUI game;
     
     private EntityNode player;
     private ChaseCamera chaseCamera;
@@ -76,16 +73,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
-        
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
-        
-        game = new GameGUI(niftyDisplay);
-        
-        // attach the Nifty display to the gui view port as a processor
-        app.getGuiViewPort().addProcessor(niftyDisplay);
-        
+                
     }
 
     @Override

@@ -61,6 +61,10 @@ public class ClientApplication extends SimpleApplication{
         gameState.setEnabled(false);
         stateManager.attach(gameState);
         
+        GameOverState gameOverState = new GameOverState();
+        gameOverState.setEnabled(false);
+        stateManager.attach(gameOverState);
+        
         //Bullet physics for players, walls, objects
         BulletAppState bulletAppState = new BulletAppState();
         bulletAppState.setDebugEnabled(true);  

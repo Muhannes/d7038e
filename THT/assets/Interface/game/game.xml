@@ -3,15 +3,15 @@
     <useControls filename="nifty-default-controls.xml"/>
     <useStyles filename="nifty-default-styles.xml"/>
     <screen id="game" controller="gui.game.GameGUI">
-        <layer childLayout="vertical">
-            <panel childLayout="horizontal" valign="top" width="100%" height="10%">
-                <text id="txtPing" text="PING:"></text>
+        <layer childLayout="horizontal">
+            <panel childLayout="center" id="topPanel">
+                <text id="hello" text="Game Over"></text>
             </panel>
-            <panel childLayout="horizontal" align="middle" width="100">
-                <text id="gameover" text=""></text>
+            <panel childLayout="center" id="middlePanel">
+                <text id="gameover"text=""></text>
             </panel>
-            <panel childLayout="horizontal" align="bottom">
-                <text id="quit" text="Press 'Enter' to return back to lobby!"></text>
+            <panel childLayout="center" id="bottomPanel">
+                <text id="quit" text=""></text>
             </panel>
         </layer>
     </screen>
