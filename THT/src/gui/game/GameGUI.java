@@ -44,7 +44,7 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
         
         this.nifty.fromXml("Interface/game/gameover.xml", "gameover", this);
         LOGGER.log(Level.INFO, "Done loading" + this.nifty.getAllScreensName());
-        nifty.setDebugOptionPanelColors(true);
+    //    nifty.setDebugOptionPanelColors(true);
     }
     
     @Override
