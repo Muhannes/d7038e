@@ -235,7 +235,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
             new Runnable(){
                 @Override
                 public void run() {                        
-                    if(victims.size() > 0 && killers.size() > 0){
+                    if(catchers.size() > 0 && monkeys.size() > 0){
                         broadcastMonkeysCaught(catchers, monkeys);  
                     }  
                     catchers.clear();

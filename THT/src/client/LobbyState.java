@@ -53,11 +53,6 @@ public class LobbyState extends BaseAppState implements
         LOGGER.log(Level.FINE, "Initializing LoginScreen"); 
         
         this.app = (ClientApplication) app;
-        
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-            app.getAssetManager(), app.getInputManager(), 
-            app.getAudioRenderer(), app.getGuiViewPort()
-        );
     }    
 
     @Override
@@ -67,6 +62,10 @@ public class LobbyState extends BaseAppState implements
         
     @Override
     protected void onEnable() {
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
         clientLobbyService = app.getClientLobbyService();
         // Create GUI
         if (!lobbyAuthenticated) {
@@ -101,6 +100,8 @@ public class LobbyState extends BaseAppState implements
         niftyDisplay.getNifty().exit();
         gui.removeLobbyGUIListener(this);
         clientLobbyService.removeClientLobbyListener(this);
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
     }
     
     /**

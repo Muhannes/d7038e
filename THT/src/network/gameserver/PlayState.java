@@ -102,7 +102,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
-        npcController = new NPCController(root, hostedMovementService, bulletAppState);
+        npcController = new NPCController(root, app, hostedMovementService, bulletAppState);
     }
 
     @Override

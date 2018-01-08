@@ -5,6 +5,8 @@
  */
 package control;
 
+import client.ClientApplication;
+import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
@@ -28,43 +30,48 @@ public class NPCController implements PhysicsCollisionListener{
     private static final Random RANDOM = new Random(System.currentTimeMillis());
     private Node root;
     private HostedMovementService hostedMovementService;
-    private final List<Node> npcNodes = new ArrayList<>();
     private ScheduledExecutorService executor;
     private BulletAppState bulletAppState;
+    private SimpleApplication app;
     
     
-    public NPCController(Node root, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
+    public NPCController(Node root, SimpleApplication app, HostedMovementService hostedMovementService, BulletAppState bulletAppState) {
         this.root = root;
+        this.app = app;
         this.hostedMovementService = hostedMovementService;
         this.bulletAppState = bulletAppState;
-        npcNodes.add((Node) root.getChild("20")); //Not good to have static
+        
         this.bulletAppState.getPhysicsSpace().addCollisionListener(this);
         startControlling();
     }
     
     private void startControlling(){
-        executor = Executors.newScheduledThreadPool(npcNodes.size());
-        for (Node npcNode : npcNodes) {
-            executor.scheduleAtFixedRate(getRunnableController(npcNode.getControl(CharacterControl.class), npcNode.getName()), 
-                    1, 1, TimeUnit.SECONDS);
-        }
+        
+        executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(getRunnableController(), 1, 1, TimeUnit.SECONDS);
+        
     }
     
     public void stopControlling(){
         executor.shutdownNow();
-        npcNodes.clear();
         bulletAppState.getPhysicsSpace().removeCollisionListener(this);
     }
     
-    private Runnable getRunnableController(final CharacterControl cc, final String id){
+    private Runnable getRunnableController(){
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);
-                //newDir = newDir.normalize().mult(NPC_MOVEMENT_SPEED);
-                cc.setWalkDirection(newDir);
-                cc.setViewDirection(newDir);
-                hostedMovementService.playerUpdated(id);
+                
+                for (Spatial spatial : ((Node)root.getChild("playersNode")).getChildren()) {
+                    if (spatial instanceof MonkeyNode) {
+                        Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);
+                        //newDir = newDir.normalize().mult(NPC_MOVEMENT_SPEED);
+                        CharacterControl cc = spatial.getControl(CharacterControl.class);
+                        cc.setWalkDirection(newDir);
+                        cc.setViewDirection(newDir);
+                        hostedMovementService.playerUpdated(spatial.getName());
+                    }
+                }
             }
         };
         return r;
@@ -74,18 +81,11 @@ public class NPCController implements PhysicsCollisionListener{
     public void collision(PhysicsCollisionEvent event) {
         Spatial a = event.getNodeA();
         Spatial b = event.getNodeB();
-        if (a.getName().equals("longside") && b.getName().equals("20")) {
-            for (Node npcNode : npcNodes) {
-                if (b == npcNode) {
-                    turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());
-                }
-            }
-        } else if (b.getName().equals("longside") && a.getName().equals("20")) {
-            for (Node npcNode : npcNodes) {
-                if (a == npcNode) {
-                    turnAround(npcNode.getControl(CharacterControl.class), npcNode.getName());
-                }
-            }
+        if (a.getName().equals("longside") && b instanceof MonkeyNode) {
+            turnAround(b.getControl(CharacterControl.class), b.getName());
+        } else if (b.getName().equals("longside") && a instanceof MonkeyNode) {
+            turnAround(a.getControl(CharacterControl.class), a.getName());
+            
         }
     }
     

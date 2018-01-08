@@ -306,21 +306,27 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     public void notifyMonkeysCaught(List<String> catchers, List<String> monkeys) {
         LOGGER.log(Level.INFO, monkeys + " got caught " );
-        for(String c : monkeys){
-            if(playerNode.getChild(c) == null){
-                LOGGER.severe("players does not exist");
-            } else {
-                //reset the player bullet
-                app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(GhostControl.class)); //reset bulletAppState
-                app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(CharacterControl.class)); //reset bulletAppState
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                for(String c : monkeys){
+                    if(playerNode.getChild(c) == null){
+                        LOGGER.severe("players does not exist");
+                    } else {
+                        //reset the player bullet
+                        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(GhostControl.class)); //reset bulletAppState
+                        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(c).getControl(CharacterControl.class)); //reset bulletAppState
 
-                //remove old player
-                playerNode.detachChildNamed(c);
-                
-                //Do somthing with all the catchers (send out to GUI)
+                        //remove old player
+                        playerNode.detachChildNamed(c);
 
-            } 
-        }
+                        //Do somthing with all the catchers (send out to GUI)
+
+                    } 
+                }
+            }
+        });
+        
     }
 
     @Override

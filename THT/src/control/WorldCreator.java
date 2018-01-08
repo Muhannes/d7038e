@@ -39,11 +39,11 @@ public class WorldCreator {
         listOfPlayers.forEach(p -> {
             Spatial model;
             if (p.getType() == EntityType.Human) {
-                model = humanModel;
+                model = humanModel.clone();
             } else if (p.getType() == EntityType.Monster) {
-                model = monsterModel;
+                model = monsterModel.clone();
             } else {
-                model = monkeyModel;
+                model = monkeyModel.clone();
             }
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
