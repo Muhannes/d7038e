@@ -110,7 +110,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         root.detachAllChildren();
         hostedMovementService.clear();
         movementSender.shutdownNow();
-        collisionController.destroy();
+        collisionController.shutDown();
+        collisionController = null;
         npcController.stopControlling();
         npcController = null;
     }
@@ -159,7 +160,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public void playerGotKilled(String victim, String killer){
         LOGGER.log(Level.INFO, victim + " got slaughtered by " + killer);
         
-        if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
+        if(playersNode.getChild(victim) == null || playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
 

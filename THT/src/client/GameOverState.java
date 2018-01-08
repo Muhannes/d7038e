@@ -27,6 +27,7 @@ public class GameOverState extends BaseAppState {
 
     @Override
     protected void onEnable() {
+        backToLobby();
     }
 
     @Override

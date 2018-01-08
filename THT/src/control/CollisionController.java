@@ -22,7 +22,7 @@ import network.service.gamestats.server.HostedGameStatsService;
  *
  * @author ted
  */
-public class CollisionController extends GhostControl implements PhysicsCollisionListener{
+public class CollisionController implements PhysicsCollisionListener{
 
     private static final Logger LOGGER = Logger.getLogger(CollisionController.class.getName());
     
@@ -38,6 +38,10 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         this.root = root;
         this.hostedGameStatsService = hostedGameStatsService;
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
+    }
+    
+    public void shutDown(){
+        bulletAppState.getPhysicsSpace().removeCollisionListener(this);
     }
 
     @Override
