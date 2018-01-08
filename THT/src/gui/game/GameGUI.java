@@ -16,6 +16,7 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import de.lessvoid.nifty.tools.Color;
 import gui.event.EnterEvent;
+import gui.event.KeyBoardMapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -38,18 +39,17 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
     private final List<GameGUIListener> listeners;
     
     public GameGUI(NiftyJmeDisplay display){
-        nifty = display.getNifty();
+        this.nifty = display.getNifty();
         this.listeners = new ArrayList<>();
         
-        nifty.fromXml("Interface/game/game.xml", "game");
-        LOGGER.log(Level.INFO, "Done loading");
+        this.nifty.fromXml("Interface/game/gameover.xml", "gameover", this);
+        LOGGER.log(Level.INFO, "Done loading" + this.nifty.getAllScreensName());
     }
     
     @Override
     public void bind(Nifty nifty, Screen screen) {  
-        LOGGER.log(Level.INFO, "bind?\n" + screen + " \n" + nifty);
         this.screen = screen;
-        
+        this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
     }
     
     public void addLobbyGUIListener(GameGUIListener gameGUIListener){
@@ -77,32 +77,26 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
     
     public void endGame(String winners){
         LOGGER.log(Level.INFO, "The winners are : " + winners);
-/*                   
-            gameover = this.screen.findElementById("gameover");
+            gameover = this.screen.findElementById("winner");
             quit = this.screen.findElementById("quit");
             
         if(winners.equals("humans")){
-            LOGGER.log(Level.INFO, "humans");
             gameover.getRenderer(TextRenderer.class).setText("Humans win!\nAll the monkeys have been found."); 
-            gameover.getRenderer(TextRenderer.class).setColor(Color.WHITE);
         }else{
-            LOGGER.log(Level.INFO, "monsters");
             gameover.getRenderer(TextRenderer.class).setText("Monsters win!\nAll the silly humans are dead.");
-            gameover.getRenderer(TextRenderer.class).setColor(Color.WHITE);
         }
-        LOGGER.log(Level.INFO, "set quit test");
         quit.getRenderer(TextRenderer.class).setText("Press 'Enter' to return to lobby!");
-        quit.getRenderer(TextRenderer.class).setColor(Color.WHITE);
-        */
     }
 
     @Override
     public boolean keyEvent(NiftyInputEvent nie) {
-        if(nie instanceof EnterEvent){
+/*        if(nie instanceof EnterEvent){
             LOGGER.log(Level.INFO, "Pressed Enter");
             listeners.forEach(l -> l.onQuit());
             return true;
         }
         return false;
+*/
+    return false;
     }
 }
