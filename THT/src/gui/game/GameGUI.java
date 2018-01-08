@@ -17,6 +17,7 @@ import de.lessvoid.nifty.screen.ScreenController;
 import de.lessvoid.nifty.tools.Color;
 import gui.event.EnterEvent;
 import gui.event.KeyBoardMapping;
+import gui.event.PEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,8 +34,7 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
 
     private Screen screen;
     private Nifty nifty;
-    private Element gameover;
-    private Element quit;
+    private Element winner;
     
     private final List<GameGUIListener> listeners;
     
@@ -44,6 +44,7 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
         
         this.nifty.fromXml("Interface/game/gameover.xml", "gameover", this);
         LOGGER.log(Level.INFO, "Done loading" + this.nifty.getAllScreensName());
+        nifty.setDebugOptionPanelColors(true);
     }
     
     @Override
@@ -76,27 +77,21 @@ public class GameGUI implements ScreenController, PingSessionListener, KeyInputH
     }
     
     public void endGame(String winners){
-        LOGGER.log(Level.INFO, "The winners are : " + winners);
-            gameover = this.screen.findElementById("winner");
-            quit = this.screen.findElementById("quit");
+            winner = this.screen.findElementById("winner");
             
         if(winners.equals("humans")){
-            gameover.getRenderer(TextRenderer.class).setText("Humans win!\nAll the monkeys have been found."); 
+            winner.getRenderer(TextRenderer.class).setText("Game Over!\nHumans win, all the monkeys have been found.\nPress 'P' to return to lobby!"); 
         }else{
-            gameover.getRenderer(TextRenderer.class).setText("Monsters win!\nAll the silly humans are dead.");
+            winner.getRenderer(TextRenderer.class).setText("Game Over!\nMonsters win, all the silly humans are dead.\nPress 'P' to return to lobby!");
         }
-        quit.getRenderer(TextRenderer.class).setText("Press 'Enter' to return to lobby!");
     }
 
     @Override
     public boolean keyEvent(NiftyInputEvent nie) {
-/*        if(nie instanceof EnterEvent){
-            LOGGER.log(Level.INFO, "Pressed Enter");
+        if(nie instanceof PEvent){
             listeners.forEach(l -> l.onQuit());
             return true;
         }
-        return false;
-*/
     return false;
     }
 }

@@ -18,10 +18,13 @@ public class KeyBoardMapping implements NiftyInputMapping{
     @Override
     public NiftyInputEvent convert(KeyboardInputEvent kie) {
         if(kie.isKeyDown()){
-            if(kie.getKey() == KeyboardInputEvent.KEY_RETURN) 
-                return new EnterEvent();
+            if(kie.getKey() == KeyboardInputEvent.KEY_RETURN){ 
+                return new EnterEvent();                
+            }
+            if(kie.getKey() == KeyboardInputEvent.KEY_P){
+                return new PEvent();
+            }
         }
         return null;
     }
-    
 }
