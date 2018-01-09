@@ -75,7 +75,7 @@ public class LobbySessionImpl implements LobbySession, LobbySessionListener{
         }
         
         if(room.equals("")) return;
-        
+        if(joinedRoom != null) return;
         LobbyRoomImpl r = (LobbyRoomImpl)LobbyRoomImpl.getRoom(room);
         joinedRoom = r.join(this);
         
