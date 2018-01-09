@@ -7,6 +7,7 @@ package gui.game;
 
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.effects.EffectEventId;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
@@ -48,11 +49,16 @@ public class CollisionGUI implements ScreenController{
         //Print the text
         text1 = this.screen.findElementById("death");
         text1.getRenderer(TextRenderer.class).setText("A human got slain");     
+        text1.startEffect(EffectEventId.onCustom);
+        text1.getRenderer(TextRenderer.class).setText("");     
+        
     }
     
     public void displayCatch(){
-        text2 = this.screen.findElementById("caught");
+        text2 = this.screen.findElementById("caught");        
         text2.getRenderer(TextRenderer.class).setText("A monkey got caught"); 
+        text2.startEffect(EffectEventId.onCustom);
+        text2.getRenderer(TextRenderer.class).setText("");         
     }
 
     @Override
