@@ -65,10 +65,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private InputManager input;
     
     private EntityNode player;
-    private ChaseCamera chaseCamera;
     private Camera camera;
     private CameraNode camNode;
-    private int id;
     private Boolean sentGameOver = true;
             
             
@@ -87,7 +85,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     protected void onEnable() {     
-        LOGGER.log(Level.INFO, "enabling client");
         gameStatsListener = this;
                 
         this.root = app.getRootNode();   
@@ -173,7 +170,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     
     @Override
     public void notifyPlayersKilled(List<String> victims, List<String> killers) {
-        LOGGER.log(Level.INFO, "\nVictim list : " + victims + "\nKiller list : " + killers);
         app.enqueue(() -> {            
             for(int i = 0; i < victims.size(); i++){
                 //TODO: Print out to GUI that killer slaughtered the victim
@@ -186,24 +182,20 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(GhostControl.class)); //reset bulletAppState
                     app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victims.get(i)).getControl(CharacterControl.class)); //reset bulletAppState
-                    LOGGER.log(Level.SEVERE, "Clearing character and ghost control from bullet");
-
+                
                     playerNode.detachChildNamed(victims.get(i));
-                    LOGGER.log(Level.SEVERE, "deleting character from playerNode");
-
+                
                     /* -------------------------------------------------------------- */
                                         
                     //create monster 
                     EntityNode newMonster = WorldCreator.createMonster(app.getAssetManager(), victims.get(i), app.getStateManager().getState(BulletAppState.class));
                     newMonster.attachChild(camNode);
-                    LOGGER.log(Level.SEVERE, "Created monster and set camNode");
-
+                
                     //monster control
                     MonsterInputControl monsterInputControl = new MonsterInputControl(newMonster, clientMovementService, clientGameStatsService);
                     newMonster.addControl(monsterInputControl);
                     monsterInputControl.initKeys(input);
-                    LOGGER.log(Level.INFO, "Created monster inputControl");
-
+                
                     newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
                     
                     newMonster.addControl(new ListenerControl(app.getListener()));
@@ -221,7 +213,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     //attach new monster to playground
                     player = newMonster; //might be usedful for other methods.        
                     playerNode.attachChild(player);
-                    LOGGER.log(Level.INFO, "created monster direction : " + playerNode.getChild(victims.get(i)).getControl(CharacterControl.class).getWalkDirection()); 
 
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
@@ -242,10 +233,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     newMonster.addControl(new ConvergeControl(clientMovementService));
                     //attach new monster
                     playerNode.attachChild(newMonster);                    
-                    
-                    LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
-
-               }
+                }
             }
         });
     }
@@ -290,7 +278,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             if(!updatedTrapNames.contains(trapNames.get(i))){
                 traps.detachChildNamed(trapNames.get(i));
                 updatedTrapNames.add(trapNames.get(i));
-                LOGGER.log(Level.INFO, trapNames.get(i) + " is deattached.");
             }
         }
 
@@ -305,7 +292,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     public void notifyMonkeysCaught(List<String> catchers, List<String> monkeys) {
-        LOGGER.log(Level.INFO, monkeys + " got caught " );
         app.enqueue(new Runnable() {
             @Override
             public void run() {
@@ -331,7 +317,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     public void notifyGameOver(String winner) {
-        LOGGER.log(Level.SEVERE, "\nGame Over!\n");
+        LOGGER.log(Level.INFO, "\nGame Over!\n");
         if(sentGameOver){
             GameState gs = this;
             app.enqueue(new Runnable() {
