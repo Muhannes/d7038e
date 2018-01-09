@@ -12,12 +12,7 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.material.MatParam;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState.BlendMode;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.List;
@@ -59,9 +54,9 @@ public class WorldCreator {
     public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
+        System.out.println(position.toString());
         if (type == EntityType.Human) {
             return new HumanNode(name, position, bulletAppState, model);
-            
         } else if (type == EntityType.Monster){
             return new MonsterNode(name, position, bulletAppState, model);
         } else if (type == EntityType.Monkey){
@@ -78,23 +73,25 @@ public class WorldCreator {
         monsterModel.scale(0.01f);
         Spatial model = monsterModel.clone();
                     
-        Vector3f tmpPos = new Vector3f(-3.16f, 2.0f, -8.9f); //monster spawn
+        Vector3f tmpPos = new Vector3f(-8.071331f, 6.0000033f, -18.304163f); //monster spawn
         
         return new MonsterNode(name, tmpPos, bulletAppState, model);
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 
-        Spatial walls = ((Node)mapModel).getChild("walls");        
-        ((Node)walls).getChildren().forEach((wall) -> {                    
+        Spatial walls = ((Node)mapModel).getChild("walls");     
+        ((Node)walls).getChildren().forEach((wall) -> { 
             RigidBodyControl b = new RigidBodyControl(
                    CollisionShapeFactory.createBoxShape(wall), 0); // 0 Mass = static
             
             b.setKinematic(true); // This for some reason makes the rigid align with the Mesh...
+            
             if (wall.getName().equals("longside")) {
                 // Collisions with npc monkey
                 b.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
             }
-            wall.addControl(b);  
+            
+            wall.addControl(b);
             
             bulletAppState.getPhysicsSpace().add(b);  
         });
