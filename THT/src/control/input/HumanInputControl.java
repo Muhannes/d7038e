@@ -13,7 +13,6 @@ import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
 import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;
-import java.util.logging.Level;
 /**
  * This control handles how a human should react to keyboard input.
  * 
@@ -40,10 +39,11 @@ public class HumanInputControl extends AbstractInputControl{
         manager.addListener(this, "trap");
     }
     
+    
+    @Override
     public void disableKeys(InputManager manager){
         super.disableKeys(manager);
         manager.deleteMapping("trap");
-        manager.removeListener(this);
     }
 
     @Override
@@ -60,9 +60,8 @@ public class HumanInputControl extends AbstractInputControl{
     
     private void sendTrapsToServer(){
         Vector3f position = self.getLocalTranslation();
-        LOGGER.log(Level.INFO, "creating trap at position : " + position);
         self.setLocalTranslation(position);
         String trapName = self.getName() + ":" + traps;
         gameStatsService.notifyTrapPlaced(trapName, position);
-    }
+    }    
 }

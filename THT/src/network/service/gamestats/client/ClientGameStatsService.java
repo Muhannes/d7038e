@@ -79,9 +79,9 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
     private class GameStatsSessionCallback implements GameStatsSessionListener {
         
         @Override
-        public void notifyPlayersKilled(List<String> victims, List<String> killers) {
-            LOGGER.log(Level.INFO, "received dead player from server\nVictims"+ victims + "\nKillers" + killers);
-            listeners.forEach(l -> l.notifyPlayersKilled(victims, killers));
+        public void notifyPlayersKilled(String victim, String killer) {
+            LOGGER.log(Level.INFO, "received dead player from server\nVictims"+ victim + "\nKillers" + killer);
+            listeners.forEach(l -> l.notifyPlayersKilled(victim, killer));
         }
 
         @Override
@@ -98,14 +98,14 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
         }
 
         @Override
-        public void notifyMonkeysCaught(List<String> catchers, List<String> monkeys) {
-            listeners.forEach(l -> l.notifyMonkeysCaught(catchers, monkeys));
+        public void notifyMonkeysCaught(String catcher, String monkey) {
+            listeners.forEach(l -> l.notifyMonkeysCaught(catcher, monkey));
         }
 
         @Override
-        public void notifyGameOver() {
-            LOGGER.log(Level.SEVERE, "Sending out gameover to clients!");
-            listeners.forEach(l -> l.notifyGameOver());
+        public void notifyGameOver(String winners) {
+            LOGGER.log(Level.SEVERE, "Sending out gameover to listeners!");
+            listeners.forEach(l -> l.notifyGameOver(winners));
         }
     }
 }

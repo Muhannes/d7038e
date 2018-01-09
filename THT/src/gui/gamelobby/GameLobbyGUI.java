@@ -40,7 +40,7 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
         /** Read your XML and initialize your custom ScreenController */
         nifty.fromXml("Interface/gamelobby/gamelobby.xml", "gamelobby", this);
         
-        //nifty.setDebugOptionPanelColors(true);
+//        nifty.setDebugOptionPanelColors(true);
     }
 
     @Override

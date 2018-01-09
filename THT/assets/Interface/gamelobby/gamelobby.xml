@@ -24,19 +24,18 @@
 
                 <!-- CHAT INPUT FIELD -->
                 <panel childLayout="horizontal"> 
-                    <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" maxLength="45"/>
+                    <control name="textfield" id="textfieldInput" textHAlign="center" textVAlign="center" maxLength="45"/>                    
                     <control name="button" id="SendMessage" visibleToMouse="true" label="Send">
                         <interact onClick="sendMessage()"/>
                         <effect>
                             <onHover name="textSize" maxSize="15%"/>
                         </effect>
-                    </control>            
+                    </control>                                    
                 </panel> 
-                <panel childLayout="center"></panel> 
             </panel>
             
             <!-- QUIT BUTTON -->
-            <panel childLayout="horizontal" width="100%" height="10%" padding="10px">
+            <panel childLayout="horizontal" width="100%" height="8%" padding="10px">
                 <panel childLayout="center" width="25%">
                     <control name="button" id="return" visibleToMouse="true" label="Return">
                         <interact onClick="returnToLobby()"/>

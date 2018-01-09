@@ -82,6 +82,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (playersNode == null || root == null || traps == null) {
             LOGGER.severe("root, trapNode or playersNode is null");
         }
+        monkeys = 0;
+        humans = 0;
         for(Spatial child : playersNode.getChildren()){
             //Count all the monkeys
             if(child instanceof MonkeyNode){
@@ -100,18 +102,21 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
-        npcController = new NPCController(root, hostedMovementService, bulletAppState);
+        npcController = new NPCController(root, app, hostedMovementService, bulletAppState);
     }
 
     @Override
     protected void onDisable() {
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         hostedMovementService.removeSessions(this);
         hostedGameStatsService.removeSessions(this);
         root.detachAllChildren();
         hostedMovementService.clear();
         movementSender.shutdownNow();
-        collisionController.destroy();
+        collisionController.shutDown();
+        collisionController = null;
         npcController.stopControlling();
+        npcController = null;
     }
 
     @Override
@@ -134,8 +139,19 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         }
     }
     
+    public void gameover(){
+        PlayState ps = this;
+        app.enqueue(new Runnable() {
+            @Override
+            public void run() {
+                ps.setEnabled(false);
+                app.getStateManager().getState(WaitingState.class).setEnabled(true);
+            }
+        });
+    }
+    
     public boolean allDead(){
-        humans--;
+        if(humans > 0) humans--;
         if(humans == 0){
             //GAME OVER
             LOGGER.log(Level.SEVERE, "Game over!");
@@ -147,7 +163,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public void playerGotKilled(String victim, String killer){
         LOGGER.log(Level.INFO, victim + " got slaughtered by " + killer);
         
-        if(playersNode.getChild(victim) == null && playersNode.getChild(killer) == null){
+        if(playersNode.getChild(victim) == null || playersNode.getChild(killer) == null){
             LOGGER.severe("players does not exist");
         } else {
 
@@ -244,7 +260,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }    
     
     public boolean allCaught(){
-        monkeys--;
+        if(monkeys > 0) monkeys--;
         if(monkeys == 0){
             //GAME OVER
             LOGGER.log(Level.SEVERE, "Game Over!");

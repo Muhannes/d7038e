@@ -22,7 +22,7 @@ import network.service.gamestats.server.HostedGameStatsService;
  *
  * @author ted
  */
-public class CollisionController extends GhostControl implements PhysicsCollisionListener{
+public class CollisionController implements PhysicsCollisionListener{
 
     private static final Logger LOGGER = Logger.getLogger(CollisionController.class.getName());
     
@@ -39,34 +39,38 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         this.hostedGameStatsService = hostedGameStatsService;
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
     }
+    
+    public void shutDown(){
+        bulletAppState.getPhysicsSpace().removeCollisionListener(this);
+    }
 
     @Override
     public void collision(PhysicsCollisionEvent event) {
         Spatial nodeA = event.getNodeA();
         Spatial nodeB = event.getNodeB();
-        if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){   
-            try{
-                if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
-
-                    if(isTrapCollision(nodeA, nodeB)){
-                        triggerTrap(nodeA, nodeB);
-                    } else if(isTrapCollision(nodeB, nodeA)){
-                        triggerTrap(nodeB, nodeA);
-                    } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
-                        if(isMurder(nodeA, nodeB)){    
-                            commitMurder(nodeA, nodeB);
-                        } else if(isMurder(nodeB, nodeA)){
-                            commitMurder(nodeB, nodeA);
-                        } else if(caughtMonkey(nodeA, nodeB)){
-                            gotHim(nodeA, nodeB);
-                        } else if(caughtMonkey(nodeB, nodeA)){
-                            gotHim(nodeB, nodeA);
-                        } else {}
-                    }
-                } 
-            } catch(NullPointerException e){
-//                LOGGER.log(Level.SEVERE, e.getMessage());
+        if(!nodeA.getName().equals("Quad") && !nodeB.getName().equals("Quad")){
+            if(nodeA.getParent() == null || nodeB.getParent() == null){
+                return;
             }
+            if(!triggeredTraps.contains(nodeB.getParent().getName()) && !triggeredTraps.contains(nodeA.getParent().getName())){            
+
+                if(isTrapCollision(nodeA, nodeB)){
+                    triggerTrap(nodeA, nodeB);
+                } else if(isTrapCollision(nodeB, nodeA)){
+                    triggerTrap(nodeB, nodeA);
+                } else if (event.getNodeA().getParent().getName().equals("playersNode") && event.getNodeB().getParent().getName().equals("playersNode")){                    
+                    if(isMurder(nodeA, nodeB)){    
+                        commitMurder(nodeA, nodeB);
+                    } else if(isMurder(nodeB, nodeA)){
+                        commitMurder(nodeB, nodeA);
+                    } else if(caughtMonkey(nodeA, nodeB)){
+                        gotHim(nodeA, nodeB);
+                    } else if(caughtMonkey(nodeB, nodeA)){
+                        gotHim(nodeB, nodeA);
+                    } else {}
+                }
+            } 
+            
         }
     }
     
@@ -104,10 +108,11 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         LOGGER.log(Level.INFO, nodeA.getName() + " is the victim \n" + nodeB.getName() + " is the killer");                        
         if(!playState.allDead()){
             playState.playerGotKilled(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutKilled();  
+            hostedGameStatsService.sendOutKilled(nodeA.getName(), nodeB.getName());  
         } else {
-            hostedGameStatsService.gameover();
+            String winners = "monsters";
+            hostedGameStatsService.gameover(winners);
+            playState.gameover();
         }
     }
     
@@ -120,10 +125,11 @@ public class CollisionController extends GhostControl implements PhysicsCollisio
         LOGGER.log(Level.INFO, nodeA.getName() + " caught " + nodeB.getName());
         if(!playState.allCaught()){
             playState.monkeyGotCaught(nodeB.getName());
-            hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutMonkeyInfo();  
+            hostedGameStatsService.sendOutMonkeyInfo(nodeA.getName(), nodeB.getName());
         } else {
-            hostedGameStatsService.gameover();
+            String winners = "humans";
+            hostedGameStatsService.gameover(winners);
+            playState.gameover();
         }
     }    
 }

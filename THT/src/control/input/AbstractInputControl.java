@@ -39,10 +39,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     protected final ClientGameStatsService gameStatsService;
     private boolean forward = false, backward = false, strafeLeft = false, strafeRight = false;
     
-    
-    private final float updatePeriod = 0.1f;
-    private float lastUpdate = 0f;
-
     protected CharacterControl character;
     
     public AbstractInputControl(ClientMovementService movementService, ClientGameStatsService gameStatsService){
@@ -75,31 +71,23 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         if(strafeLeft) newMoveDirection.addLocal(moveDirLeft);
         if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
         newMoveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
-        character.setWalkDirection(newMoveDirection);
-        //LOGGER.log(Level.INFO, " setNewMoveDirection direction : " + character.getWalkDirection());
-        
+        character.setWalkDirection(newMoveDirection);        
     }
+    
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
-            //LOGGER.log(Level.INFO, "Fetched the char control\n direction (onAction): " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
 
-        //LOGGER.log(Level.INFO, " dir : " + character.getWalkDirection());
-
         if(name.equals("forward")) forward = isPressed;
         else if(name.equals("backward")) backward = isPressed;
         else if(name.equals("strafeLeft")) strafeLeft = isPressed;
         else if(name.equals("strafeRight")) strafeRight = isPressed;
-        else if(name.equals("jump") && isPressed){
-           character.jump();
-        }
-        
-        //LOGGER.log(Level.INFO, "onAction update");
+                
         setNewMoveDirection(tpf);
         sendMovementToServer();                    
     }
@@ -122,7 +110,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         }else if(name.equals("rotatedown")){
             ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
         }
-        //LOGGER.log(Level.INFO, "onAnalog update");
         setNewMoveDirection(tpf);
         sendMovementToServer();
     }
@@ -132,7 +119,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
      */
     private void sendMovementToServer(){       
         Spatial self = getSpatial();
-        //LOGGER.log(Level.INFO, "walking direction (sendMovementToServer): " + character.getWalkDirection());
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);
@@ -154,13 +140,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     protected void controlUpdate(float tpf) {
         // Scale every frame, since tpf changes.
         setNewMoveDirection(tpf);
-        
-        // Comment out to send updates to server regularly
-        /*lastUpdate += tpf;
-        if(lastUpdate > updatePeriod){
-            sendMovementToServer();
-            lastUpdate -= updatePeriod;
-        }*/
     }
     
     /**
@@ -172,20 +151,24 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         manager.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
         manager.addMapping("strafeLeft", new KeyTrigger(KeyInput.KEY_A));
         manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_D));     
-        manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         
         manager.addMapping("rotateright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         manager.addMapping("rotateleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         manager.addMapping("rotateup", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
         manager.addMapping("rotatedown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", "jump", 
-                "rotateleft", "rotateright", "rotateup", "rotatedown");
-    
+        manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", 
+                "rotateleft", "rotateright", "rotateup", "rotatedown");    
     }
     
-    public void disableKeys(InputManager manager){
-        manager.clearMappings();
-        manager.removeListener(this);        
-    }
-    
+    public void disableKeys(InputManager input){       
+        //Clearing human player settings
+        input.deleteMapping("forward");
+        input.deleteMapping("backward");
+        input.deleteMapping("strafeLeft");
+        input.deleteMapping("strafeRight");
+        input.deleteMapping("rotateright");
+        input.deleteMapping("rotateleft");
+        input.deleteMapping("rotateup");
+        input.deleteMapping("rotatedown");
+    }    
 }

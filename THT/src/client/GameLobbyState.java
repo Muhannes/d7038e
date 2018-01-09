@@ -52,10 +52,6 @@ public class GameLobbyState extends BaseAppState implements
     @Override
     public void initialize(Application app){        
         this.app = (ClientApplication) app;
-        
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
     }
 
     @Override
@@ -65,6 +61,9 @@ public class GameLobbyState extends BaseAppState implements
     
     @Override
     protected void onEnable() {
+        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+        app.getAssetManager(), app.getInputManager(), 
+        app.getAudioRenderer(), app.getGuiViewPort());
         try {
             chatService = app.getClientChatService();
             chatService.addChatSessionListener(this);
@@ -99,6 +98,8 @@ public class GameLobbyState extends BaseAppState implements
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
         
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
         lobbyService.leave();
         if (chatService != null) {
             chatService.leavechat(roomID);

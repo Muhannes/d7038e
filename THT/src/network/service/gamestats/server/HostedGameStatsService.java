@@ -16,6 +16,8 @@ import com.jme3.scene.Node;
 import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
@@ -50,15 +52,7 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     private final List <String> deletedTraps = new ArrayList<>();
     private final List <String> slowedPlayers = new ArrayList<>();
     
-    //When player dies
-    private final List <String> victims = new ArrayList<>();
-    private final List <String> killers = new ArrayList<>();
-    
-    //when monkey is caught
-    private final List<String> monkeys = new ArrayList<>();
-    private final List<String> catchers = new ArrayList<>();
-    
-    
+    private ExecutorService executor;
     private int channel;
     
     public HostedGameStatsService(){
@@ -75,7 +69,8 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         rmiHostedService = getService(RmiHostedService.class);
         if( rmiHostedService == null ) {
             throw new RuntimeException("GameStats service requires an RMI service.");
-        }   
+        }
+        executor = Executors.newCachedThreadPool();
     }
     
     public void trapUpdated(String id){
@@ -127,29 +122,30 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     public void sendOutTraps(Node trapNode){
         //Send out movements everything 10ms 
-        new Thread(new Runnable(){
-                @Override
-                public void run() {                         
-                    for(String newTrapId : updatedTraps){            
-                        Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
-                        String trapName = trapNode.getChild(newTrapId).getName();
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {                         
+                for(String newTrapId : updatedTraps){            
+                    Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
+                    String trapName = trapNode.getChild(newTrapId).getName();
 
-                        trapNames.add(trapName);
-                        trapPositions.add(position);
-                    }    
+                    trapNames.add(trapName);
+                    trapPositions.add(position);
+                }    
 
-                    if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
-                        broadcast(trapNames, trapPositions);
+                if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
+                    broadcast(trapNames, trapPositions);
 
-                        //Clearing old lists
-                        trapNames.clear();
-                        trapPositions.clear();
-                        updatedTraps.clear(); 
-                    }                            
+                    //Clearing old lists
+                    trapNames.clear();
+                    trapPositions.clear();
+                    updatedTraps.clear(); 
+                }                            
 
-                }            
-            }
-        ).start();
+            }            
+        };
+        executor.submit(r);
+        
     }
 
     public void broadcast(List<String> trapNames, List<Vector3f> trapLocations){
@@ -158,107 +154,85 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     
     public void sendOutDeletedTraps(){
         //Send out movements everything 10ms 
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run() {
-                    for(String id : deletedTraps){            
-                        if(!triggeredTraps.contains(id)){
-                            triggeredTraps.add(id);                                   
-                        }
-                    }    
-                    for(String playerId : slowedPlayers){
-                        if(!triggers.contains(playerId)){
-                            triggers.add(playerId);                                    
-                        }
+        
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                for(String id : deletedTraps){            
+                    if(!triggeredTraps.contains(id)){
+                        triggeredTraps.add(id);                                   
                     }
-                    if(triggers.size() > 0 && triggeredTraps.size() > 0){
-                        LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
-                        broadcastDeletedTraps(triggers, triggeredTraps);
+                }    
+                for(String playerId : slowedPlayers){
+                    if(!triggers.contains(playerId)){
+                        triggers.add(playerId);                                    
+                    }
+                }
+                if(triggers.size() > 0 && triggeredTraps.size() > 0){
+                    LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
+                    broadcastDeletedTraps(triggers, triggeredTraps);
 
-                        //Clearing old lists
-                        triggers.clear();
-                        triggeredTraps.clear();
-                        slowedPlayers.clear();
-                        deletedTraps.clear();                                
-                        if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
-                            LOGGER.log(Level.SEVERE, "Clear not functional");
-                        }
+                    //Clearing old lists
+                    triggers.clear();
+                    triggeredTraps.clear();
+                    slowedPlayers.clear();
+                    deletedTraps.clear();                                
+                    if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
+                        LOGGER.log(Level.SEVERE, "Clear not functional");
                     }
                 }
             }
-        ).start();
+        };
+        executor.submit(r);
     }
 
     public void broadcastDeletedTraps(List<String> triggers, List<String> triggeredTraps){
         players.forEach(l -> l.getCallback().notifyTrapsTriggered(triggers, triggeredTraps));            
     }
     
-    public void playerGotKilled(String victim, String killer){
-        LOGGER.log(Level.INFO, killer + " slaughtered " + victim);
-        victims.add(victim);
-        killers.add(killer);        
-    }
     
-    public void sendOutKilled(){
+    public void sendOutKilled(String victim, String killer){
         LOGGER.log(Level.INFO, "sendOutKilled()");
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run() {                        
-                    if(victims.size() > 0 && killers.size() > 0){
-                        LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victims + "\n" + killers);
-                        broadcastPlayersKilled(victims, killers);  
-                    }  
-                    victims.clear();
-                    killers.clear();     
+        Runnable r = new Runnable(){
+            @Override
+            public void run(){
+                LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victim + "\n" + killer);
+                broadcastPlayersKilled(victim, killer);   
 
-                }
             }
-        ).start();
+        };
+        executor.submit(r);
     }
     
-    public void broadcastPlayersKilled(List <String> victims, List<String> killers){
-        LOGGER.log(Level.INFO, victims + "\n" + killers);
-        players.forEach(l -> l.getCallback().notifyPlayersKilled(victims, killers));
-    }
-
-    public void playerCaughtMonkey(String catcher, String monkey){
-        LOGGER.log(Level.INFO, catcher + " caught " + monkey);
-        catchers.add(catcher);
-        monkeys.add(monkey);
+    public void broadcastPlayersKilled(String victim, String killer){
+        LOGGER.log(Level.INFO, victim + "\n" + killer);
+        players.forEach(l -> l.getCallback().notifyPlayersKilled(victim, killer));
     }
     
-    public void sendOutMonkeyInfo(){
+    public void sendOutMonkeyInfo(String catcher, String monkey){
         //broadcast out that a monkey got caught
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run() {                        
-                    if(victims.size() > 0 && killers.size() > 0){
-                        broadcastMonkeysCaught(catchers, monkeys);  
-                    }  
-                    catchers.clear();
-                    monkeys.clear();
-                }
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                broadcastMonkeysCaught(catcher, monkey);
             }
-        ).start();
+        };
+        executor.submit(r);
     }
 
-    public void broadcastMonkeysCaught(List<String> catchers, List<String> monkeys){
-        players.forEach(l -> l.getCallback().notifyMonkeysCaught(catchers, monkeys));        
+    public void broadcastMonkeysCaught(String catcher, String monkey){
+        players.forEach(l -> l.getCallback().notifyMonkeysCaught(catcher, monkey));        
     }
     
-    public void gameover(){
+    public void gameover(String winners){
         LOGGER.log(Level.SEVERE, "Sending out gameover from server!");
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run() {
-                    players.forEach(l -> l.getCallback().notifyGameOver());
-                }
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                players.forEach(l -> l.getCallback().notifyGameOver(winners));
             }
-        ).start();
+        };
+        executor.submit(r);
     }
     
     private class GameStatsSessionImpl implements GameStatsSession {

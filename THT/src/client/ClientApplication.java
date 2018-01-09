@@ -25,7 +25,6 @@ import network.service.movement.client.ClientMovementService;
 public class ClientApplication extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(ClientApplication.class.getName());
-    
     private ClientNetworkManager clientNetworkManager;
         
     @Override
@@ -61,23 +60,24 @@ public class ClientApplication extends SimpleApplication{
         gameState.setEnabled(false);
         stateManager.attach(gameState);
         
+        GameOverState gameOverState = new GameOverState();
+        gameOverState.setEnabled(false);
+        stateManager.attach(gameOverState);
+        
         //Bullet physics for players, walls, objects
         BulletAppState bulletAppState = new BulletAppState();
         //bulletAppState.setDebugEnabled(true);  
         stateManager.attach(bulletAppState);
         
+        
         // Start app at login Screen
         loginScreen.setEnabled(true);
-        
-        //setFlyCamEnabled(false);
+        flyCam.setEnabled(false);
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
     }
     
-    public void setFlyCamEnabled(boolean enabled){
-        flyCam.setEnabled(enabled);
-    }
     
     @Override
     public void destroy(){
