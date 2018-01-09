@@ -36,7 +36,7 @@ public class CollisionGUI implements ScreenController{
         
         this.nifty.fromXml("Interface/game/gamegui.xml", "gamegui", this);
         LOGGER.log(Level.INFO, "Done loading" + this.nifty.getAllScreensName());
-        nifty.setDebugOptionPanelColors(true);
+//        nifty.setDebugOptionPanelColors(true);
     }
     
     @Override

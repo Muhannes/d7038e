@@ -140,10 +140,10 @@ public class SetupState extends BaseAppState implements AllReadyListener{
         for (int a = 0; a < accounts.size(); a++) {
             if(a == monsterID){
                 players.add(new Player(EntityType.Monster, 
-                    new Vector3f(-3.78f, 1.0f, 8.84f), new Quaternion(0, 0, 0, 0), accounts.get(a).id));                 
+                    new Vector3f(-4.866537f, 5.9999995f, -16.220175f), new Quaternion(0, 0, 0, 0), accounts.get(a).id));  
             }else{
                 players.add(new Player(EntityType.Human, 
-                    new Vector3f(-3.16f, 2f, -8.9f), new Quaternion(0, 0, 0, 0), accounts.get(a).id)); 
+                    new Vector3f(16.662006f, 6.0000014f, 7.364316f), new Quaternion(0, 0, 0, 0), accounts.get(a).id)); 
             }            
         }
         players.get(monsterID).setType(EntityType.Monster);
