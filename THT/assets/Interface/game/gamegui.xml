@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
+    <useStyles filename="nifty-default-styles.xml"/>
+    <screen id="gamegui" controller="gui.game.CollisionGUI">
+        <layer childLayout="center" width="50%" align="top" height="20%">
+            <panel childLayout="vertical">
+                <panel id="displayKiller" childLayout="center" valign="top">
+                    <text id="death" font="Interface/Fonts/Default.fnt" text=""/>
+                </panel>
+                <panel id="displayCatcher" childLayout="center" valign="bottom">
+                    <text id="caught" font="Interface/Fonts/Default.fnt" text=""/>                
+                </panel>                
+            </panel>
+        </layer>
+    </screen>
+</nifty>

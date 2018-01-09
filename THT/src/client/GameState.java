@@ -13,6 +13,7 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -29,6 +30,7 @@ import control.converge.ConvergeControl;
 import control.input.AbstractInputControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
+import gui.game.CollisionGUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,6 +53,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     
     private GameStatsSessionListener gameStatsListener;
         
+    private NiftyJmeDisplay niftyDisplay;
+    private CollisionGUI gui;
+    
     private Node root;
     private Node traps;
     private Node playerNode;
@@ -86,6 +91,15 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         this.input = app.getInputManager();
         this.camera = app.getCamera();
                 
+        /* GUI */
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
+        app.getGuiViewPort().addProcessor(niftyDisplay);
+        
+        app.getInputManager().setCursorVisible(false);
+        gui = new CollisionGUI(niftyDisplay);
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      
@@ -159,6 +173,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         
         root.detachAllChildren();
         //app.stop();
+        app.getViewPort().removeProcessor(niftyDisplay);
+        //Clean up nifty
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
+
     }
     
     @Override
@@ -231,8 +251,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 //attach new convergeControl
                 newMonster.addControl(new ConvergeControl(clientMovementService));
                 //attach new monster
-                playerNode.attachChild(newMonster);                    
+                playerNode.attachChild(newMonster);                     
             }
+            //Always display a death
+            death();            
         });
     }
 
@@ -305,7 +327,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     playerNode.detachChildNamed(monkey);
 
                     //Do something with all the catchers (send out to GUI)
-
+                    caught();
                 }
             }
         });
@@ -327,5 +349,13 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             });   
             sentGameOver = false;
         }
+    }
+
+    public void death() {
+        gui.displayKiller();
+    }
+
+    public void caught() {
+        gui.displayCatch();
     }
 }

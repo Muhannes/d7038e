@@ -5,6 +5,7 @@
  */
 package network;
 
+import network.util.PortFinder;
 import com.jme3.network.Client;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.Network;
@@ -14,15 +15,11 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcClientService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.handover.ClientHandoverService;
 import network.service.gamesetup.server.HostedGameSetupService;
 import network.service.gamestats.server.HostedGameStatsService;
-import network.service.login.LoginListenerService;
 import network.service.movement.server.HostedMovementService;
 import network.util.NetConfig;
 import static network.util.NetConfig.initSerializables;
@@ -37,6 +34,7 @@ public class GameNetworkHandler {
     private static final Logger LOGGER = Logger.getLogger(GameNetworkHandler.class.getName());
     
     private Server server;
+    private int serverPort = -1;
     private Client lobbyClient;
     private Client loginClient;
     
@@ -50,9 +48,11 @@ public class GameNetworkHandler {
     @SuppressWarnings("CallToPrintStackTrace")
     private void initGameServer(){
         try {
-            LOGGER.log(Level.INFO, "Starting server at port: {0}", Integer.toString(NetConfig.GAME_SERVER_PORT));
+            serverPort = PortFinder.findFreePort();
+            LOGGER.log(Level.INFO, "Starting server at port: {0}", Integer.toString(serverPort));
             // create and start the server
-            server = Network.createServer(NetConfig.GAME_SERVER_PORT);
+            server = Network.createServer(serverPort);
+            
             //server.getServices().removeService(server.getServices().getService(ServerSerializerRegistrationsService.class));
             server.getServices().addService(new RpcHostedService());
             server.getServices().addService(new RmiHostedService());
@@ -66,22 +66,29 @@ public class GameNetworkHandler {
         }
     }
     
+    public int getServerPort(){
+        return serverPort;
+    }
+    
     public void addConnectionListener(ConnectionListener connectionListener){
         server.addConnectionListener(connectionListener);
     }
     
     
     public void connectToLobbyServer(){
+        if (serverPort < 1) {
+            LOGGER.severe("No Server port was set. this must be done before trying to connect to lobby");
+            return;
+        }
         try{
             LOGGER.log(Level.INFO, "Trying to connect to server at {0}:{1}", 
                     new Object[]{NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_HANDOVER_SERVER_PORT});
             lobbyClient = Network.connectToServer(NetConfig.LOBBY_SERVER_NAME, NetConfig.LOBBY_HANDOVER_SERVER_PORT);
             lobbyClient.getServices().addService(new RpcClientService());
             lobbyClient.getServices().addService(new RmiClientService()); 
-            lobbyClient.getServices().addService(new ClientHandoverService());
+            lobbyClient.getServices().addService(new ClientHandoverService(serverPort));
             
             lobbyClient.start();
-            
             getClientHandoverService().joinLobby();
         }catch(IOException ex){
                LOGGER.log(Level.SEVERE, null, ex);
