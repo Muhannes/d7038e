@@ -74,7 +74,7 @@ public class LobbyRoomImpl implements LobbyRoom {
     }
     
     synchronized String join(LobbySessionImpl player){
-        if(canJoin()){
+        if(canJoin(player)){
             participants.forEach(p -> p.playerJoinedLobby(player.getName()));
             participants.add(player);
             names.add(player.getName());
@@ -108,7 +108,10 @@ public class LobbyRoomImpl implements LobbyRoom {
         }
     }
     
-    private boolean canJoin(){
+    private boolean canJoin(LobbySessionImpl player){
+        if (participants.contains(player)) {
+            return false;
+        }
         return participants.size() < max;
     }
     
