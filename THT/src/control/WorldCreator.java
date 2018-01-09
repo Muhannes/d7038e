@@ -54,7 +54,6 @@ public class WorldCreator {
     public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
-        System.out.println(position.toString());
         if (type == EntityType.Human) {
             return new HumanNode(name, position, bulletAppState, model);
         } else if (type == EntityType.Monster){
