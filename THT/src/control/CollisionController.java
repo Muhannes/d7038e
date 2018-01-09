@@ -108,8 +108,7 @@ public class CollisionController implements PhysicsCollisionListener{
         LOGGER.log(Level.INFO, nodeA.getName() + " is the victim \n" + nodeB.getName() + " is the killer");                        
         if(!playState.allDead()){
             playState.playerGotKilled(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.playerGotKilled(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutKilled();  
+            hostedGameStatsService.sendOutKilled(nodeA.getName(), nodeB.getName());  
         } else {
             String winners = "monsters";
             hostedGameStatsService.gameover(winners);
@@ -126,8 +125,7 @@ public class CollisionController implements PhysicsCollisionListener{
         LOGGER.log(Level.INFO, nodeA.getName() + " caught " + nodeB.getName());
         if(!playState.allCaught()){
             playState.monkeyGotCaught(nodeB.getName());
-            hostedGameStatsService.playerCaughtMonkey(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutMonkeyInfo();
+            hostedGameStatsService.sendOutMonkeyInfo(nodeA.getName(), nodeB.getName());
         } else {
             String winners = "humans";
             hostedGameStatsService.gameover(winners);
