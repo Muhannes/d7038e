@@ -8,6 +8,8 @@ package client;
 import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.renderer.Camera;
+import com.jme3.scene.CameraNode;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
@@ -25,7 +27,6 @@ import network.service.movement.client.ClientMovementService;
 public class ClientApplication extends SimpleApplication{
     
     private static final Logger LOGGER = Logger.getLogger(ClientApplication.class.getName());
-    
     private ClientNetworkManager clientNetworkManager;
         
     @Override
@@ -70,18 +71,15 @@ public class ClientApplication extends SimpleApplication{
         bulletAppState.setDebugEnabled(true);  
         stateManager.attach(bulletAppState);
         
+        
         // Start app at login Screen
         loginScreen.setEnabled(true);
-        
-        //setFlyCamEnabled(false);
+        flyCam.setEnabled(false);
         setDisplayStatView(false);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
     }
     
-    public void setFlyCamEnabled(boolean enabled){
-        flyCam.setEnabled(enabled);
-    }
     
     @Override
     public void destroy(){

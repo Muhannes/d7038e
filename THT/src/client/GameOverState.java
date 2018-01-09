@@ -43,6 +43,8 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
             app.getAudioRenderer(), app.getGuiViewPort()
         );
         app.getGuiViewPort().addProcessor(niftyDisplay);
+        
+        app.getInputManager().setCursorVisible(true);
         game = new GameGUI(niftyDisplay);
         game.addLobbyGUIListener(this);
     }

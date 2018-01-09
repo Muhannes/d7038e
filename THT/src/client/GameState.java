@@ -108,6 +108,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         }
         
         // set forward camera node that follows the character
+        input.setCursorVisible(false);
         camNode = new CameraNode("CamNode", camera);
         // so that walls are not invisible
         camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.23f, 1000);
