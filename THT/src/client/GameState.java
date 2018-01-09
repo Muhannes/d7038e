@@ -69,7 +69,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private Camera camera;
     private CameraNode camNode;
     private int id;
-    private Boolean sentGameOver = true;
+    private Boolean sentGameOver;
             
             
     @Override
@@ -154,6 +154,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         });
 
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playGameMusic();
+        
+        sentGameOver = true;
     }
 
     @Override

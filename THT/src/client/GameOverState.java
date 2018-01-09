@@ -28,11 +28,6 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-            app.getAssetManager(), app.getInputManager(), 
-            app.getAudioRenderer(), app.getGuiViewPort()
-        );
-        app.getGuiViewPort().addProcessor(niftyDisplay);
     }
 
     @Override
@@ -43,8 +38,13 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     @Override
     protected void onEnable() {
         LOGGER.log(Level.SEVERE, "GameOverState enabled");
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
+        app.getGuiViewPort().addProcessor(niftyDisplay);
         game = new GameGUI(niftyDisplay);
-        game.addLobbyGUIListener(this);  
+        game.addLobbyGUIListener(this);
     }
 
     public void setWinner(String winners){ 
@@ -56,6 +56,8 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
         game.removeLobbyGUIListener(this);
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
     }
 
     @Override
