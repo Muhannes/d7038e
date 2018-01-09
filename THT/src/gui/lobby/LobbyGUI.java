@@ -115,8 +115,13 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     @Override
     public boolean keyEvent(NiftyInputEvent nie) {
         if(nie instanceof EnterEvent){
-            createLobby();
-            return true;
+            TextField field = screen.findNiftyControl("textfieldGamename", TextField.class);
+            if (field.hasFocus()) {
+                createLobby();
+                return true;
+            } else {
+                return false;
+            }
         }
         return false;
     }

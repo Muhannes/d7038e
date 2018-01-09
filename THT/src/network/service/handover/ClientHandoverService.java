@@ -40,10 +40,11 @@ public class ClientHandoverService extends AbstractClientService implements Hand
     
     private int channel;
     // Channel we send on, is it a port though?
+    private int serverPort;
     
-    
-    public ClientHandoverService(){
+    public ClientHandoverService(int serverPort){
         this.channel = MessageConnection.CHANNEL_DEFAULT_RELIABLE;
+        this.serverPort = serverPort;
     }
     
     @Override
@@ -80,7 +81,7 @@ public class ClientHandoverService extends AbstractClientService implements Hand
         } catch (SocketException ex) {
             Logger.getLogger(ClientHandoverService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        getDelegate().join(-1, ip, NetConfig.GAME_SERVER_PORT);
+        getDelegate().join(-1, ip, serverPort);
     }
     
     private HandoverSession getDelegate(){
