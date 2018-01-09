@@ -5,17 +5,14 @@
  */
 package client;
 
-import static api.models.EntityType.Monster;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
-import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -25,7 +22,6 @@ import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
 import control.WorldCreator;
-import control.animation.HumanAnimationControl;
 import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
@@ -33,9 +29,6 @@ import control.converge.ConvergeControl;
 import control.input.AbstractInputControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
-import de.lessvoid.nifty.Nifty;
-import gui.game.GameGUI;
-import gui.game.GameGUIListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,7 +60,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private EntityNode player;
     private Camera camera;
     private CameraNode camNode;
-    private Boolean sentGameOver = true;
+    private int id;
+    private Boolean sentGameOver;
             
             
     @Override
@@ -116,16 +110,17 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         // set forward camera node that follows the character
         camNode = new CameraNode("CamNode", camera);
         // so that walls are not invisible
-        camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.25f, 1000);
+        camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.23f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-        camNode.setLocalTranslation(new Vector3f(0, 1, 0));
         player.attachChild(camNode);        
 
         if (player instanceof HumanNode) {
+            camNode.setLocalTranslation(new Vector3f(0, 0.3f, 0));
             HumanInputControl inputControl = new HumanInputControl(player, clientMovementService, clientGameStatsService);
             player.addControl(inputControl);
             inputControl.initKeys(input);
         } else if (player instanceof MonsterNode) {
+            camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));
             MonsterInputControl inputControl = new MonsterInputControl(player, clientMovementService, clientGameStatsService);
             player.addControl(inputControl);
             inputControl.initKeys(input);
@@ -151,6 +146,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         });
 
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playGameMusic();
+        
+        sentGameOver = true;
     }
 
     @Override
@@ -213,6 +210,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     //attach new monster to playground
                     player = newMonster; //might be usedful for other methods.        
                     playerNode.attachChild(player);
+                    // Adjust camera height to monster model size
+                    camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));
 
                 } else {
                     LOGGER.log(Level.INFO, victims.get(i) + " has died by the hands of " + killers.get(i));
