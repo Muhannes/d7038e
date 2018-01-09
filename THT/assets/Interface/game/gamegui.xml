@@ -8,14 +8,14 @@
                     <panel id="displayKiller" childLayout="center" valign="top">
                         <text id="death" font="Interface/Fonts/Default.fnt" text="">
                             <effect>
-                                <onCustom name="fade" length="2500"/>
+                                <onCustom customKey="fadeDeath" length="2000" neverStopRendering="false"/>
                             </effect>                            
                         </text>
                     </panel>
                     <panel id="displayCatcher" childLayout="center" valign="bottom">
                         <text id="caught" font="Interface/Fonts/Default.fnt" text="">                
                             <effect>
-                                <onCustom name="fade" length="2500"/>
+                                <onCustom customKey="fadeCaught" length="2000" neverStopRendering="false"/>
                             </effect>                            
                         </text>
                     </panel>                                
