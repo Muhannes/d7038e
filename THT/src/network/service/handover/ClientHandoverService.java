@@ -73,14 +73,16 @@ public class ClientHandoverService extends AbstractClientService implements Hand
                 {
                     InetAddress i = (InetAddress) ee.nextElement();
                     if (i.getHostAddress().startsWith("192.168.")) {
-                        System.out.println("MyIP: " + i.getHostAddress());
                         ip = i.getHostAddress();
-                    }
+                    } else if (i.getHostAddress().startsWith("10.")) {
+                        ip = i.getHostAddress();
+                    } 
                 }
             }
         } catch (SocketException ex) {
             Logger.getLogger(ClientHandoverService.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("My GameServer IP: " + ip);
         getDelegate().join(-1, ip, serverPort);
     }
     
