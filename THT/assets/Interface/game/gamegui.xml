@@ -2,14 +2,25 @@
 <nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
     <useStyles filename="nifty-default-styles.xml"/>
     <screen id="gamegui" controller="gui.game.CollisionGUI">
-        <layer childLayout="center" width="50%" align="top" height="20%">
+        <layer childLayout="vertical" width="50%">
             <panel childLayout="vertical">
-                <panel id="displayKiller" childLayout="center" valign="top">
-                    <text id="death" font="Interface/Fonts/Default.fnt" text=""/>
+                <panel id="upper" childLayout="center" height="30%">
+                    <panel id="displayKiller" childLayout="center" valign="top">
+                        <text id="death" font="Interface/Fonts/Default.fnt" text="">
+                            <effect>
+                                <onStartScreen name="fade" length="2500"/>
+                            </effect>                            
+                        </text>
+                    </panel>
+                    <panel id="displayCatcher" childLayout="center" valign="bottom">
+                        <text id="caught" font="Interface/Fonts/Default.fnt" text="">                
+                            <effect>
+                                <onStartScreen name="fade" length="2500"/>
+                            </effect>                            
+                        </text>
+                    </panel>                                
                 </panel>
-                <panel id="displayCatcher" childLayout="center" valign="bottom">
-                    <text id="caught" font="Interface/Fonts/Default.fnt" text=""/>                
-                </panel>                
+                <panel id="lower" childLayout="vertical" height="70%"/>
             </panel>
         </layer>
     </screen>
