@@ -17,11 +17,9 @@ import com.jme3.scene.control.AbstractControl;
  */
 public class SpeedController extends AbstractControl {
 
-    private float movementSpeed;
     private CharacterControl cc;
 
-    public SpeedController(float movementSpeed) {
-        this.movementSpeed = movementSpeed;
+    public SpeedController() {
     }
     
     
@@ -30,6 +28,7 @@ public class SpeedController extends AbstractControl {
         if (cc == null){
             cc = getSpatial().getControl(CharacterControl.class);
         } else {
+            float movementSpeed = ((EntityNode) getSpatial()).movementSpeed;
             Vector3f newWalkDir = cc.getWalkDirection().normalize().mult(movementSpeed).mult(tpf);
             cc.setWalkDirection(newWalkDir);
         }

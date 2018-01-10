@@ -50,6 +50,9 @@ public class MonsterNode extends EntityNode{
         
         this.addControl(new MonsterAnimationControl(model));
         
+        // Speed scaling
+        this.addControl(new SpeedController());
+        
         attachChild(model);
     }
     

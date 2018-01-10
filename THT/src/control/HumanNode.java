@@ -41,6 +41,10 @@ public class HumanNode extends EntityNode{
         bulletAppState.getPhysicsSpace().add(charControl);
                         
         this.addControl(new HumanAnimationControl(model));
+        
+        // Speed scaling
+        this.addControl(new SpeedController());
+        
                 
         attachChild(model);
     }
