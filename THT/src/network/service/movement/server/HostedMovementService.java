@@ -106,8 +106,29 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
      * TODO: Filter based on location, i.e. only send to those that need the info
      * @param movements 
      */
-    public void broadcast(List<PlayerMovement> movements){
-        players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));
+    private synchronized void broadcast(MovementSessionImpl player, List<PlayerMovement> movements){
+        player.getCallback().notifyPlayerMovement(movements);
+    }
+    
+    public Runnable broadcastEverything(Node playersNode){
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                List<PlayerMovement> movements = new ArrayList<>();
+                for(Spatial s : playersNode.getChildren()){
+                    Vector3f location = new Vector3f(s.getLocalTranslation());
+                    Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                    Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+
+                    //do same for location
+                    PlayerMovement pm = new PlayerMovement(s.getName(), location, direction, rotation);
+                    movements.add(pm);
+                }
+                
+                players.forEach(p -> broadcast(p, movements));
+            }
+        };
+        return r;
     }
     
     public Runnable getMovementSender(Node playersNode, Node rooms){
@@ -142,7 +163,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                         List<PlayerMovement> filtered = Filter.getPlayerMovements(
                                 playersNode.getChild(id), movements, rooms);
                         if(filtered.size() > 0){
-                            session.getCallback().notifyPlayerMovement(filtered);
+                            broadcast(session, filtered);
                         }
                     });
                     

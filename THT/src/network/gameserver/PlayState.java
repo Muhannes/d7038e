@@ -99,8 +99,9 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
-        movementSender = Executors.newScheduledThreadPool(1);
+        movementSender = Executors.newScheduledThreadPool(2);
         movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode, rooms), 20, 20, TimeUnit.MILLISECONDS);
+        movementSender.scheduleAtFixedRate(hostedMovementService.broadcastEverything(playersNode), 1, 1, TimeUnit.SECONDS);
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
