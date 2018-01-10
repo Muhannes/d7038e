@@ -22,6 +22,10 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.PlayerMovement;
@@ -33,17 +37,21 @@ import network.service.movement.client.ClientMovementService;
  * @author truls
  */
 public abstract class AbstractInputControl extends AbstractControl implements AnalogListener, ActionListener{
-    
+    private final Object lock = new Object();
     private static final Logger LOGGER = Logger.getLogger(AbstractInputControl.class);
     protected final ClientMovementService movementService;
     protected final ClientGameStatsService gameStatsService;
     private boolean forward = false, backward = false, strafeLeft = false, strafeRight = false;
     
     protected CharacterControl character;
+    private boolean isSending = false;
+    private ScheduledExecutorService executor;
+    
     
     public AbstractInputControl(ClientMovementService movementService, ClientGameStatsService gameStatsService){
         this.movementService = movementService; 
         this.gameStatsService = gameStatsService;
+        executor = Executors.newScheduledThreadPool(1);
     }
 
     @Override
@@ -117,12 +125,27 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     /**
      * Sends information about model to server
      */
-    private void sendMovementToServer(){       
-        Spatial self = getSpatial();
-        PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
-                character.getWalkDirection(), character.getViewDirection());
-        movementService.sendPlayerMovement(pm);
+    private void sendMovementToServer(){    
+        synchronized(lock){
+            if (!isSending) {
+                executor.schedule(movementSender, 20, TimeUnit.MILLISECONDS);
+                isSending = true;
+            }
+        }
     }
+    
+    private final Runnable movementSender = new Runnable(){
+        @Override
+        public void run(){
+            Spatial self = getSpatial();
+            PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
+                    character.getWalkDirection(), character.getViewDirection());
+            movementService.sendPlayerMovement(pm);
+            synchronized(lock){
+                isSending = false;
+            }
+        }
+    };
     
     private void rotateY(float rotationRad){
         Vector3f oldViewRot = character.getViewDirection();
