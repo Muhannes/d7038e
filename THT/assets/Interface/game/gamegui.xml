@@ -6,14 +6,14 @@
             <panel childLayout="vertical">
                 <panel id="upper" childLayout="center" height="30%">
                     <panel id="displayKiller" childLayout="center" valign="top">
-                        <text id="death" font="Interface/Fonts/Default.fnt" text="">
+                        <text id="death" font="Interface/Fonts/Default.fnt" text="A human got slain">
                             <effect>
                                 <onCustom customKey="fadeDeath" length="2000" neverStopRendering="false"/>
                             </effect>                            
                         </text>
                     </panel>
                     <panel id="displayCatcher" childLayout="center" valign="bottom">
-                        <text id="caught" font="Interface/Fonts/Default.fnt" text="">                
+                        <text id="caught" font="Interface/Fonts/Default.fnt" text="A monkey got caught">                
                             <effect>
                                 <onCustom customKey="fadeCaught" length="2000" neverStopRendering="false"/>
                             </effect>                            

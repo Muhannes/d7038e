@@ -46,18 +46,15 @@ public class CollisionGUI implements ScreenController{
     
 
     public void displayKiller(){
-        //Print the text
         text1 = this.screen.findElementById("death");
-        text1.getRenderer(TextRenderer.class).setText("A human got slain");     
-        text1.startEffect(EffectEventId.onStartScreen);
-        text1.getRenderer(TextRenderer.class).setText("");             
+//        text1.getRenderer(TextRenderer.class).setText("A human got slain");     
+        text1.startEffect(EffectEventId.onCustom);
     }
     
     public void displayCatch(){
         text2 = this.screen.findElementById("caught");        
-        text2.getRenderer(TextRenderer.class).setText("A monkey got caught"); 
-        text2.startEffect(EffectEventId.onStartScreen);
-        text2.getRenderer(TextRenderer.class).setText("");         
+//        text2.getRenderer(TextRenderer.class).setText("A monkey got caught"); 
+        text2.startEffect(EffectEventId.onCustom);
     }
 
     @Override
