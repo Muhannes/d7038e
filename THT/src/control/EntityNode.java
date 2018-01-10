@@ -60,7 +60,6 @@ public abstract class EntityNode extends Node{
         
     public void slowDown(){
         if(!slowed){
-            LOGGER.log(Level.INFO, "Sloooowing down");
             timer = System.currentTimeMillis();
             slowed = true;
             movementSpeed = SLOWED_MOVEMENT_SPEED;

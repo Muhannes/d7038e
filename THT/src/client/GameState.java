@@ -271,7 +271,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 Spatial trap = asset.loadModel("Models/trap/trap.j3o");
                 
                 Vector3f position = newTraps.get(i);
-                LOGGER.log(Level.INFO, "New trap received from server at " + position);
                 trap.setLocalTranslation(position);        
 
                 //Create node for each Trap (Only server needs to control check ghosts)
