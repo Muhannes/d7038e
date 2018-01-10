@@ -16,6 +16,7 @@ import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import control.animation.MonsterAnimationControl;
 import control.audio.MonsterAudioControl;
+import java.util.logging.Level;
 
 /**
  *
@@ -45,11 +46,6 @@ public class MonsterNode extends EntityNode{
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
                 
-        //Ghost
-/*        GhostControl ghost = new GhostControl(shape);
-        this.addControl(ghost);
-        bulletAppState.getPhysicsSpace().add(ghost);
-*/        
         bulletAppState.getPhysicsSpace().add(charControl);
         
         this.addControl(new MonsterAnimationControl(model));
@@ -57,4 +53,7 @@ public class MonsterNode extends EntityNode{
         attachChild(model);
     }
     
+    public MonsterAnimationControl getAnimation(){
+        return this.getControl(MonsterAnimationControl.class);
+    }
 }

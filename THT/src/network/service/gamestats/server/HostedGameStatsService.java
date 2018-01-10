@@ -235,6 +235,26 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         executor.submit(r);
     }
     
+    public void broadcastSlash(String player){
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                players.forEach(l -> l.getCallback().notifyPlayerSlashed(player));
+            }
+        };
+        executor.submit(r);        
+    }
+    
+    public void broadcastJump(String player){
+        Runnable r = new Runnable(){
+            @Override
+            public void run() {
+                players.forEach(l -> l.getCallback().notifyPlayerJumped(player));
+            }
+        };
+        executor.submit(r);
+    }
+    
     private class GameStatsSessionImpl implements GameStatsSession {
         
         private final HostedConnection connection;
@@ -254,8 +274,17 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         
         @Override
         public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-            LOGGER.log(Level.INFO, "trap received at server" + trapName + " - " + newTrap );
             gameStatsSessions.forEach(l -> l.notifyTrapPlaced(trapName, newTrap));
+        }
+
+        @Override
+        public void notifyJump(String player) {            
+            gameStatsSessions.forEach(l -> l.notifyJump(player));
+        }
+
+        @Override
+        public void notifySlash(String player) {
+            gameStatsSessions.forEach(l -> l.notifySlash(player));
         }
     } 
 }

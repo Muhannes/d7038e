@@ -72,15 +72,23 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
     
     @Override
     public void notifyTrapPlaced(String trapName, Vector3f newTrap) {
-        LOGGER.log(Level.INFO, "new trap " + trapName + " - " + newTrap);
         getDelegate().notifyTrapPlaced(trapName, newTrap);
+    }
+
+    @Override
+    public void notifyJump(String player) {
+        getDelegate().notifyJump(player);
+    }
+
+    @Override
+    public void notifySlash(String player) {
+        getDelegate().notifySlash(player);
     }
     
     private class GameStatsSessionCallback implements GameStatsSessionListener {
         
         @Override
         public void notifyPlayersKilled(String victim, String killer) {
-            LOGGER.log(Level.INFO, "received dead player from server\nVictims"+ victim + "\nKillers" + killer);
             listeners.forEach(l -> l.notifyPlayersKilled(victim, killer));
         }
 
@@ -91,7 +99,6 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-            LOGGER.log(Level.INFO, "Received new triggeres" + names + " and " + trapNames + "from server");
             if(names.size() > 0 && trapNames.size() > 0){
                listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));                
             }
@@ -104,8 +111,17 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
 
         @Override
         public void notifyGameOver(String winners) {
-            LOGGER.log(Level.SEVERE, "Sending out gameover to listeners!");
             listeners.forEach(l -> l.notifyGameOver(winners));
+        }
+
+        @Override
+        public void notifyPlayerJumped(String player) {
+            listeners.forEach(l -> l.notifyPlayerJumped(player));
+        }
+
+        @Override
+        public void notifyPlayerSlashed(String player) {
+            listeners.forEach(l -> l.notifyPlayerSlashed(player));
         }
     }
 }

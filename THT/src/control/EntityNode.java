@@ -54,6 +54,10 @@ public abstract class EntityNode extends Node{
         return model;
     }
     
+    public void jumped(){
+        charControl.jump();
+    }
+        
     public void slowDown(){
         if(!slowed){
             LOGGER.log(Level.INFO, "Sloooowing down");
@@ -76,9 +80,7 @@ public abstract class EntityNode extends Node{
                         wd.multLocal(movementSpeed);
                     }
                 }
-            }).start();
-            
-            
+            }).start();            
         }
     }
     
