@@ -53,18 +53,24 @@ public class LobbyState extends BaseAppState implements
         LOGGER.log(Level.FINE, "Initializing LoginScreen"); 
         
         this.app = (ClientApplication) app;
-    }    
-
-    @Override
-    public void cleanup(Application app){
-    }
         
-    @Override
-    protected void onEnable() {
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
             app.getAssetManager(), app.getInputManager(), 
             app.getAudioRenderer(), app.getGuiViewPort()
         );
+        gui = new LobbyGUI(niftyDisplay);
+    }    
+
+    @Override
+    public void cleanup(Application app){
+        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
+        
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
+    }
+        
+    @Override
+    protected void onEnable() {
         clientLobbyService = app.getClientLobbyService();
         // Create GUI
         if (!lobbyAuthenticated) {
@@ -85,7 +91,6 @@ public class LobbyState extends BaseAppState implements
         
         rooms = new HashMap<>();
         
-        gui = new LobbyGUI(niftyDisplay);
         app.getGuiViewPort().addProcessor(niftyDisplay);
         gui.addLobbyGUIListener(this);
         
@@ -95,12 +100,9 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     protected void onDisable() {
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
-        gui.removeLobbyGUIListener(this);
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
+        gui.cleanup();
         clientLobbyService.removeClientLobbyListener(this);
-        niftyDisplay.cleanup();
-        niftyDisplay = null;
     }
     
     /**

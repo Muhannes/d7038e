@@ -36,7 +36,6 @@ public class GameGUI implements ScreenController{
         this.nifty = display.getNifty();
         
         this.nifty.fromXml("Interface/game/gamegui.xml", "gamegui", this);
-//        LOGGER.log(Level.INFO, "Done loading" + this.nifty.getAllScreensName());
 //        nifty.setDebugOptionPanelColors(true);
     }
     

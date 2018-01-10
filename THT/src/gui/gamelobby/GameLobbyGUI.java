@@ -49,6 +49,21 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
         this.screen = screen;
         this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
     }
+    
+    public void cleanup(){
+        clearChat();
+        clearPlayers();
+        screen.setDefaultFocus();
+        screen.findElementById(screen.getDefaultFocusElementId()).setFocus();
+        
+        //screen.removeKeyboardInputHandler(this);
+        //display.getNifty().removeScreen("gamelobby");
+        //display.getNifty().exit();
+        //display.cleanup();
+        //display = null;
+        listeners.clear();
+        
+    }
 
     @Override
     public void onStartScreen() {
@@ -80,6 +95,16 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
     public void removePlayer(String name){
         ListBox field = screen.findNiftyControl("myListBoxPlayers", ListBox.class);
         field.removeItem(name);
+    }
+    
+    public void clearPlayers(){
+        ListBox field = screen.findNiftyControl("myListBoxPlayers", ListBox.class);
+        field.clear();
+    }
+    
+    public void clearChatMessage(){
+        TextField field = screen.findNiftyControl("textfieldInput", TextField.class);
+        field.setText("");
     }
     
     public void ready(){

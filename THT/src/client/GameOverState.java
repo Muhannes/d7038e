@@ -30,23 +30,27 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
-    }
-
-    @Override
-    protected void cleanup(Application app) {
-    }
-
-    @Override
-    protected void onEnable() {
-        LOGGER.log(Level.SEVERE, "GameOverState enabled");
+        
         this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
             app.getAssetManager(), app.getInputManager(), 
             app.getAudioRenderer(), app.getGuiViewPort()
         );
+        
+        game = new GameOverGUI(niftyDisplay);
+    }
+
+    @Override
+    protected void cleanup(Application app) {
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
+    }
+
+    @Override
+    protected void onEnable() {
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         app.getInputManager().setCursorVisible(true);
-        game = new GameOverGUI(niftyDisplay);
         game.addLobbyGUIListener(this);
     }
 
@@ -56,11 +60,8 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     
     @Override
     protected void onDisable() {     
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
         game.removeLobbyGUIListener(this);
-        niftyDisplay.cleanup();
-        niftyDisplay = null;
     }
 
     @Override

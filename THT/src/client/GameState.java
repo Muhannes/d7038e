@@ -70,7 +70,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
-                
+        /* GUI */
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
+        gui = new GameGUI(niftyDisplay);
     }
 
     @Override
@@ -78,6 +83,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         if(root != null){
             root.detachAllChildren();
         }
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
     }
 
     @Override
@@ -88,16 +96,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         this.asset = app.getAssetManager();
         this.input = app.getInputManager();
         this.camera = app.getCamera();
-                
-        /* GUI */
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-            app.getAssetManager(), app.getInputManager(), 
-            app.getAudioRenderer(), app.getGuiViewPort()
-        );
-        app.getGuiViewPort().addProcessor(niftyDisplay);
-        
+       
+        app.getGuiViewPort().addProcessor(niftyDisplay);        
         app.getInputManager().setCursorVisible(false);
-        gui = new GameGUI(niftyDisplay);
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      
@@ -175,12 +176,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
         root.detachAllChildren();
-        app.getViewPort().removeProcessor(niftyDisplay);
-        //Clean up nifty
-        niftyDisplay.getNifty().exit();
-        niftyDisplay.cleanup();
-        niftyDisplay = null;
-
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
     }
     
     @Override
