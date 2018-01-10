@@ -193,7 +193,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
             //TODO: Print out to GUI that killer slaughtered the victim
 
             if(victim.equals(player.getName())){ // Myself died
-                LOGGER.log(Level.INFO, "you have died!");
+//                LOGGER.log(Level.INFO, "you have died!");
 
                 player.getControl(AbstractInputControl.class).disableKeys(input);
 
@@ -217,13 +217,11 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
 
                 newMonster.addControl(new ListenerControl(app.getListener()));
-                LOGGER.log(Level.SEVERE, newMonster.getControl(ListenerControl.class).toString());
+                //LOGGER.log(Level.SEVERE, newMonster.getControl(ListenerControl.class).toString());
                 if(newMonster.getControl(ListenerControl.class) == null){
                     LOGGER.log(Level.SEVERE, "There is no listenerControl!");
-                } else {
-                    LOGGER.log(Level.SEVERE, "There is one listenerControl!");
                 }
-
+                
                 //converge control
                 ConvergeControl converge = new ConvergeControl(clientMovementService, false);
                 newMonster.addControl(converge);
@@ -235,7 +233,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));
 
             } else {
-                LOGGER.log(Level.INFO, victim + " has died by the hands of " + killer);
+                //LOGGER.log(Level.INFO, victim + " has died by the hands of " + killer);
 
                 //reset bullet
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
@@ -337,7 +335,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     public void notifyGameOver(String winner) {
-        LOGGER.log(Level.INFO, "\nGame Over!\n");
+//        LOGGER.log(Level.INFO, "\nGame Over!\n");
         if(sentGameOver){
             GameState gs = this;
             app.enqueue(new Runnable() {
@@ -376,7 +374,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         //Received that a player has slashed
         if(!name.equals(this.player.getName())){
             if(playerNode.getChild(name) instanceof MonsterNode){
-                LOGGER.log(Level.INFO, "monster slash!");
                 MonsterNode monster = (MonsterNode) playerNode.getChild(name);
                 if(monster.getmodel() == null){
                     LOGGER.log(Level.INFO, "model is null");
