@@ -11,7 +11,7 @@ import com.jme3.network.service.rmi.Asynchronous;
  *
  * @author ted
  */
-public interface GameGUIListener {
+public interface GameOverGUIListener {
     
     @Asynchronous
     void onQuit();

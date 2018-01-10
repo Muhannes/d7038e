@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
     <useStyles filename="nifty-default-styles.xml"/>
-    <screen id="gameover" controller="gui.game.GameGUI">
+    <screen id="gameover" controller="gui.game.GameOverGUI">
         <layer childLayout="center" align="center" width="80%">
             <panel id="mid" childLayout="center" align="center" height="40%" wrap="true">
                 <text id="winner" font="Interface/Fonts/Default.fnt" text=""/>

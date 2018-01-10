@@ -31,7 +31,7 @@ import control.converge.ConvergeControl;
 import control.input.AbstractInputControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
-import gui.game.CollisionGUI;
+import gui.game.GameGUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +55,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private GameStatsSessionListener gameStatsListener;
         
     private NiftyJmeDisplay niftyDisplay;
-    private CollisionGUI gui;
+    private GameGUI gui;
     
     private Node root;
     private Node traps;
@@ -100,7 +100,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         app.getInputManager().setCursorVisible(false);
-        gui = new CollisionGUI(niftyDisplay);
+        gui = new GameGUI(niftyDisplay);
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      

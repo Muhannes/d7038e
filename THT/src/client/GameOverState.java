@@ -8,22 +8,22 @@ package client;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import gui.game.GameGUI;
-import gui.game.GameGUIListener;
+import gui.game.GameOverGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import gui.game.GameOverGUIListener;
 
 /**
  *
  * @author hannes
  */
-public class GameOverState extends BaseAppState implements GameGUIListener{
+public class GameOverState extends BaseAppState implements GameOverGUIListener{
 
     private static final Logger LOGGER = Logger.getLogger(GameOverState.class.getName());
 
     private NiftyJmeDisplay niftyDisplay;
     ClientApplication app;
-    private GameGUI game;    
+    private GameOverGUI game;    
     
     @Override
     protected void initialize(Application app) {
@@ -45,7 +45,7 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         app.getInputManager().setCursorVisible(true);
-        game = new GameGUI(niftyDisplay);
+        game = new GameOverGUI(niftyDisplay);
         game.addLobbyGUIListener(this);
     }
 
