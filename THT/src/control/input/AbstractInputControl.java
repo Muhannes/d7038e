@@ -54,7 +54,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     private void setNewMoveDirection(float tpf) {
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
-            LOGGER.log(Level.INFO, "Fetched the char control\n direction : " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
@@ -87,6 +86,10 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         else if(name.equals("backward")) backward = isPressed;
         else if(name.equals("strafeLeft")) strafeLeft = isPressed;
         else if(name.equals("strafeRight")) strafeRight = isPressed;
+        else if(name.equals("jump") && isPressed){
+            character.jump();
+            sendJumpToServer();
+        }
                 
         setNewMoveDirection(tpf);
         sendMovementToServer();                    
@@ -96,7 +99,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     public void onAnalog(String name, float value, float tpf) {
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
-            LOGGER.log(Level.INFO, "Fetched the char control\n direction (onAnalog): " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
@@ -122,6 +124,10 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                 character.getWalkDirection(), character.getViewDirection());
         movementService.sendPlayerMovement(pm);
+    }
+    
+    private void sendJumpToServer(){
+        gameStatsService.notifyJump(getSpatial().getName());
     }
     
     private void rotateY(float rotationRad){
@@ -151,13 +157,13 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         manager.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
         manager.addMapping("strafeLeft", new KeyTrigger(KeyInput.KEY_A));
         manager.addMapping("strafeRight", new KeyTrigger(KeyInput.KEY_D));     
-        
+        manager.addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
         manager.addMapping("rotateright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         manager.addMapping("rotateleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         manager.addMapping("rotateup", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
         manager.addMapping("rotatedown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         manager.addListener(this, "forward", "backward", "strafeLeft", "strafeRight", 
-                "rotateleft", "rotateright", "rotateup", "rotatedown");    
+                "rotateleft", "rotateright", "rotateup", "rotatedown", "jump");    
     }
     
     public void disableKeys(InputManager input){       
@@ -170,5 +176,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         input.deleteMapping("rotateleft");
         input.deleteMapping("rotateup");
         input.deleteMapping("rotatedown");
+        input.deleteMapping("jump");
     }    
 }
