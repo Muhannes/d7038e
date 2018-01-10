@@ -99,7 +99,7 @@ public class LobbyRoomImpl implements LobbyRoom {
         participants.forEach(p -> p.playerReady(player.getName(), true));
      
         playersReady++;
-        if(playersReady == participants.size()){
+        if(playersReady == participants.size() && participants.size() > 1){
             List<Account> accounts = new ArrayList<>();
             participants.forEach(p -> accounts.add(p.getAccount()));
             List<LobbySessionListener> callbacks = new ArrayList<>();
