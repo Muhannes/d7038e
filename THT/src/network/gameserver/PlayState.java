@@ -78,9 +78,10 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         root = (Node) app.getRootNode();
         playersNode = (Node) app.getRootNode().getChild("playersNode");
         traps = (Node) app.getRootNode().getChild("traps");
+        Node rooms = (Node) app.getRootNode().getChild("floor");
         
-        if (playersNode == null || root == null || traps == null) {
-            LOGGER.severe("root, trapNode or playersNode is null");
+        if (playersNode == null || root == null || traps == null || rooms == null) {
+            LOGGER.severe("root, trapNode, rooms or playersNode is null");
         }
         monkeys = 0;
         humans = 0;
@@ -98,7 +99,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         hostedMovementService.addSessions(this);        
         hostedGameStatsService.addSessions(this);
         movementSender = Executors.newScheduledThreadPool(1);
-        movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode), 20, 20, TimeUnit.MILLISECONDS);
+        movementSender.scheduleAtFixedRate(hostedMovementService.getMovementSender(playersNode, rooms), 20, 20, TimeUnit.MILLISECONDS);
 
         collisionController = new CollisionController(app.getStateManager().getState(PlayState.class), bulletAppState, root, hostedGameStatsService);
 
