@@ -65,6 +65,7 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     @Override
     public void onQuit() {
         //release everything
+        app.disconnectToGameServer();
         backToLobby();
     }
     

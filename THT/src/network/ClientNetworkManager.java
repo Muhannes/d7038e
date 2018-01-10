@@ -74,6 +74,12 @@ public class ClientNetworkManager implements
         }
     }
     
+    public void disconnectToGameServer(){
+        if(gameClient.isStarted() && gameClient.isConnected()){
+            gameClient.close();
+        }
+    }
+    
     public void connectToLoginServer(){
         try{
             LOGGER.log(Level.INFO, "Trying to connect to login server at {0}:{1}", 

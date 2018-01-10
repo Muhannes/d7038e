@@ -92,6 +92,10 @@ public class ClientApplication extends SimpleApplication{
         clientNetworkManager.connectToGameServer(ip, port);
     }
     
+    public void disconnectToGameServer(){
+        clientNetworkManager.disconnectToGameServer();
+    }
+    
     public void connectToLobbyServer(){
         clientNetworkManager.connectToLobbyServer();
     }
