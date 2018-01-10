@@ -73,7 +73,12 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     protected void initialize(Application app) {
         this.app = (ClientApplication) app;
-                
+        /* GUI */
+        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
+        gui = new CollisionGUI(niftyDisplay);
     }
 
     @Override
@@ -81,6 +86,9 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         if(root != null){
             root.detachAllChildren();
         }
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
+        niftyDisplay = null;
     }
 
     @Override
@@ -92,15 +100,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         this.input = app.getInputManager();
         this.camera = app.getCamera();
                 
-        /* GUI */
-        this.niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-            app.getAssetManager(), app.getInputManager(), 
-            app.getAudioRenderer(), app.getGuiViewPort()
-        );
+        
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         app.getInputManager().setCursorVisible(false);
-        gui = new CollisionGUI(niftyDisplay);
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      
@@ -175,10 +178,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         root.detachAllChildren();
         //app.stop();
         app.getGuiViewPort().removeProcessor(niftyDisplay);
-        //Clean up nifty
-        niftyDisplay.getNifty().exit();
-        niftyDisplay.cleanup();
-        niftyDisplay = null;
 
     }
     
