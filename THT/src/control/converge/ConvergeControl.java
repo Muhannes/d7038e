@@ -42,7 +42,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     private Vector3f convergeVector;
     private int convergeCounter;
     
-    private final boolean convRot;
+    private final boolean convergeAll;
     // Used to determing if the rotation should be converged.
     
     /**
@@ -57,11 +57,11 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     /**
      * Creates a converger that will converge position but rotation is optional
      * @param service Service that will notify new setpoints
-     * @param convRot True if rotational should be converged, else False.
+     * @param convergeAll True if rotational should be converged, else False.
      */
-    public ConvergeControl(ClientMovementService service, boolean convRot){
+    public ConvergeControl(ClientMovementService service, boolean convergeAll){
         service.addListener(this);
-        this.convRot = convRot;
+        this.convergeAll = convergeAll;
     }
     
     @Override
@@ -88,7 +88,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
     }
     
     private void convergeRotation(Vector3f setpoint){
-        if(convRot){
+        if(convergeAll){
             CharacterControl character = getSpatial().getControl(CharacterControl.class);
             character.setViewDirection(setpoint);
         }
@@ -151,7 +151,9 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
                     } else {
                         newConvergeVector(posSetpoint);
                     }
-                    getSpatial().getControl(CharacterControl.class).setWalkDirection(pm.direction);
+                    if(convergeAll){
+                        getSpatial().getControl(CharacterControl.class).setWalkDirection(pm.direction);
+                    }
                 }
                 return;
             }
