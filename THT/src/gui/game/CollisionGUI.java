@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class CollisionGUI implements ScreenController{
 
-    private static final Logger LOGGER = Logger.getLogger(GameGUI.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CollisionGUI.class.getName());
 
     private Screen screen;
     private Nifty nifty;
