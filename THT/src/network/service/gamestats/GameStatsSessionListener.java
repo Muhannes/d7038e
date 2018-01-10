@@ -25,10 +25,10 @@ public interface GameStatsSessionListener {
     void notifyMonkeysCaught(String catcher, String monkey);
     
     @Asynchronous
-    void notifyTrapsPlaced(List <String> trapNames, List <Vector3f> newTraps);
+    void notifyTrapsPlaced(String trapName, Vector3f newTrap);
     
     @Asynchronous
-    void notifyTrapsTriggered(List <String> names, List <String> trapNames);    
+    void notifyTrapsTriggered(String name, String trapName);    
     
     @Asynchronous
     void notifyPlayerJumped(String player);

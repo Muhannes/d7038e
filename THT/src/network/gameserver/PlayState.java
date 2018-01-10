@@ -187,7 +187,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             
             //attach the new monster
             playersNode.attachChild(newMonster);
-            LOGGER.log(Level.INFO, "Created monster : " + newMonster.getName() + " at " + newMonster.getLocalTranslation());
         } 
     }
     
@@ -201,8 +200,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
         if (traps.getChild(trapName) != null) {
             LOGGER.severe("ID already exist! " + trapName);
         }else {
-            
-            LOGGER.info("Placing trap: " + trapName);
             app.enqueue(new Runnable() {
                 @Override
                 public void run() {
@@ -228,10 +225,8 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                     
                     bulletAppState.getPhysicsSpace().add(ghost);
                     traps.attachChild(node);
-                    hostedGameStatsService.trapUpdated(geom.getName());
-                                
-                    LOGGER.info("Sending trap info: " + trapName);
-                    hostedGameStatsService.sendOutTraps(traps);
+                    
+                    hostedGameStatsService.sendOutTraps(traps, geom.getName());
                 }
             });
 
@@ -239,16 +234,14 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     }
 
     public void deleteTrap(String name, String trapName){
-        LOGGER.log(Level.INFO, name + " triggered  " + trapName + "!");
         if(playersNode.getChild(name) != null){
             //Slow down player 
             EntityNode entity = (EntityNode) playersNode.getChild(name);
             entity.slowDown();
-            LOGGER.log(Level.INFO, entity.getName() + " is slowed");
         }
         if(traps.getChild(trapName) != null){
-            // TODO: Got error here once (detach removes the bulletAppState probably)
             try{
+                //remove from appState
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(traps.getChild(trapName).getControl(GhostControl.class)); //reset bulletAppState            
                 //remove trap from root
                 traps.detachChildNamed(trapName);
@@ -265,16 +258,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
     public boolean allCaught(){
         if(monkeys > 0) monkeys--;
         if(monkeys == 0){
-            //GAME OVER
-            LOGGER.log(Level.SEVERE, "Game Over!");
             return true;
         }
         return false;
     }
 
     public void monkeyGotCaught(String monkey){
-        LOGGER.log(Level.INFO, monkey + " got caught " );
-        
         if(playersNode.getChild(monkey) == null){
             LOGGER.severe("monkey does not exist");
         } else {
@@ -283,17 +272,12 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playersNode.getChild(monkey).getControl(CharacterControl.class)); //reset bulletAppState
 
             //remove old player
-            playersNode.detachChildNamed(monkey);
-            
+            playersNode.detachChildNamed(monkey);            
         } 
     }
 
     @Override
     public void notifyJump(String player){
-        /*
-        Jump
-        broadcast out jump to clients
-        */
         if(playersNode.getChild(player) instanceof EntityNode){
             EntityNode entity = (EntityNode) playersNode.getChild(player);
             entity.jumped();            
@@ -303,9 +287,6 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
 
     @Override
     public void notifySlash(String player) {
-        /*
-        broadcast out slash to clients
-        */
         if(playersNode.getChild(player) instanceof MonsterNode){
             hostedGameStatsService.broadcastSlash(player);        
         }

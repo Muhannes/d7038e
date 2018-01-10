@@ -14,8 +14,10 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import gui.event.EnterEvent;
 import gui.event.KeyBoardMapping;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import sun.swing.SwingUtilities2;
 
 /**
  *
@@ -26,11 +28,11 @@ public class LoginGUI implements ScreenController, KeyInputHandler{
     private List<LoginGUIListener> listeners = new ArrayList<>();
     
     private Nifty nifty;
-    
+    private NiftyJmeDisplay display;
     private Screen screen;
     
     public LoginGUI(NiftyJmeDisplay display){
-    
+        this.display = display;
         /** Create a new NiftyGUI object */
         nifty = display.getNifty();
 
@@ -61,6 +63,8 @@ public class LoginGUI implements ScreenController, KeyInputHandler{
     @Override
     public void onEndScreen() {
         // Nothing
+        display.cleanup();
+        System.out.println("Cleaning up LoginGUI");    
     }
     
     public void startGame(){

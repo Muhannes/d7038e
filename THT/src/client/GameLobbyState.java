@@ -36,7 +36,8 @@ public class GameLobbyState extends BaseAppState implements
     private NiftyJmeDisplay niftyDisplay;
     private ClientApplication app;
     private String gameName;
-    private ArrayList<String> players;
+    private final ArrayList<String> players;
+    
     LobbyState lobbyScreen;
     private ClientChatService chatService;
     private ClientLobbyService lobbyService;

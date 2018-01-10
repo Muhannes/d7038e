@@ -32,15 +32,15 @@ public class LobbyState extends BaseAppState implements
 
     private static final Logger LOGGER = Logger.getLogger(LobbyState.class.getName());
     
-    private NiftyJmeDisplay niftyDisplay;
-    private ClientApplication app;
-    private Map<String, Integer> rooms;
+    NiftyJmeDisplay niftyDisplay;
+    ClientApplication app;
+    Map<String, Integer> rooms;
     
-    private ClientChatService clientChatService;
-    private ClientLobbyService clientLobbyService;
-    private GameLobbyState gameLobbyScreen;
+    ClientChatService clientChatService;
+    ClientLobbyService clientLobbyService;
+    GameLobbyState gameLobbyScreen;
     
-    private LobbyGUI gui;
+    LobbyGUI gui;
     
     private boolean lobbyAuthenticated = false;
     private boolean chatAuthenticated = false;
@@ -57,7 +57,6 @@ public class LobbyState extends BaseAppState implements
 
     @Override
     public void cleanup(Application app){
-        LOGGER.log(Level.FINE, "Cleanup LoginScreen");
     }
         
     @Override

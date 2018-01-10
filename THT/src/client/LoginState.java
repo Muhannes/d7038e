@@ -116,5 +116,6 @@ public class LoginState extends BaseAppState implements
         clientLoginService.removeLoginSessionListener(this);
         app.getViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
     }
 }

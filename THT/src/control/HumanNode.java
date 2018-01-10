@@ -9,10 +9,10 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import control.animation.HumanAnimationControl;
+import control.input.HumanInputControl;
 
 /**
  *
@@ -45,8 +45,15 @@ public class HumanNode extends EntityNode{
         // Speed scaling
         this.addControl(new SpeedController());
         
-                
         attachChild(model);
     }
 
+    public HumanInputControl getInput(){
+        return this.getControl(HumanInputControl.class);
+    }
+    
+    public HumanAnimationControl getAnimation(){
+        return this.getControl(HumanAnimationControl.class);
+    }
+    
 }

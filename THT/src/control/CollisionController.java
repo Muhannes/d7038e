@@ -69,8 +69,7 @@ public class CollisionController implements PhysicsCollisionListener{
                         gotHim(nodeB, nodeA);
                     } else {}
                 }
-            } 
-            
+            }             
         }
     }
     
@@ -89,10 +88,7 @@ public class CollisionController implements PhysicsCollisionListener{
         String owner = list[0];
 
         if(!nodeA.getName().equals(owner)){
-
-            LOGGER.log(Level.INFO, "removing trap : " + nodeB.getParent().getName());
-            hostedGameStatsService.triggeredTrap(nodeA.getName(), nodeB.getName());
-            hostedGameStatsService.sendOutDeletedTraps();
+            hostedGameStatsService.sendOutDeletedTraps(nodeA.getName(), nodeB.getName());
             playState.deleteTrap(nodeA.getName(), nodeB.getName());
 
             triggeredTraps.add(nodeB.getParent().getName());
@@ -105,7 +101,6 @@ public class CollisionController implements PhysicsCollisionListener{
     }
     
     private void commitMurder(Spatial nodeA, Spatial nodeB){
-        LOGGER.log(Level.INFO, nodeA.getName() + " is the victim \n" + nodeB.getName() + " is the killer");                        
         if(!playState.allDead()){
             playState.playerGotKilled(nodeA.getName(), nodeB.getName());
             hostedGameStatsService.sendOutKilled(nodeA.getName(), nodeB.getName());  
@@ -122,7 +117,6 @@ public class CollisionController implements PhysicsCollisionListener{
     }
     
     private void gotHim(Spatial nodeA, Spatial nodeB){
-        LOGGER.log(Level.INFO, nodeA.getName() + " caught " + nodeB.getName());
         if(!playState.allCaught()){
             playState.monkeyGotCaught(nodeB.getName());
             hostedGameStatsService.sendOutMonkeyInfo(nodeA.getName(), nodeB.getName());

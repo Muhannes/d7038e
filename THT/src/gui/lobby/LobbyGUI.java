@@ -57,6 +57,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     @Override
     public void onEndScreen() {
         // Nothing
+        display.cleanup();
     }
     
     @NiftyEventSubscriber(id="myListBox")

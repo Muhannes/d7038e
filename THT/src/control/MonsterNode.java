@@ -16,6 +16,7 @@ import com.jme3.scene.Spatial;
 import com.sun.istack.internal.logging.Logger;
 import control.animation.MonsterAnimationControl;
 import control.audio.MonsterAudioControl;
+import control.input.MonsterInputControl;
 import java.util.logging.Level;
 
 /**
@@ -58,5 +59,9 @@ public class MonsterNode extends EntityNode{
     
     public MonsterAnimationControl getAnimation(){
         return this.getControl(MonsterAnimationControl.class);
+    }
+    
+    public MonsterInputControl getInput(){
+        return this.getControl(MonsterInputControl.class);
     }
 }

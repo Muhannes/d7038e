@@ -58,6 +58,8 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
     @Override
     public void onEndScreen() {
         //Nothing
+        display.cleanup();
+        System.out.println("Cleaning up GameLobbyGUI");
     }
     
     public void clearChat(){

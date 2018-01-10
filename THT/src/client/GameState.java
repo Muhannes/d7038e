@@ -23,7 +23,6 @@ import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
 import control.WorldCreator;
-import control.animation.MonsterAnimationControl;
 import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
@@ -31,9 +30,7 @@ import control.converge.ConvergeControl;
 import control.input.AbstractInputControl;
 import control.input.HumanInputControl;
 import control.input.MonsterInputControl;
-import gui.game.CollisionGUI;
-import java.util.ArrayList;
-import java.util.List;
+import gui.game.GameGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSessionListener;
@@ -55,7 +52,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     private GameStatsSessionListener gameStatsListener;
         
     private NiftyJmeDisplay niftyDisplay;
-    private CollisionGUI gui;
+    private GameGUI gui;
     
     private Node root;
     private Node traps;
@@ -100,7 +97,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         app.getGuiViewPort().addProcessor(niftyDisplay);
         
         app.getInputManager().setCursorVisible(false);
-        gui = new CollisionGUI(niftyDisplay);
+        gui = new GameGUI(niftyDisplay);
         
         /* Listeners */
         this.clientMovementService = app.getClientMovementService();      
@@ -164,6 +161,11 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).playGameMusic();
         
         sentGameOver = true;
+        
+        if(playerNode.getChild(player.getName()) instanceof HumanNode){ //If player, show the tool tip, 'f' for trap.
+            gui.displayTooltip(); 
+        }
+
     }
 
     @Override
@@ -173,7 +175,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
         root.detachAllChildren();
-        //app.stop();
         app.getViewPort().removeProcessor(niftyDisplay);
         //Clean up nifty
         niftyDisplay.getNifty().exit();
@@ -190,14 +191,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
     @Override
     public void notifyPlayersKilled(String victim, String killer) {
         app.enqueue(() -> {            
-            //TODO: Print out to GUI that killer slaughtered the victim
 
             if(victim.equals(player.getName())){ // Myself died
-//                LOGGER.log(Level.INFO, "you have died!");
 
                 player.getControl(AbstractInputControl.class).disableKeys(input);
-
-
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(CharacterControl.class)); //reset bulletAppState
 
@@ -215,9 +212,8 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 monsterInputControl.initKeys(input);
 
                 newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
-
                 newMonster.addControl(new ListenerControl(app.getListener()));
-                //LOGGER.log(Level.SEVERE, newMonster.getControl(ListenerControl.class).toString());
+
                 if(newMonster.getControl(ListenerControl.class) == null){
                     LOGGER.log(Level.SEVERE, "There is no listenerControl!");
                 }
@@ -233,7 +229,6 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));
 
             } else {
-                //LOGGER.log(Level.INFO, victim + " has died by the hands of " + killer);
 
                 //reset bullet
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
@@ -253,59 +248,48 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 playerNode.attachChild(newMonster);                     
             }
             //Always display a death
-            death();            
+            death();
         });
     }
 
     @Override
-    public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
+    public void notifyTrapsPlaced(String trapName, Vector3f newTrap) {
         app.enqueue(() -> {
-            updateTreeWithNewTraps(trapNames, newTraps);
+            updateTreeWithNewTraps(trapName, newTrap);
         });    
     }
 
-    public void updateTreeWithNewTraps(List<String> trapNames, List<Vector3f> newTraps){
-        for(int i = 0; i < trapNames.size(); i++){
-            if(traps.getChild(trapNames.get(i)) == null){
-                
-                Spatial trap = asset.loadModel("Models/trap/trap.j3o");
-                
-                Vector3f position = newTraps.get(i);
-                trap.setLocalTranslation(position);        
+    public void updateTreeWithNewTraps(String trapName, Vector3f newTrap){
+        if(traps.getChild(trapName) == null){    
+            Spatial trap = asset.loadModel("Models/trap/trap.j3o");
 
-                //Create node for each Trap (Only server needs to control check ghosts)
-                Node node = new Node(trapNames.get(i));
-                node.attachChild(trap);
-                traps.attachChild(node);
+            Vector3f position = newTrap;
+            trap.setLocalTranslation(position);        
+
+            //Create node for each Trap (Only server needs to control check ghosts)
+            Node node = new Node(trapName);
+            node.attachChild(trap);
+            traps.attachChild(node);
+
+            if(player instanceof HumanNode){
+                HumanNode human = (HumanNode) player;
+                gui.displayTraps(human.getInput().getTrapRemaining());
             }
+
         }
     }
     
     @Override
-    public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
+    public void notifyTrapsTriggered(String name, String trapName) {
         app.enqueue(() -> {
-            updateTreeWithDeletedTraps(names, trapNames);
+            updateTreeWithDeletedTraps(name, trapName);
         });    
     }
     
-    public void updateTreeWithDeletedTraps(List<String> names, List<String> trapNames){
-        List<String> updatedNames = new ArrayList<>();
-        List<String> updatedTrapNames = new ArrayList<>();
-
-        for(int i = 0; i < trapNames.size(); i++){
-            if(!updatedTrapNames.contains(trapNames.get(i))){
-                traps.detachChildNamed(trapNames.get(i));
-                updatedTrapNames.add(trapNames.get(i));
-            }
-        }
-
-        for(int j = 0; j < names.size(); j++){
-            if(!updatedNames.contains(names.get(j))){
-                updatedNames.add(names.get(j));
-                EntityNode entity = (EntityNode) playerNode.getChild(names.get(j));
-                entity.slowDown();
-            }
-        }        
+    public void updateTreeWithDeletedTraps(String name, String trapName){
+        traps.detachChildNamed(trapName);
+        EntityNode entity = (EntityNode) playerNode.getChild(name);
+        entity.slowDown();
     }
 
     @Override
@@ -328,13 +312,11 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                     caught();
                 }
             }
-        });
-        
+        });        
     }
 
     @Override
     public void notifyGameOver(String winner) {
-//        LOGGER.log(Level.INFO, "\nGame Over!\n");
         if(sentGameOver){
             GameState gs = this;
             app.enqueue(new Runnable() {

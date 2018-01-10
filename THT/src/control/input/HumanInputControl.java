@@ -39,6 +39,9 @@ public class HumanInputControl extends AbstractInputControl{
         manager.addListener(this, "trap");
     }
     
+    public int getTrapRemaining(){
+        return traps;
+    }
     
     @Override
     public void disableKeys(InputManager manager){
@@ -53,7 +56,7 @@ public class HumanInputControl extends AbstractInputControl{
         if(name.equals("trap") && isPressed){            
             if(traps > 0){
                 sendTrapsToServer();
-                traps--;
+                traps--;                
             }
         }
     }

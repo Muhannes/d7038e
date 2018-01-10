@@ -93,15 +93,13 @@ public class ClientGameStatsService extends AbstractClientService implements Gam
         }
 
         @Override
-        public void notifyTrapsPlaced(List<String> trapNames, List<Vector3f> newTraps) {
-            listeners.forEach(l -> l.notifyTrapsPlaced(trapNames, newTraps));
+        public void notifyTrapsPlaced(String trapName, Vector3f newTrap) {
+            listeners.forEach(l -> l.notifyTrapsPlaced(trapName, newTrap));
         }
 
         @Override
-        public void notifyTrapsTriggered(List<String> names, List<String> trapNames) {
-            if(names.size() > 0 && trapNames.size() > 0){
-               listeners.forEach(l -> l.notifyTrapsTriggered(names, trapNames));                
-            }
+        public void notifyTrapsTriggered(String name, String trapName) {
+            listeners.forEach(l -> l.notifyTrapsTriggered(name, trapName));                
         }
 
         @Override

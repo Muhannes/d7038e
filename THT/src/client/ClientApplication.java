@@ -8,6 +8,7 @@ package client;
 import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
@@ -30,6 +31,7 @@ public class ClientApplication extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         // Default logger
+              
         Logger.getLogger("").setLevel(Level.INFO);
         
         // Turning off Niftys verbose logging

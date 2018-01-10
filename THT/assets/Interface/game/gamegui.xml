@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
     <useStyles filename="nifty-default-styles.xml"/>
-    <screen id="gamegui" controller="gui.game.CollisionGUI">
+    <screen id="gamegui" controller="gui.game.GameGUI">
         <layer childLayout="vertical" width="50%">
             <panel id="upper" childLayout="center" height="30%" width="100%">
                 <panel id="display" childLayout="center">
@@ -21,7 +21,12 @@
                     </text>
                 </panel>                                
             </panel>
-            <panel id="lower" childLayout="vertical" height="70%"/>
+            <panel id="lower" childLayout="vertical" height="60%"/>
+            <panel id="lowest" childLayout="vertical" height="10%">
+                <panel id="displayTraps" childLayout="center" width="100%">                    
+                    <text id="traps" font="Interface/Fonts/Default.fnt" text=""/>
+                </panel>
+            </panel>
         </layer>
     </screen>
 </nifty>

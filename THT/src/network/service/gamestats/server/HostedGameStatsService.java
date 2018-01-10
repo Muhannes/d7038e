@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-import network.gameserver.GameServer;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionEmitter;
 import network.service.gamestats.GameStatsSessionListener;
@@ -73,21 +72,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         executor = Executors.newCachedThreadPool();
     }
     
-    public void trapUpdated(String id){
-        if(!updatedTraps.contains(id)){
-            updatedTraps.add(id);
-        }
-    }
-    
-    public void triggeredTrap(String playerId, String id){        
-        if(!deletedTraps.contains(id)){
-            deletedTraps.add(id);
-        }
-        if(!slowedPlayers.contains(playerId)){
-            slowedPlayers.add(playerId);
-        }
-    }
-    
     @Override
     public void startHostingOnConnection(HostedConnection connection) {
         LOGGER.log(Level.INFO, "GameStats service started. Client id: {0}", connection.getId());
@@ -120,97 +104,56 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
         gameStatsSessions.remove(session);
     }
     
-    public void sendOutTraps(Node trapNode){
+    public void sendOutTraps(Node trapNode, String id){
         //Send out movements everything 10ms 
         Runnable r = new Runnable(){
             @Override
             public void run() {                         
-                for(String newTrapId : updatedTraps){            
-                    Vector3f position = trapNode.getChild(newTrapId).getLocalTranslation();
-                    String trapName = trapNode.getChild(newTrapId).getName();
-
-                    trapNames.add(trapName);
-                    trapPositions.add(position);
-                }    
-
-                if(!trapNames.isEmpty() && !trapPositions.isEmpty()){
-                    broadcast(trapNames, trapPositions);
-
-                    //Clearing old lists
-                    trapNames.clear();
-                    trapPositions.clear();
-                    updatedTraps.clear(); 
-                }                            
-
+                String trapName = trapNode.getChild(id).getName();
+                Vector3f position = trapNode.getChild(id).getLocalTranslation();
+                broadcast(trapName, position);
             }            
         };
         executor.submit(r);
         
     }
 
-    public void broadcast(List<String> trapNames, List<Vector3f> trapLocations){
-        players.forEach(l -> l.getCallback().notifyTrapsPlaced(trapNames, trapLocations));
+    public void broadcast(String trapName, Vector3f trapLocation){
+        players.forEach(l -> l.getCallback().notifyTrapsPlaced(trapName, trapLocation));
     }
     
-    public void sendOutDeletedTraps(){
+    public void sendOutDeletedTraps(String triggerer, String triggeredTrap){
         //Send out movements everything 10ms 
         
         Runnable r = new Runnable(){
             @Override
             public void run() {
-                for(String id : deletedTraps){            
-                    if(!triggeredTraps.contains(id)){
-                        triggeredTraps.add(id);                                   
-                    }
-                }    
-                for(String playerId : slowedPlayers){
-                    if(!triggers.contains(playerId)){
-                        triggers.add(playerId);                                    
-                    }
-                }
-                if(triggers.size() > 0 && triggeredTraps.size() > 0){
-                    LOGGER.log(Level.INFO, "Broadcasting out \n" + triggers + " \n " + triggeredTraps);
-                    broadcastDeletedTraps(triggers, triggeredTraps);
-
-                    //Clearing old lists
-                    triggers.clear();
-                    triggeredTraps.clear();
-                    slowedPlayers.clear();
-                    deletedTraps.clear();                                
-                    if(deletedTraps.size() > 0 || slowedPlayers.size() > 0){
-                        LOGGER.log(Level.SEVERE, "Clear not functional");
-                    }
-                }
+                broadcastDeletedTraps(triggerer, triggeredTrap);
             }
         };
         executor.submit(r);
     }
 
-    public void broadcastDeletedTraps(List<String> triggers, List<String> triggeredTraps){
-        players.forEach(l -> l.getCallback().notifyTrapsTriggered(triggers, triggeredTraps));            
+    public void broadcastDeletedTraps(String triggerer, String triggeredTrap){
+        players.forEach(l -> l.getCallback().notifyTrapsTriggered(triggerer, triggeredTrap));            
     }
     
     
     public void sendOutKilled(String victim, String killer){
-        LOGGER.log(Level.INFO, "sendOutKilled()");
         Runnable r = new Runnable(){
             @Override
             public void run(){
-                LOGGER.log(Level.INFO, "boardcasting out dead player\n" + victim + "\n" + killer);
-                broadcastPlayersKilled(victim, killer);   
-
+                broadcastPlayersKilled(victim, killer);
             }
         };
         executor.submit(r);
     }
     
     public void broadcastPlayersKilled(String victim, String killer){
-        LOGGER.log(Level.INFO, victim + "\n" + killer);
         players.forEach(l -> l.getCallback().notifyPlayersKilled(victim, killer));
     }
     
     public void sendOutMonkeyInfo(String catcher, String monkey){
-        //broadcast out that a monkey got caught
         Runnable r = new Runnable(){
             @Override
             public void run() {
@@ -225,7 +168,6 @@ public class HostedGameStatsService extends AbstractHostedConnectionService impl
     }
     
     public void gameover(String winners){
-        LOGGER.log(Level.SEVERE, "Sending out gameover from server!");
         Runnable r = new Runnable(){
             @Override
             public void run() {
