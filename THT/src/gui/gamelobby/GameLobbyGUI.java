@@ -17,6 +17,7 @@ import gui.event.EnterEvent;
 import gui.event.KeyBoardMapping;
 import java.util.ArrayList;
 import java.util.List;
+import network.service.login.client.ClientLoginService;
 
 /**
  *
@@ -93,7 +94,9 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
     
     public void sendMessage(){
         TextField field = screen.findNiftyControl("textfieldInput", TextField.class);
-        String message = field.getRealText();
+        String input = field.getRealText();
+        String player = ClientLoginService.getAccount().name;
+        String message = player+":"+input;
         listeners.forEach(l -> l.onSendMessage(message));
         field.setText("");
     }
