@@ -50,6 +50,7 @@ public class ClientNetworkManager implements
             lobbyClient.getServices().addService(new ClientLobbyService());
             lobbyClient.getServices().addService(new ClientPingService());
             
+            lobbyClient.addClientStateListener(this);
             lobbyClient.start();
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
@@ -68,6 +69,7 @@ public class ClientNetworkManager implements
             gameClient.getServices().addService(new ClientMovementService());
             gameClient.getServices().addService(new ClientGameStatsService());
             
+            gameClient.addClientStateListener(this);
             gameClient.start();
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
@@ -89,6 +91,7 @@ public class ClientNetworkManager implements
             loginClient.getServices().addService(new RmiClientService()); 
             loginClient.getServices().addService(new ClientLoginService());
             
+            loginClient.addClientStateListener(this);
             loginClient.start();
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
@@ -105,6 +108,7 @@ public class ClientNetworkManager implements
             chatClient.getServices().addService(new RmiClientService()); 
             chatClient.getServices().addService(new ClientChatService());
             
+            chatClient.addClientStateListener(this);
             chatClient.start();
         }catch(IOException ex){
             LOGGER.log(Level.SEVERE, null, ex);
@@ -122,12 +126,12 @@ public class ClientNetworkManager implements
 
     @Override
     public void clientConnected(Client c) {
-        LOGGER.log(Level.INFO, "Connected to server");  
+        LOGGER.log(Level.INFO, "Connected to server {0}, version {1}", new Object[]{c.getGameName(), c.getVersion()});  
     }
 
     @Override
     public void clientDisconnected(Client c, ClientStateListener.DisconnectInfo info) {
-        LOGGER.log(Level.INFO, "Disconnected from server.\nReason: {0}", info.reason);  
+        LOGGER.log(Level.INFO, "Disconnected from server {0}, version {1}.", new Object[]{c.getGameName(), c.getVersion()});  
     }
     
     public ClientLoginService getClientLoginService(){
