@@ -11,6 +11,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import network.service.movement.PlayerMovement;
 
 /**
  * Utility functions for finding Area of Interest and players that are interested
@@ -20,30 +22,31 @@ import java.util.List;
  */
 public class Filter {
     
+    private static final Logger LOGGER = Logger.getLogger(Filter.class.getName());
+    
     static boolean preProcessed = false;
     
     /**
-     * This function returns all players that are close enough to the given player.
-     * Players are close enough if they are in the same room or neighbouring rooms.
+     * This function returns all PlayerMovements that the given player is interested in.
      * @param player Given player 
-     * @param players All players
+     * @param movements Recently received player movements
      * @param rooms All rooms
      * @return A list of players
      */
-    static List<Spatial> getInterestedPlayers(Spatial player, Node players, Node rooms){
+    public static List<PlayerMovement> getPlayerMovements(Spatial player, List<PlayerMovement> movements, Node rooms){
         
-        List<Spatial> playersInterested = new ArrayList<>();
+        List<PlayerMovement> interestingMovements = new ArrayList<>();
         
         for(Spatial r : areaOfInterest(player, rooms)){
-            for(Spatial p : players.getChildren()){
-                Ray ray = new Ray(p.getLocalTranslation(), new Vector3f(0, -1, 0));
-                if(r.getWorldBound().intersects(ray)){
-                    playersInterested.add(p);
+            for(PlayerMovement m : movements){
+                Ray ray = new Ray(m.location, new Vector3f(0, -1, 0));
+                if(r.getWorldBound().intersects(ray) && !interestingMovements.contains(m)){ // There is a possiblity that we intersect two rooms;
+                    interestingMovements.add(m);
                 }
             }
         }
         
-        return playersInterested;
+        return interestingMovements;
     }
     
     /**

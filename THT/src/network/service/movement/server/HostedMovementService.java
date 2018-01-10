@@ -20,10 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import network.gameserver.Filter;
+import network.service.login.Account;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionEmitter;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
+import network.util.ConnectionAttribute;
 import network.util.NetConfig;
 
 /**
@@ -107,7 +110,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         players.forEach(p -> p.getCallback().notifyPlayerMovement(movements));
     }
     
-    public Runnable getMovementSender(Node playersNode){
+    public Runnable getMovementSender(Node playersNode, Node rooms){
         
         //Send out movements everything 10ms 
         Runnable r = new Runnable(){
@@ -130,9 +133,19 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                     }
                     
                 }
+                
                 if (!movements.isEmpty()) {
-                    broadcast(movements);
-                    //Clear movements
+                    // For each session, filter out the player movements that this session is interested in.
+                    players.forEach((session) -> { 
+                        Account account = session.conn.getAttribute(ConnectionAttribute.ACCOUNT);
+                        String id = "" + account.id;
+                        List<PlayerMovement> filtered = Filter.getPlayerMovements(
+                                playersNode.getChild(id), movements, rooms);
+                        if(filtered.size() > 0){
+                            session.getCallback().notifyPlayerMovement(filtered);
+                        }
+                    });
+                    
                     movements.clear();        
                 }
             }           
