@@ -23,6 +23,7 @@ import control.EntityNode;
 import control.HumanNode;
 import control.MonsterNode;
 import control.WorldCreator;
+import control.animation.MonsterAnimationControl;
 import control.audio.AmbientAudioService;
 import control.audio.ListenerControl;
 import control.audio.MonsterAudioControl;
@@ -167,7 +168,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     protected void onDisable() {  
-        player.getControl(AbstractInputControl.class).disableKeys(input);
+        player.getControl(AbstractInputControl.class).closeControl(input);
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
@@ -357,5 +358,35 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     public void caught() {
         gui.displayCatch();
+    }
+
+    @Override
+    public void notifyPlayerJumped(String name) {
+        //Received that a player has jumped
+        if(!name.equals(this.player.getName())){
+            if(playerNode.getChild(name) instanceof EntityNode){
+                EntityNode entity = (EntityNode) playerNode.getChild(name);
+                entity.jumped();
+            }            
+        }
+    }
+
+    @Override
+    public void notifyPlayerSlashed(String name) {
+        //Received that a player has slashed
+        if(!name.equals(this.player.getName())){
+            if(playerNode.getChild(name) instanceof MonsterNode){
+                LOGGER.log(Level.INFO, "monster slash!");
+                MonsterNode monster = (MonsterNode) playerNode.getChild(name);
+                if(monster.getmodel() == null){
+                    LOGGER.log(Level.INFO, "model is null");
+                }
+                if(monster.getAnimation() == null){
+                    LOGGER.log(Level.INFO, "animation is null");                    
+                }else{
+                    monster.getAnimation().swordSlash();
+                }
+            }
+        }
     }
 }

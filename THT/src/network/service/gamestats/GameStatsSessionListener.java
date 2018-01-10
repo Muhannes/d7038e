@@ -29,4 +29,10 @@ public interface GameStatsSessionListener {
     
     @Asynchronous
     void notifyTrapsTriggered(List <String> names, List <String> trapNames);    
+    
+    @Asynchronous
+    void notifyPlayerJumped(String player);
+    
+    @Asynchronous
+    void notifyPlayerSlashed(String player);
 }

@@ -22,6 +22,7 @@ import network.service.movement.PlayerMovement;
 public class NetConfig {
     
     private static final Logger LOGGER = Logger.getLogger(NetConfig.class.getName());
+
     private static final String SERVER_IP = "localhost";
     
     public static String LOBBY_SERVER_NAME = SERVER_IP;

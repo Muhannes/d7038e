@@ -50,8 +50,8 @@ public class MonsterInputControl extends AbstractInputControl{
             if(getSpatial().getControl(MonsterAnimationControl.class) == null){
                 LOGGER.log(Level.SEVERE, "monster control is null");
             }
-            LOGGER.log(Level.INFO, "onAction \n\n\n");
             getSpatial().getControl(MonsterAnimationControl.class).swordSlash();
+            gameStatsService.notifySlash(getSpatial().getName());
         }
     }
     

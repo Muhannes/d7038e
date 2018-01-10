@@ -22,6 +22,7 @@ import control.EntityNode;
 import control.CollisionController;
 import control.HumanNode;
 import control.MonkeyNode;
+import control.MonsterNode;
 import control.WorldCreator;
 import control.NPCController;
 import java.util.concurrent.Executors;
@@ -284,5 +285,28 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
             playersNode.detachChildNamed(monkey);
             
         } 
+    }
+
+    @Override
+    public void notifyJump(String player){
+        /*
+        Jump
+        broadcast out jump to clients
+        */
+        if(playersNode.getChild(player) instanceof EntityNode){
+            EntityNode entity = (EntityNode) playersNode.getChild(player);
+            entity.jumped();            
+            hostedGameStatsService.broadcastJump(player);            
+        }
+    }
+
+    @Override
+    public void notifySlash(String player) {
+        /*
+        broadcast out slash to clients
+        */
+        if(playersNode.getChild(player) instanceof MonsterNode){
+            hostedGameStatsService.broadcastSlash(player);        
+        }
     }
 }

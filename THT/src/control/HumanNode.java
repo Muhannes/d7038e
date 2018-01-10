@@ -38,11 +38,6 @@ public class HumanNode extends EntityNode{
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);
         
-        //ghost
-/*        GhostControl ghost = new GhostControl(shape);
-        this.addControl(ghost);
-        bulletAppState.getPhysicsSpace().add(ghost);
-*/        
         bulletAppState.getPhysicsSpace().add(charControl);
                         
         this.addControl(new HumanAnimationControl(model));
