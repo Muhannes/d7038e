@@ -22,7 +22,8 @@ import network.service.movement.PlayerMovement;
 public class NetConfig {
     
     private static final Logger LOGGER = Logger.getLogger(NetConfig.class.getName());
-    private static final String SERVER_IP = "localhost";//"10.0.0.5";
+
+    private static final String SERVER_IP = "localhost";
     
     public static String LOBBY_SERVER_NAME = SERVER_IP;
     public static int LOBBY_PLAYER_SERVER_PORT = 7999;
@@ -58,7 +59,7 @@ public class NetConfig {
         while (delegate == null){
             networkDelay(50);
             delegate = rmi.getRemoteObject(type); 
-            if (counter > 10) { 
+            if (counter > 40) { 
                 throw new RuntimeException("Unable to locate delegate for " + type.getName());
             }
             counter++;
