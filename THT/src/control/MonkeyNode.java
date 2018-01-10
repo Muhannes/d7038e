@@ -43,7 +43,8 @@ public class MonkeyNode extends EntityNode {
         bulletAppState.getPhysicsSpace().add(charControl);
         
         // Speed scaling
-        this.addControl(new SpeedController(MONKEY_MOVEMENT_SPEED));
+        movementSpeed = MONKEY_MOVEMENT_SPEED;
+        this.addControl(new SpeedController());
         
         attachChild(model);
     }
