@@ -22,7 +22,6 @@ public class MonsterAudioControl extends AbstractAudioControl{
     
     public MonsterAudioControl(AssetManager manager){
         footsteps = new AudioNode(manager, "Sound/Effects/Foot steps.ogg", AudioData.DataType.Buffer);
-        footsteps.setLooping(true);
         footsteps.setPositional(true);
         footsteps.setReverbEnabled(true);
         footsteps.setRefDistance(3); // Distance when soundlevel is half its original
