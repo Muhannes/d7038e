@@ -55,7 +55,7 @@ public class GameOverState extends BaseAppState implements GameGUIListener{
     
     @Override
     protected void onDisable() {     
-        app.getViewPort().removeProcessor(niftyDisplay);
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
         niftyDisplay.getNifty().exit();
         game.removeLobbyGUIListener(this);
         niftyDisplay.cleanup();

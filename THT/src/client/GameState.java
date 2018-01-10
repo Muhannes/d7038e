@@ -174,7 +174,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         
         root.detachAllChildren();
         //app.stop();
-        app.getViewPort().removeProcessor(niftyDisplay);
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
         //Clean up nifty
         niftyDisplay.getNifty().exit();
         niftyDisplay.cleanup();

@@ -52,18 +52,24 @@ public class GameLobbyState extends BaseAppState implements
     @Override
     public void initialize(Application app){        
         this.app = (ClientApplication) app;
+        
+        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+            app.getAssetManager(), app.getInputManager(), 
+            app.getAudioRenderer(), app.getGuiViewPort()
+        );
+        
+        gui = new GameLobbyGUI(niftyDisplay);
     }
 
     @Override
     public void cleanup(Application app){
         
+        niftyDisplay.getNifty().exit();
+        niftyDisplay.cleanup();
     }
     
     @Override
     protected void onEnable() {
-        niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
-        app.getAssetManager(), app.getInputManager(), 
-        app.getAudioRenderer(), app.getGuiViewPort());
         try {
             chatService = app.getClientChatService();
             chatService.addChatSessionListener(this);
@@ -71,7 +77,6 @@ public class GameLobbyState extends BaseAppState implements
             LOGGER.log(Level.WARNING, "Chat service is offline");
         }
         lobbyService = app.getClientLobbyService();
-        gui = new GameLobbyGUI(niftyDisplay);
         
         gui.addGameLobbyGUIListener(this);
         
@@ -89,17 +94,12 @@ public class GameLobbyState extends BaseAppState implements
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopPreGameMusic();
         
         players.clear();
-        gui.clearChat();
         if (chatService != null) {
             chatService.removeChatSessionListener(this);
         }
         lobbyService.removeClientLobbyListener(this);
-        gui.removeGameLobbyGUIListener(this);
-        app.getViewPort().removeProcessor(niftyDisplay);
-        niftyDisplay.getNifty().exit();
-        
-        niftyDisplay.cleanup();
-        niftyDisplay = null;
+        app.getGuiViewPort().removeProcessor(niftyDisplay);
+        gui.cleanup();
         lobbyService.leave();
         if (chatService != null) {
             chatService.leavechat(roomID);

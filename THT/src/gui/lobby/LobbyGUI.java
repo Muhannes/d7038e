@@ -30,6 +30,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     private NiftyJmeDisplay display;
     private Screen screen;
     private ListBox listBox;
+    private TextField gameName;
     
     public LobbyGUI(NiftyJmeDisplay display){
         this.display = display;
@@ -47,6 +48,19 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
         this.screen = screen;
         this.screen.addKeyboardInputHandler(new KeyBoardMapping(), this);
         listBox = screen.findNiftyControl("myListBox", ListBox.class);
+        gameName = screen.findNiftyControl("textfieldGamename", TextField.class);
+    }
+    
+    public void cleanup(){
+        //screen.removeKeyboardInputHandler(this);
+        //display.getNifty().removeScreen("lobby");
+        //display.getNifty().exit();
+        //display.cleanup();
+        //display = null;
+        clearLobbyRoomList();
+        clearGameName();
+        screen.findElementById(screen.getDefaultFocusElementId()).setFocus();
+        listeners.clear();
     }
 
     @Override
@@ -79,6 +93,10 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
      */
     public void clearLobbyRoomList(){
         listBox.clear();
+    }
+    
+    public void clearGameName(){
+        gameName.setText("");
     }
     
     public void addLobbyGUIListener(LobbyGUIListener lobbyGUIListener){
@@ -115,8 +133,7 @@ public class LobbyGUI implements ScreenController, KeyInputHandler{
     @Override
     public boolean keyEvent(NiftyInputEvent nie) {
         if(nie instanceof EnterEvent){
-            TextField field = screen.findNiftyControl("textfieldGamename", TextField.class);
-            if (field.hasFocus()) {
+            if (gameName.hasFocus()) {
                 createLobby();
                 return true;
             } else {
