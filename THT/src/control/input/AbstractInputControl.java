@@ -38,6 +38,7 @@ import network.service.movement.client.ClientMovementService;
  */
 public abstract class AbstractInputControl extends AbstractControl implements AnalogListener, ActionListener{
     private final Object lock = new Object();
+    private final Object charLock = new Object();
     private static final Logger LOGGER = Logger.getLogger(AbstractInputControl.class);
     protected final ClientMovementService movementService;
     protected final ClientGameStatsService gameStatsService;
@@ -53,13 +54,22 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         this.gameStatsService = gameStatsService;
         executor = Executors.newScheduledThreadPool(1);
     }
+    
+    private void shutDownExecutor(){
+        executor.shutdown();
+    }
+    
+    public void closeControl(InputManager input){
+        shutDownExecutor();
+        disableKeys(input);
+    }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         // Nothing
     }
     
-    private void setNewMoveDirection(float tpf) {
+    private Vector3f setNewMoveDirection(float tpf) {
         if(character == null){
             character = getSpatial().getControl(CharacterControl.class);
             LOGGER.log(Level.INFO, "Fetched the char control\n direction : " + character.getWalkDirection() + "\n location : " + character.getPhysicsLocation());
@@ -67,19 +77,23 @@ public abstract class AbstractInputControl extends AbstractControl implements An
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
         }
-        Vector3f moveDir = character.getViewDirection().clone();
-        Vector3f moveDirLeft = rotateY(moveDir, FastMath.DEG_TO_RAD * 90);
-        moveDir.y = 0;
-        moveDirLeft.y = 0;
-        moveDir.normalizeLocal();
-        moveDirLeft.normalizeLocal();
-        Vector3f newMoveDirection = new Vector3f(0,0,0);
-        if(forward) newMoveDirection.addLocal(moveDir);
-        if(backward) newMoveDirection.addLocal(moveDir.negate());
-        if(strafeLeft) newMoveDirection.addLocal(moveDirLeft);
-        if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
-        newMoveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
-        character.setWalkDirection(newMoveDirection);        
+        Vector3f newMoveDirection;
+        synchronized(charLock){
+            Vector3f moveDir = character.getViewDirection();
+            Vector3f moveDirLeft = rotateY(moveDir, FastMath.DEG_TO_RAD * 90);
+            moveDir.y = 0;
+            moveDirLeft.y = 0;
+            moveDir.normalizeLocal();
+            moveDirLeft.normalizeLocal();
+            newMoveDirection = new Vector3f(0,0,0);
+            if(forward) newMoveDirection.addLocal(moveDir);
+            if(backward) newMoveDirection.addLocal(moveDir.negate());
+            if(strafeLeft) newMoveDirection.addLocal(moveDirLeft);
+            if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
+            newMoveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
+            character.setWalkDirection(newMoveDirection);
+        }
+        return newMoveDirection;
     }
     
     @Override
@@ -95,7 +109,6 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         else if(name.equals("backward")) backward = isPressed;
         else if(name.equals("strafeLeft")) strafeLeft = isPressed;
         else if(name.equals("strafeRight")) strafeRight = isPressed;
-                
         setNewMoveDirection(tpf);
         sendMovementToServer();                    
     }
@@ -111,15 +124,18 @@ public abstract class AbstractInputControl extends AbstractControl implements An
         }
         if(name.equals("rotateleft")){
             rotateY(-value);
+            setNewMoveDirection(tpf);
+            sendMovementToServer();
         }else if(name.equals("rotateright")){
             rotateY(value);
+            setNewMoveDirection(tpf);
+            sendMovementToServer();
         }else if(name.equals("rotateup")){
             ((Node) getSpatial()).getChild("CamNode").rotate(value, 0, 0);
         }else if(name.equals("rotatedown")){
             ((Node) getSpatial()).getChild("CamNode").rotate(-value, 0, 0);
         }
-        setNewMoveDirection(tpf);
-        sendMovementToServer();
+        
     }
     
     /**
@@ -137,19 +153,24 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     private final Runnable movementSender = new Runnable(){
         @Override
         public void run(){
-            Spatial self = getSpatial();
-            PlayerMovement pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
-                    character.getWalkDirection(), character.getViewDirection());
-            movementService.sendPlayerMovement(pm);
+            PlayerMovement pm;
             synchronized(lock){
                 isSending = false;
             }
+            synchronized(charLock){
+                Spatial self = getSpatial().clone();
+                pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
+                        character.getWalkDirection(), character.getViewDirection());
+            }
+            movementService.sendPlayerMovement(pm);
         }
     };
     
     private void rotateY(float rotationRad){
-        Vector3f oldViewRot = character.getViewDirection();
-        character.setViewDirection(rotateY(oldViewRot, rotationRad));
+        synchronized(charLock){
+            Vector3f oldViewRot = character.getViewDirection();
+            character.setViewDirection(rotateY(oldViewRot, rotationRad));
+        }
     }
     
     private Vector3f rotateY(Vector3f v, float rotationRad){

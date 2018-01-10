@@ -167,7 +167,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
 
     @Override
     protected void onDisable() {  
-        player.getControl(AbstractInputControl.class).disableKeys(input);
+        player.getControl(AbstractInputControl.class).closeControl(input);
         AmbientAudioService.getAmbientAudioService(app.getAssetManager()).stopGameMusic();
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
