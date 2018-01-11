@@ -21,12 +21,10 @@ import com.jme3.scene.Spatial;
 import control.WorldCreator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.service.gamesetup.AllReadyListener;
-import network.service.gamesetup.GameSetupSessionListener;
 import network.service.gamesetup.server.HostedGameSetupService;
 import network.service.login.Account;
 import network.service.movement.server.HostedMovementService;
@@ -49,7 +47,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private HostedMovementService hostedMovementService;
     private List<Account> accounts;
     
-    private final int MONKEYS_PER_PLAYER = 2;
+    private final int MONKEYS_PER_PLAYER = 1;
     
     @Override
     protected void initialize(Application app) {
@@ -69,7 +67,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     protected void onEnable() {
         LOGGER.info("SETUP STATE ENABLED");
         world = new Node("world");
-        LOGGER.log(Level.INFO, "world node : " + world);
+//        LOGGER.log(Level.INFO, "world node : " + world);
         this.app.getRootNode().attachChild(world);
         hostedGameSetupService = app.getHostedGameSetupService();
         asset = app.getAssetManager();

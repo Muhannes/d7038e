@@ -11,11 +11,11 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.sun.istack.internal.logging.Logger;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.ping.PingSession;
 import network.service.ping.PingSessionListener;
 import network.util.NetConfig;
@@ -26,7 +26,7 @@ import network.util.NetConfig;
  */
 public class HostedPingService extends AbstractHostedConnectionService{
     
-    private static final Logger LOGGER = Logger.getLogger(HostedPingService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedPingService.class.getName());
     
     private static final String PING = "Attribute.PING";
     

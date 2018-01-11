@@ -9,10 +9,10 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.login.Account;
 import network.service.login.LoginSession;
 import network.service.login.LoginSessionListener;
@@ -24,7 +24,7 @@ import network.util.NetConfig;
  */
 public class ClientLoginService extends AbstractClientService implements LoginSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientLoginService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientLoginService.class.getName());
     
     private static Account myAccount;
     

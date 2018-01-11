@@ -9,9 +9,9 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import network.util.NetConfig;
 
 /**
@@ -20,7 +20,7 @@ import network.util.NetConfig;
  */
 public class LoginListenerService extends AbstractClientService{
 
-    private static final Logger LOGGER = Logger.getLogger(LoginListenerService.class);
+    private static final Logger LOGGER = Logger.getLogger(LoginListenerService.class.getName());
     
     private static final List<Account> accounts = new ArrayList<>();
     

@@ -15,12 +15,12 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.sun.istack.internal.logging.Logger;
 import control.MonkeyNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.gameserver.Filter;
 import network.service.login.Account;
 import network.service.movement.MovementSession;
@@ -36,7 +36,7 @@ import network.util.NetConfig;
  */
 public class HostedMovementService extends AbstractHostedConnectionService implements MovementSessionEmitter {
     
-    private static final Logger LOGGER = Logger.getLogger(HostedMovementService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedMovementService.class.getName());
 
     private static final String MOVEMENT = "MOVEMENT";
     private static int movementCounter = 0;

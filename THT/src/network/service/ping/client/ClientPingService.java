@@ -9,10 +9,10 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.ping.PingSession;
 import network.service.ping.PingSessionListener;
 
@@ -22,7 +22,7 @@ import network.service.ping.PingSessionListener;
  */
 public class ClientPingService extends AbstractClientService{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientPingService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientPingService.class.getName());
     
     private List<PingSessionListener> listeners = new ArrayList<>();
     
