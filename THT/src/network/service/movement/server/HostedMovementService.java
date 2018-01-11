@@ -135,7 +135,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         Runnable r = () -> {
             movementCounter++;
             if(movementCounter == 50){
-                System.out.println("Sending to all");
                 broadcastEverything(playersNode);
                 movementCounter = 0;
             }else{
