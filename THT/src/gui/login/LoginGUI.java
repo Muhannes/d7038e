@@ -14,10 +14,8 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import gui.event.EnterEvent;
 import gui.event.KeyBoardMapping;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import sun.swing.SwingUtilities2;
 
 /**
  *

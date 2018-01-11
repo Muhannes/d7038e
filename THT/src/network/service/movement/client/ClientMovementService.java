@@ -11,8 +11,8 @@ import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import com.sun.istack.internal.logging.Logger;
 import java.util.List;
+import java.util.logging.Logger;
 import network.service.movement.MovementSession;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -24,7 +24,7 @@ import network.util.NetConfig;
  */
 public class ClientMovementService extends AbstractClientService implements MovementSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientMovementService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientMovementService.class.getName());
 
     private final MovementSessionListener callback = new MovementSessionCallback();
 

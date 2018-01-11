@@ -10,10 +10,9 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionListener;
 import network.util.NetConfig;
@@ -23,7 +22,7 @@ import network.util.NetConfig;
  * @author truls
  */
 public class ClientGameStatsService extends AbstractClientService implements GameStatsSession{
-    private static final Logger LOGGER = Logger.getLogger(ClientGameStatsService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientGameStatsService.class.getName());
     
     private final GameStatsSessionListener callback = new GameStatsSessionCallback();
     // Used to get notifications from the server

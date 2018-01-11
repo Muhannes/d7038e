@@ -11,10 +11,10 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.gamesetup.SetupGameEvent;
 import network.util.NetConfig;
 import utils.eventbus.Event;
@@ -28,7 +28,7 @@ import network.service.lobby.LobbySessionListener;
  */
 public class HostedHandoverService extends AbstractHostedConnectionService implements EventListener{
     
-    private static final Logger LOGGER = Logger.getLogger(HostedHandoverService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedHandoverService.class.getName());
     private final List<GameServer> gameServers = new ArrayList<>();
     
     private RmiHostedService rmiHostedService;

@@ -11,12 +11,12 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.sun.istack.internal.logging.Logger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.lobby.server.HostedLobbyService;
 import network.service.login.LoginSession;
 import network.service.login.LoginSessionListener;
@@ -28,7 +28,7 @@ import network.util.NetConfig;
  */
 public class HostedLoginService extends AbstractHostedConnectionService{
     
-    private static final Logger LOGGER = Logger.getLogger(HostedLoginService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedLoginService.class.getName());
     
     private final List<HostedConnection> loginListeners = new ArrayList<>();
     

@@ -10,10 +10,7 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import gui.game.GameOverGUI;
 import gui.game.GameGUIListener;
-import java.awt.Color;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import sun.swing.SwingUtilities2;
 
 /**
  *

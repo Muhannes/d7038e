@@ -21,9 +21,10 @@ import com.jme3.scene.Spatial;
  */
 public class MonkeyNode extends EntityNode {
 
-    private static final float MONKEY_MOVEMENT_SPEED = 4;
+    private static final float MONKEY_MOVEMENT_SPEED = 2.5f;
     public MonkeyNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, AssetManager assetManager) {
         super(name, position, bulletAppState, model, assetManager);
+
     }
 
     @Override

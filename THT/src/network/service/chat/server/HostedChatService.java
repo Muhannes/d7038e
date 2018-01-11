@@ -11,8 +11,8 @@ import com.jme3.network.service.AbstractHostedConnectionService;
 import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
-import com.sun.istack.internal.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.chat.ChatSession;
 import network.util.NetConfig;
 
@@ -22,7 +22,7 @@ import network.util.NetConfig;
  */
 public class HostedChatService extends AbstractHostedConnectionService{
     
-    private static final Logger LOGGER = Logger.getLogger(HostedChatService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedChatService.class.getName());
     
     private static final String CHAT = "CHAT";
     

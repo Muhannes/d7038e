@@ -11,7 +11,7 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.network.MessageConnection;
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Logger;
 import network.util.NetConfig;
 import network.service.lobby.LobbySession;
 
@@ -21,7 +21,7 @@ import network.service.lobby.LobbySession;
  */
 public class HostedLobbyService extends AbstractHostedConnectionService{
     
-    private static final Logger LOGGER = Logger.getLogger(HostedLobbyService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedLobbyService.class.getName());
     
     private static final String LOBBY_SERVICE = "lobby_service";
     

@@ -11,9 +11,9 @@ import com.jme3.input.controls.KeyTrigger;
 import control.animation.MonsterAnimationControl;
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
-import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This control handles how a monster should react to keyboard input.
@@ -24,7 +24,7 @@ import java.util.logging.Level;
  */
 public class MonsterInputControl extends AbstractInputControl{
 
-    private static final Logger LOGGER = Logger.getLogger(MonsterInputControl.class);
+    private static final Logger LOGGER = Logger.getLogger(MonsterInputControl.class.getName());
     
     private EntityNode self; //Will be used for decoy 
 
