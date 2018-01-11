@@ -23,7 +23,7 @@ public class NetConfig {
     
     private static final Logger LOGGER = Logger.getLogger(NetConfig.class.getName());
 
-    private static final String SERVER_IP = "10.0.0.5";
+    private static final String SERVER_IP = "localhost";
     
     public static String LOBBY_SERVER_NAME = SERVER_IP;
     public static int LOBBY_PLAYER_SERVER_PORT = 7999;

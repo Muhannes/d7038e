@@ -112,77 +112,68 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
         player.getCallback().notifyPlayerMovement(movements);
     }
     
-    public Runnable broadcastEverything(Node playersNode){
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                List<PlayerMovement> movements = new ArrayList<>();
-                for(Spatial s : playersNode.getChildren()){
-                    if (!(s instanceof MonkeyNode)) {
-                        Vector3f location = new Vector3f(s.getLocalTranslation());
-                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
-                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+    public void broadcastEverything(Node playersNode){
+        List<PlayerMovement> movements = new ArrayList<>();
+        
+        for(Spatial s : playersNode.getChildren()){
+            if (!(s instanceof MonkeyNode)) {
+                Vector3f location = new Vector3f(s.getLocalTranslation());
+                Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
 
-                        //do same for location
-                        PlayerMovement pm = new PlayerMovement(s.getName(), location, direction, rotation);
-                        movements.add(pm);
-                    }
-                    
-                }
-                
-                players.forEach(p -> broadcast(p, movements));
+                //do same for location
+                PlayerMovement pm = new PlayerMovement(s.getName(), location, direction, rotation);
+                movements.add(pm);
             }
-        };
-        return r;
+        }
+        
+        players.forEach(p -> broadcast(p, movements));
     }
     
     public Runnable getMovementSender(Node playersNode, Node rooms){
-        movementCounter++;
-        if (movementCounter == 50) {
-            movementCounter = 0;
-            System.out.println("Sending all!");
-            return broadcastEverything(playersNode);
-        }else {
-            //Send out movements everything 10ms 
-            Runnable r = new Runnable(){
-                @Override
-                public void run() {
-                    List<String> ups = new ArrayList<>(updatedPlayers);
-                    updatedPlayers.clear(); //changed from within the loop.   
-                    for(String id : ups){
-                        Spatial s = playersNode.getChild(id);
-                        if (s != null) {
-                            Vector3f location = new Vector3f(s.getLocalTranslation());
-                            Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
-                            Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+        //Send out movements everything 10ms 
+        Runnable r = () -> {
+            movementCounter++;
+            if(movementCounter == 50){
+                System.out.println("Sending to all");
+                broadcastEverything(playersNode);
+                movementCounter = 0;
+            }else{
+                List<String> ups = new ArrayList<>(updatedPlayers);
+                updatedPlayers.clear(); //changed from within the loop.
+                for(String id : ups){
+                    Spatial s = playersNode.getChild(id);
+                    if (s != null) {
+                        Vector3f location = new Vector3f(s.getLocalTranslation());
+                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+                        
+                        //do same for location
+                        PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
+                        movements.add(pm);
+                    } else {
+                        LOGGER.info("Spatial was null when trying to send info");
+                    }
 
-                            //do same for location
-                            PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
-                            movements.add(pm);
-                        } else {
-                            LOGGER.info("Spatial was null when trying to send info");
+                }
+           
+                if (!movements.isEmpty()) {
+                    // For each session, filter out the player movements that this session is interested in.
+                    players.forEach((session) -> {
+                        Account account = session.conn.getAttribute(ConnectionAttribute.ACCOUNT);
+                        String id = "" + account.id;
+                        List<PlayerMovement> filtered = Filter.getPlayerMovements(
+                                playersNode.getChild(id), movements, rooms);
+                        if(filtered.size() > 0){
+                            broadcast(session, filtered);
                         }
-
-                    }
-
-                    if (!movements.isEmpty()) {
-                        // For each session, filter out the player movements that this session is interested in.
-                        players.forEach((session) -> { 
-                            Account account = session.conn.getAttribute(ConnectionAttribute.ACCOUNT);
-                            String id = "" + account.id;
-                            List<PlayerMovement> filtered = Filter.getPlayerMovements(
-                                    playersNode.getChild(id), movements, rooms);
-                            if(filtered.size() > 0){
-                                broadcast(session, filtered);
-                            }
-                        });
-
-                        movements.clear();        
-                    }
-                }           
-            };
-            return r;
-        }
+                    });
+                    
+                    movements.clear();
+                }
+            }
+        };
+        return r;
     }
 
     @Override
