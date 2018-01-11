@@ -40,15 +40,16 @@ public class MonkeyNode extends EntityNode {
         createLowDetailModel(assetManager, ColorRGBA.Brown, radius, height);
         model.setLocalTranslation(model.getLocalTranslation().subtract(0, height, 0));
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
-        charControl = new CharacterControl(shape, 1.0f);
+        charControl = new MyCharacterControl(shape, 1.0f);
+        movementSpeed = MONKEY_MOVEMENT_SPEED;
+        charControl.setMovementSpeed(movementSpeed);
         charControl.removeCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_01);
         charControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
         this.addControl(charControl);
         bulletAppState.getPhysicsSpace().add(charControl);
         
         // Speed scaling
-        movementSpeed = MONKEY_MOVEMENT_SPEED;
-        this.addControl(new SpeedController());
+        //this.addControl(new SpeedController());
         
         attachChild(model);
     }

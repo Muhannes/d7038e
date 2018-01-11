@@ -16,12 +16,9 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.LodControl;
 import com.jme3.scene.shape.Box;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jme3tools.optimize.LodGenerator;
-import org.w3c.dom.css.RGBColor;
 
 /**
  * The spatial for a movable character
@@ -30,7 +27,7 @@ import org.w3c.dom.css.RGBColor;
 public abstract class EntityNode extends Node{
     private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
     // TODO: Init variables for different trap status, i.e. isFrozen.
-    CharacterControl charControl;
+    MyCharacterControl charControl;
     Spatial model;
     Spatial lowDetailModel;
     AnimControl animationControl;

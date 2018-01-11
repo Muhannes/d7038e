@@ -44,7 +44,8 @@ public class MonsterNode extends EntityNode{
         model.rotate(0, FastMath.DEG_TO_RAD * 180, 0);
         model.setLocalTranslation(model.getLocalTranslation().add(0, - height*3/4, 0));
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);  
-        charControl = new CharacterControl(shape, 1.0f);
+        charControl = new MyCharacterControl(shape, 1.0f);
+        charControl.setMovementSpeed(movementSpeed);
         this.addControl(charControl);
                 
         bulletAppState.getPhysicsSpace().add(charControl);
@@ -52,7 +53,7 @@ public class MonsterNode extends EntityNode{
         this.addControl(new MonsterAnimationControl(model));
         
         // Speed scaling
-        this.addControl(new SpeedController());
+        //this.addControl(new SpeedController());
         
         attachChild(model);
     }

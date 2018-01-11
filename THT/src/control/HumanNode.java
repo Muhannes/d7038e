@@ -38,7 +38,8 @@ public class HumanNode extends EntityNode{
         float height = boundingBox.getYExtent() * 1.15f;
         createLowDetailModel(assetManager, ColorRGBA.Black, radius, height);
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
-        charControl = new CharacterControl(shape, 1.0f);
+        charControl = new MyCharacterControl(shape, 1.0f);
+        charControl.setMovementSpeed(movementSpeed);
         this.addControl(charControl);
         
         bulletAppState.getPhysicsSpace().add(charControl);
@@ -46,7 +47,7 @@ public class HumanNode extends EntityNode{
         this.addControl(new HumanAnimationControl(model));
         
         // Speed scaling
-        this.addControl(new SpeedController());
+        //this.addControl(new SpeedController());
         
         attachChild(model);
     }
