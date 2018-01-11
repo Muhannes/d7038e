@@ -123,7 +123,7 @@ public class GameLobbyGUI implements ScreenController, KeyInputHandler{
         TextField field = screen.findNiftyControl("textfieldInput", TextField.class);
         String input = field.getRealText();
         String player = ClientLoginService.getAccount().name;
-        String message = player+":"+input;
+        String message = player+": "+input;
         listeners.forEach(l -> l.onSendMessage(message));
         field.setText("");
     }
