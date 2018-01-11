@@ -49,7 +49,7 @@ public class SetupState extends BaseAppState implements AllReadyListener{
     private HostedMovementService hostedMovementService;
     private List<Account> accounts;
     
-    private final int MONKEYS_PER_PLAYER = 2;
+    private final int MONKEYS_PER_PLAYER = 3;
     
     @Override
     protected void initialize(Application app) {

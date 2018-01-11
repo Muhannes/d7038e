@@ -75,7 +75,7 @@ public class ClientApplication extends SimpleApplication{
         // Start app at login Screen
         loginScreen.setEnabled(true);
         flyCam.setEnabled(false);
-        setDisplayStatView(false);
+        setDisplayStatView(true);
         
         setLostFocusBehavior(LostFocusBehavior.Disabled);
     }

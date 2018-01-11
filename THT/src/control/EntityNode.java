@@ -10,10 +10,13 @@ import com.jme3.animation.AnimControl;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.LodControl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jme3tools.optimize.LodGenerator;
 
 /**
  * The spatial for a movable character
@@ -40,6 +43,23 @@ public abstract class EntityNode extends Node{
     public EntityNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
         super(name);
         this.model = model;
+        for (Spatial spatial : ((Node)model).getChildren()) {
+            if (spatial instanceof Geometry) {
+                Geometry g = (Geometry) spatial;
+                System.out.println("Adding LOD to geom, triangle count: " + 
+                g.getTriangleCount());
+                LodGenerator lod = new LodGenerator(g);
+                //lod.bakeLods(LodGenerator.TriangleReductionMethod.COLLAPSE_COST, 0.5f);
+                
+                lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL,0.25f, 0.5f, 0.75f);
+
+                LodControl lc = new LodControl();
+                System.out.println("Distance tolerance: " + lc.getDistTolerance());
+                lc.setDistTolerance(3);
+                g.addControl(lc);
+            }
+        }
+        
         this.bulletAppState = bulletAppState;
         initEntity(position);
     }
@@ -53,6 +73,16 @@ public abstract class EntityNode extends Node{
     public Spatial getmodel(){
         return model;
     }
+    
+    /*public void changeModel(Vector3f pos){
+        if (pos.distance(this.getWorldTranslation()) > 10) {
+            this.detachChild(model);
+        } else {
+            if (this.getChild(model.getName()) == null){
+                this.attachChild(model);
+            }
+        }
+    }*/
     
     public void jumped(){
         charControl.jump();

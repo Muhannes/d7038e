@@ -21,6 +21,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import control.EntityNode;
 import control.HumanNode;
+import control.ModelControl;
 import control.MonsterNode;
 import control.WorldCreator;
 import control.audio.AmbientAudioService;
@@ -126,6 +127,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         // so that walls are not invisible
         camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.23f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
+        //player.addControl(new ModelControl((Node)root.getChild("players")));
         player.attachChild(camNode);        
 
         if (player instanceof HumanNode) {
