@@ -44,6 +44,10 @@ public class GameGUI implements ScreenController{
         this.screen = screen;
     }
     
+    public void cleanup(){
+        text3 = this.screen.findElementById("traps"); 
+        text3.getRenderer(TextRenderer.class).setText("");
+    }
 
     public void displayKiller(){
         text1 = this.screen.findElementById("death");

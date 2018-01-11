@@ -176,6 +176,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeAll(root);
         
         root.detachAllChildren();
+        gui.cleanup();
         app.getGuiViewPort().removeProcessor(niftyDisplay);
     }
     
