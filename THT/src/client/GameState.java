@@ -196,7 +196,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 player.getControl(AbstractInputControl.class).disableKeys(input);
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(GhostControl.class)); //reset bulletAppState
                 app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(playerNode.getChild(victim).getControl(CharacterControl.class)); //reset bulletAppState
-
+                
                 playerNode.detachChildNamed(victim);
 
                 /* -------------------------------------------------------------- */
@@ -208,6 +208,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 //monster control
                 MonsterInputControl monsterInputControl = new MonsterInputControl(newMonster, clientMovementService, clientGameStatsService);
                 newMonster.addControl(monsterInputControl);
+                newMonster.addControl(new ModelControl(playerNode));
                 monsterInputControl.initKeys(input);
 
                 newMonster.addControl(new MonsterAudioControl(app.getAssetManager()));
