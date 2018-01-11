@@ -36,8 +36,8 @@ public class WorldCreator {
         // TODO: make different models for each character type
         Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
         Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
-//        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
-        Box box = new Box(0.1f,0.1f,0.1f);
+        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
+        Box box = new Box(0.1f,0.3f,0.1f);
         Geometry geom = new Geometry("box", box);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Blue);
@@ -52,8 +52,8 @@ public class WorldCreator {
             } else if (p.getType() == EntityType.Monster) {
                 model = monsterModel.clone();
             } else {
-//                model = monkeyModel.clone();
-                model = geom.clone();
+                model = monkeyModel.clone(); //High detail
+//                model = geom.clone(); //Low detail
             }
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });
