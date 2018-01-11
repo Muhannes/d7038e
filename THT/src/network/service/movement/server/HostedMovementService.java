@@ -138,7 +138,9 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     
     public Runnable getMovementSender(Node playersNode, Node rooms){
         movementCounter++;
-        if (movementCounter % 50 == 0) {
+        if (movementCounter == 50) {
+            movementCounter = 0;
+            System.out.println("Sending all!");
             return broadcastEverything(playersNode);
         }else {
             //Send out movements everything 10ms 
