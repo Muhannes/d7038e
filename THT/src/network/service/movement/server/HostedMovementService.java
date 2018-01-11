@@ -15,6 +15,7 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import control.MonkeyNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,6 +39,7 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     private static final Logger LOGGER = Logger.getLogger(HostedMovementService.class.getName());
 
     private static final String MOVEMENT = "MOVEMENT";
+    private static int movementCounter = 0;
     
     private RmiHostedService rmiHostedService;
     private final List<MovementSessionImpl> players = new ArrayList<>();
@@ -116,13 +118,16 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
             public void run() {
                 List<PlayerMovement> movements = new ArrayList<>();
                 for(Spatial s : playersNode.getChildren()){
-                    Vector3f location = new Vector3f(s.getLocalTranslation());
-                    Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
-                    Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+                    if (!(s instanceof MonkeyNode)) {
+                        Vector3f location = new Vector3f(s.getLocalTranslation());
+                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
 
-                    //do same for location
-                    PlayerMovement pm = new PlayerMovement(s.getName(), location, direction, rotation);
-                    movements.add(pm);
+                        //do same for location
+                        PlayerMovement pm = new PlayerMovement(s.getName(), location, direction, rotation);
+                        movements.add(pm);
+                    }
+                    
                 }
                 
                 players.forEach(p -> broadcast(p, movements));
@@ -132,46 +137,50 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
     }
     
     public Runnable getMovementSender(Node playersNode, Node rooms){
-        
-        //Send out movements everything 10ms 
-        Runnable r = new Runnable(){
-            @Override
-            public void run() {
-                List<String> ups = new ArrayList<>(updatedPlayers);
-                updatedPlayers.clear(); //changed from within the loop.   
-                for(String id : ups){
-                    Spatial s = playersNode.getChild(id);
-                    if (s != null) {
-                        Vector3f location = new Vector3f(s.getLocalTranslation());
-                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
-                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
+        movementCounter++;
+        if (movementCounter % 50 == 0) {
+            return broadcastEverything(playersNode);
+        }else {
+            //Send out movements everything 10ms 
+            Runnable r = new Runnable(){
+                @Override
+                public void run() {
+                    List<String> ups = new ArrayList<>(updatedPlayers);
+                    updatedPlayers.clear(); //changed from within the loop.   
+                    for(String id : ups){
+                        Spatial s = playersNode.getChild(id);
+                        if (s != null) {
+                            Vector3f location = new Vector3f(s.getLocalTranslation());
+                            Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
+                            Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
 
-                        //do same for location
-                        PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
-                        movements.add(pm);
-                    } else {
-                        LOGGER.info("Spatial was null when trying to send info");
-                    }
-                    
-                }
-                
-                if (!movements.isEmpty()) {
-                    // For each session, filter out the player movements that this session is interested in.
-                    players.forEach((session) -> { 
-                        Account account = session.conn.getAttribute(ConnectionAttribute.ACCOUNT);
-                        String id = "" + account.id;
-                        List<PlayerMovement> filtered = Filter.getPlayerMovements(
-                                playersNode.getChild(id), movements, rooms);
-                        if(filtered.size() > 0){
-                            broadcast(session, filtered);
+                            //do same for location
+                            PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
+                            movements.add(pm);
+                        } else {
+                            LOGGER.info("Spatial was null when trying to send info");
                         }
-                    });
-                    
-                    movements.clear();        
-                }
-            }           
-        };
-        return r;
+
+                    }
+
+                    if (!movements.isEmpty()) {
+                        // For each session, filter out the player movements that this session is interested in.
+                        players.forEach((session) -> { 
+                            Account account = session.conn.getAttribute(ConnectionAttribute.ACCOUNT);
+                            String id = "" + account.id;
+                            List<PlayerMovement> filtered = Filter.getPlayerMovements(
+                                    playersNode.getChild(id), movements, rooms);
+                            if(filtered.size() > 0){
+                                broadcast(session, filtered);
+                            }
+                        });
+
+                        movements.clear();        
+                    }
+                }           
+            };
+            return r;
+        }
     }
 
     @Override

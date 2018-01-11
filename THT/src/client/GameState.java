@@ -223,8 +223,10 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
                 player = newMonster; //might be usedful for other methods.        
                 playerNode.attachChild(player);
                 // Adjust camera height to monster model size
-                camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));
-
+                camNode.setLocalTranslation(new Vector3f(0, 0.7f, 0));                
+                
+                //clear the text in gui
+                gui.cleanup();
             } else {
 
                 //reset bullet
