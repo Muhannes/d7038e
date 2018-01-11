@@ -9,9 +9,9 @@ import com.jme3.network.MessageConnection;
 import com.jme3.network.service.AbstractClientService;
 import com.jme3.network.service.ClientServiceManager;
 import com.jme3.network.service.rmi.RmiClientService;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.chat.ChatSession;
 import network.service.chat.ChatSessionListener;
 import network.util.NetConfig;
@@ -22,7 +22,7 @@ import network.util.NetConfig;
  */
 public class ClientChatService extends AbstractClientService implements ChatSession{
 
-    private static final Logger LOGGER = Logger.getLogger(ClientChatService.class);
+    private static final Logger LOGGER = Logger.getLogger(ClientChatService.class.getName());
     
     private ChatSessionListener callback = new ChatSessionCallBack();
     // Used to get notifications from the server

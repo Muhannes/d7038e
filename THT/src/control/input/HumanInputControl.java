@@ -11,8 +11,8 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Vector3f;  
 import network.service.gamestats.client.ClientGameStatsService;
 import network.service.movement.client.ClientMovementService;
-import com.sun.istack.internal.logging.Logger;
 import control.EntityNode;
+import java.util.logging.Logger;
 /**
  * This control handles how a human should react to keyboard input.
  * 
@@ -22,7 +22,7 @@ import control.EntityNode;
  */
 public class HumanInputControl extends AbstractInputControl{
     
-    private static final Logger LOGGER = Logger.getLogger(HumanInputControl.class);
+    private static final Logger LOGGER = Logger.getLogger(HumanInputControl.class.getName());
     
     private EntityNode self;
     private int traps = 5;

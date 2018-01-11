@@ -13,12 +13,12 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rmi.RmiRegistry;
 import com.jme3.scene.Node;
-import com.sun.istack.internal.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import network.service.gamestats.GameStatsSession;
 import network.service.gamestats.GameStatsSessionEmitter;
 import network.service.gamestats.GameStatsSessionListener;
@@ -30,7 +30,7 @@ import network.util.NetConfig;
  */
 public class HostedGameStatsService extends AbstractHostedConnectionService implements GameStatsSessionEmitter{
 
-    private static final Logger LOGGER = Logger.getLogger(HostedGameStatsService.class);
+    private static final Logger LOGGER = Logger.getLogger(HostedGameStatsService.class.getName());
     
     private static final String GAME_STATS_SERVICE = "game_stats_service";
     

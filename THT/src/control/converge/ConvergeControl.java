@@ -14,7 +14,6 @@ import java.util.List;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
 import network.service.movement.client.ClientMovementService;
-import sun.util.logging.PlatformLogger;
 
 /**
  * This control will converge a Spatial to a given Setpoint. This control, once
