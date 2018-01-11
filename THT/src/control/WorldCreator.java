@@ -12,9 +12,13 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +36,12 @@ public class WorldCreator {
         // TODO: make different models for each character type
         Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
         Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
-        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
+//        Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
+        Box box = new Box(0.1f,0.1f,0.1f);
+        Geometry geom = new Geometry("box", box);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        geom.setMaterial(mat);
         
         humanModel.scale(0.15f);
         monsterModel.scale(0.01f);
@@ -43,7 +52,8 @@ public class WorldCreator {
             } else if (p.getType() == EntityType.Monster) {
                 model = monsterModel.clone();
             } else {
-                model = monkeyModel.clone();
+//                model = monkeyModel.clone();
+                model = geom.clone();
             }
             players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
         });

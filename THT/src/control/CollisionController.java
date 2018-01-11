@@ -8,12 +8,10 @@ package control;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.gameserver.PlayState;
 import network.service.gamestats.server.HostedGameStatsService;
@@ -74,6 +72,9 @@ public class CollisionController implements PhysicsCollisionListener{
     }
     
     private boolean isTrapCollision(Spatial a, Spatial b){
+        if(a instanceof MonkeyNode || b instanceof MonkeyNode){
+            return false;
+        }
         if (b.getParent().getParent() != null) {
             return (a.getParent().getName().equals("playersNode") && b.getParent().getParent().getName().equals("traps"));
         } else {
