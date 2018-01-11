@@ -127,7 +127,7 @@ public class GameState extends BaseAppState implements GameStatsSessionListener{
         // so that walls are not invisible
         camera.setFrustumPerspective(45, Display.getWidth() / Display.getHeight(), 0.23f, 1000);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-        //player.addControl(new ModelControl((Node)root.getChild("players")));
+        player.addControl(new ModelControl((Node)root.getChild("players")));
         player.attachChild(camNode);        
 
         if (player instanceof HumanNode) {

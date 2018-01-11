@@ -12,9 +12,13 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,13 +33,14 @@ public class WorldCreator {
     public static Node createPlayers(List<Player> listOfPlayers, BulletAppState bulletAppState, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Initializing {0} number of players", listOfPlayers.size() );
         Node players = new Node("players");
-        // TODO: make different models for each character type
+        // make different models for each character type
         Spatial humanModel = assetManager.loadModel("Models/Oto/Oto.mesh.xml"); // robot
         Spatial monsterModel = assetManager.loadModel("Models/Ninja/Ninja.mesh.xml"); // ninja
         Spatial monkeyModel = assetManager.loadModel("Models/Jaime/Jaime.j3o"); // monkey
         
         humanModel.scale(0.15f);
         monsterModel.scale(0.01f);
+        
         listOfPlayers.forEach(p -> {
             Spatial model;
             if (p.getType() == EntityType.Human) {
@@ -45,22 +50,22 @@ public class WorldCreator {
             } else {
                 model = monkeyModel.clone();
             }
-            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType()));
+            players.attachChild(createPlayer(Integer.toString(p.getID()), p.getPosition(), bulletAppState, model, p.getType(), assetManager));
         });
         
         return players;
     }
     
-    public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type){
+    public static EntityNode createPlayer(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, EntityType type, AssetManager assetManager){
         LOGGER.log(Level.INFO, "Name: {0}, Position: {1}", new Object[]{name, position.toString()});
         
         if (type == EntityType.Human) {
-            return new HumanNode(name, position, bulletAppState, model);
+            return new HumanNode(name, position, bulletAppState, model, assetManager);
         } else if (type == EntityType.Monster){
-            return new MonsterNode(name, position, bulletAppState, model);
+            return new MonsterNode(name, position, bulletAppState, model, assetManager);
         } else if (type == EntityType.Monkey){
             LOGGER.log(Level.INFO, "Monkey name : " + name);
-            return new MonkeyNode(name, position, bulletAppState, model);
+            return new MonkeyNode(name, position, bulletAppState, model, assetManager);
         } else {
             return null;
         }
@@ -74,7 +79,7 @@ public class WorldCreator {
                     
         Vector3f tmpPos = new Vector3f(-8.071331f, 6.0000033f, -18.304163f); //monster spawn
         
-        return new MonsterNode(name, tmpPos, bulletAppState, model);
+        return new MonsterNode(name, tmpPos, bulletAppState, model, assetManager);
     }
     
     public static void addPhysicsToMap(BulletAppState bulletAppState, Spatial mapModel){ 

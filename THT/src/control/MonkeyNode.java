@@ -5,11 +5,13 @@
  */
 package control;
 
+import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 
@@ -20,8 +22,8 @@ import com.jme3.scene.Spatial;
 public class MonkeyNode extends EntityNode {
 
     private static final float MONKEY_MOVEMENT_SPEED = 4;
-    public MonkeyNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
-        super(name, position, bulletAppState, model);
+    public MonkeyNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, AssetManager assetManager) {
+        super(name, position, bulletAppState, model, assetManager);
     }
 
     @Override
@@ -34,6 +36,7 @@ public class MonkeyNode extends EntityNode {
         float radius = boundingBox.getXExtent() / 4; 
         
         float height = boundingBox.getYExtent() / 2;
+        createLowDetailModel(assetManager, ColorRGBA.Brown, radius, height);
         model.setLocalTranslation(model.getLocalTranslation().subtract(0, height, 0));
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);

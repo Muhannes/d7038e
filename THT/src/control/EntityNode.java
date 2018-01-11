@@ -7,31 +7,37 @@ package control;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.LodControl;
+import com.jme3.scene.shape.Box;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3tools.optimize.LodGenerator;
+import org.w3c.dom.css.RGBColor;
 
 /**
  * The spatial for a movable character
  * @author hannes
  */
 public abstract class EntityNode extends Node{
-        private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(EntityNode.class.getName());
     // TODO: Init variables for different trap status, i.e. isFrozen.
     CharacterControl charControl;
     Spatial model;
+    Spatial lowDetailModel;
     AnimControl animationControl;
     AnimChannel animationChannel;
     
     BulletAppState bulletAppState;
+    AssetManager assetManager;
     
     public float movementSpeed = NORMAL_MOVEMENT_SPEED;
     public static float SLOWED_MOVEMENT_SPEED = 1.0f;
@@ -40,28 +46,23 @@ public abstract class EntityNode extends Node{
     private Boolean slowed = false;
     private final int slowTime = 3;
     
-    public EntityNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
+    public EntityNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, AssetManager assetManager) {
         super(name);
         this.model = model;
-        for (Spatial spatial : ((Node)model).getChildren()) {
-            if (spatial instanceof Geometry) {
-                Geometry g = (Geometry) spatial;
-                System.out.println("Adding LOD to geom, triangle count: " + 
-                g.getTriangleCount());
-                LodGenerator lod = new LodGenerator(g);
-                //lod.bakeLods(LodGenerator.TriangleReductionMethod.COLLAPSE_COST, 0.5f);
-                
-                lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL,0.25f, 0.5f, 0.75f);
-
-                LodControl lc = new LodControl();
-                System.out.println("Distance tolerance: " + lc.getDistTolerance());
-                lc.setDistTolerance(3);
-                g.addControl(lc);
-            }
-        }
-        
         this.bulletAppState = bulletAppState;
+        this.assetManager = assetManager;
         initEntity(position);
+    }
+    
+    public void createLowDetailModel(AssetManager assetManager, ColorRGBA c, float width, float height){
+        // Low detail level model
+        Box box = new Box(width, height, width);
+        Geometry geom = new Geometry("lowdetail", box);
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", c);
+        geom.setMaterial(material);
+        lowDetailModel = geom;
+        
     }
         
     /**
@@ -74,15 +75,19 @@ public abstract class EntityNode extends Node{
         return model;
     }
     
-    /*public void changeModel(Vector3f pos){
-        if (pos.distance(this.getWorldTranslation()) > 10) {
-            this.detachChild(model);
+    public void changeModel(Vector3f pos, int distance){
+        if (pos.distance(this.getWorldTranslation()) > distance) {
+            if (this.getChild(lowDetailModel.getName()) == null){
+                this.detachChild(model);
+                this.attachChild(lowDetailModel);
+            }
         } else {
             if (this.getChild(model.getName()) == null){
+                this.detachChild(lowDetailModel);
                 this.attachChild(model);
             }
         }
-    }*/
+    }
     
     public void jumped(){
         charControl.jump();

@@ -5,10 +5,12 @@
  */
 package control;
 
+import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import control.animation.HumanAnimationControl;
@@ -20,8 +22,8 @@ import control.input.HumanInputControl;
  */
 public class HumanNode extends EntityNode{
     
-    public HumanNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model) {
-        super(name, position, bulletAppState, model);
+    public HumanNode(String name, Vector3f position, BulletAppState bulletAppState, Spatial model, AssetManager assetManager) {
+        super(name, position, bulletAppState, model, assetManager);
     }
 
     @Override
@@ -34,6 +36,7 @@ public class HumanNode extends EntityNode{
         float radius = boundingBox.getXExtent() / 2; 
         
         float height = boundingBox.getYExtent() * 1.15f;
+        createLowDetailModel(assetManager, ColorRGBA.Black, radius, height);
         CapsuleCollisionShape shape = new CapsuleCollisionShape(radius, height);
         charControl = new CharacterControl(shape, 1.0f);
         this.addControl(charControl);

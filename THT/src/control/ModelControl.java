@@ -16,8 +16,11 @@ import com.jme3.scene.control.AbstractControl;
  * @author hannes
  */
 public class ModelControl extends AbstractControl{
-
+    private static final float TIME_TO_CHECK = 1.0f;
+    private static final int MAX_DISTANCE = 15;
+    
     private Node playersNode;
+    private float time = 0;
     
     public ModelControl(Node playersNode) {
         this.playersNode = playersNode;
@@ -27,9 +30,14 @@ public class ModelControl extends AbstractControl{
     
     @Override
     protected void controlUpdate(float tpf) {
-       // for (Spatial spatial : playersNode.getChildren()) {
-       //     ((EntityNode) spatial).changeModel(getSpatial().getWorldTranslation());
-       // }
+        time += tpf;
+        if (time > TIME_TO_CHECK) {
+            time = 0;
+            for (Spatial spatial : playersNode.getChildren()) {
+                ((EntityNode) spatial).changeModel(getSpatial().getWorldTranslation(), MAX_DISTANCE);
+            }
+        }
+        
     }
 
     @Override
