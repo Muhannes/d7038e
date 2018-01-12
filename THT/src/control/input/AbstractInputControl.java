@@ -88,7 +88,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
             if(backward) newMoveDirection.addLocal(moveDir.negate());
             if(strafeLeft) newMoveDirection.addLocal(moveDirLeft);
             if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
-            character.setNextDirection(newMoveDirection);
+            character.setNextDirection(newMoveDirection.mult(((EntityNode)getSpatial()).movementSpeed));
         }
         return newMoveDirection;
     }

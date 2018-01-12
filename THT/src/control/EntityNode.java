@@ -37,8 +37,8 @@ public abstract class EntityNode extends Node{
     AssetManager assetManager;
     
     public float movementSpeed = NORMAL_MOVEMENT_SPEED;
-    public static float SLOWED_MOVEMENT_SPEED = 1.0f;
-    public static float NORMAL_MOVEMENT_SPEED = 3.0f;
+    public static float SLOWED_MOVEMENT_SPEED = 1.0f/60.0f;
+    public static float NORMAL_MOVEMENT_SPEED = 3.0f/60.0f;
     private long timer;
     private Boolean slowed = false;
     private final int slowTime = 3;

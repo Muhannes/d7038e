@@ -45,11 +45,10 @@ public class MyCharacterControl extends CharacterControl {
     public void update(float tpf){
         Vector3f newDir = getNextDirection();
         if (newDir != null) {
-            setWalkDirection(newDir);
+            setWalkDirection(newDir.normalize().mult(movementSpeed));
+        } else {
+            setWalkDirection(getWalkDirection().normalize().mult(movementSpeed));
         }
-        //float movementSpeed = ((EntityNode) getSpatial()).movementSpeed;
-        Vector3f newWalkDir = getWalkDirection().normalize().mult(movementSpeed).mult(tpf);
-        setWalkDirection(newWalkDir);
         super.update(tpf);
     }
     

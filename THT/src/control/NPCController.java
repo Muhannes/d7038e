@@ -65,9 +65,11 @@ public class NPCController implements PhysicsCollisionListener{
                 for (Spatial spatial : ((Node)root.getChild("playersNode")).getChildren()) {
                     if (spatial instanceof MonkeyNode) {
                         Vector3f newDir = new Vector3f(RANDOM.nextFloat() - 0.5f, 0, RANDOM.nextFloat() - 0.5f);
+                        newDir = newDir.normalize().mult(((MonkeyNode) ((EntityNode)spatial)).movementSpeed);
                         //newDir = newDir.normalize().mult(NPC_MOVEMENT_SPEED);
-                        CharacterControl cc = spatial.getControl(CharacterControl.class);
-                        cc.setWalkDirection(newDir);
+                        MyCharacterControl cc = spatial.getControl(MyCharacterControl.class);
+                        //cc.setWalkDirection(newDir);
+                        cc.setNextDirection(newDir);
                         cc.setViewDirection(newDir);
                         hostedMovementService.playerUpdated(spatial.getName());
                     }
