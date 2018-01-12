@@ -147,7 +147,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                         CharacterControl cc = s.getControl(CharacterControl.class);
                         Vector3f direction = new Vector3f(cc.getWalkDirection());
                         Vector3f rotation = new Vector3f(cc.getViewDirection());
-                        System.out.println("Direction: " + direction);
                         //do same for location
                         PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
                         movements.add(pm);
@@ -168,7 +167,6 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                             broadcast(session, filtered);
                         }
                     });
-                    
                     movements.clear();
                 }
             }
