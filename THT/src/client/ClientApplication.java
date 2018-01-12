@@ -9,6 +9,7 @@ import com.jme3.app.LostFocusBehavior;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import network.ClientNetworkManager;
@@ -132,6 +133,11 @@ public class ClientApplication extends SimpleApplication{
     
     public static void main(String[] args){
        ClientApplication clientApplication = new ClientApplication();
+       AppSettings newSetting = new AppSettings(true);
+
+       newSetting.setFrameRate(60);
+
+       clientApplication.setSettings(newSetting);
        clientApplication.start();
     }
 
