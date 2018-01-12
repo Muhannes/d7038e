@@ -188,7 +188,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     @Override
     protected void controlUpdate(float tpf) {
         // Scale every frame, since tpf changes.
-        setNewMoveDirection(tpf);
+        //setNewMoveDirection(tpf);
     }
     
     /**

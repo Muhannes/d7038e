@@ -76,6 +76,8 @@ public class ClientHandoverService extends AbstractClientService implements Hand
                         ip = i.getHostAddress();
                     } else if (i.getHostAddress().startsWith("10.")) {
                         ip = i.getHostAddress();
+                    } else if (i.getHostAddress().startsWith("130.")) {
+                        ip = i.getHostAddress();
                     } 
                 }
             }
