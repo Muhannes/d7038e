@@ -144,9 +144,10 @@ public class HostedMovementService extends AbstractHostedConnectionService imple
                     Spatial s = playersNode.getChild(id);
                     if (s != null) {
                         Vector3f location = new Vector3f(s.getLocalTranslation());
-                        Vector3f direction = new Vector3f(s.getControl(CharacterControl.class).getWalkDirection());
-                        Vector3f rotation = new Vector3f(s.getControl(CharacterControl.class).getViewDirection());
-                        
+                        CharacterControl cc = s.getControl(CharacterControl.class);
+                        Vector3f direction = new Vector3f(cc.getWalkDirection());
+                        Vector3f rotation = new Vector3f(cc.getViewDirection());
+                        System.out.println("Direction: " + direction);
                         //do same for location
                         PlayerMovement pm = new PlayerMovement(id, location, direction, rotation);
                         movements.add(pm);

@@ -21,6 +21,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import control.EntityNode;
+import control.MyCharacterControl;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     protected final ClientGameStatsService gameStatsService;
     private boolean forward = false, backward = false, strafeLeft = false, strafeRight = false;
     
-    protected CharacterControl character;
+    protected MyCharacterControl character;
     private boolean isSending = false;
     private ScheduledExecutorService executor;
     
@@ -69,7 +70,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     
     private Vector3f setNewMoveDirection(float tpf) {
         if(character == null){
-            character = getSpatial().getControl(CharacterControl.class);
+            character = getSpatial().getControl(MyCharacterControl.class);
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
@@ -87,8 +88,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
             if(backward) newMoveDirection.addLocal(moveDir.negate());
             if(strafeLeft) newMoveDirection.addLocal(moveDirLeft);
             if(strafeRight) newMoveDirection.addLocal(moveDirLeft.negate());
-            newMoveDirection.normalizeLocal().multLocal(((EntityNode)getSpatial()).movementSpeed * tpf);
-            character.setWalkDirection(newMoveDirection);
+            character.setNextDirection(newMoveDirection);
         }
         return newMoveDirection;
     }
@@ -96,7 +96,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(CharacterControl.class);
+            character = getSpatial().getControl(MyCharacterControl.class);
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
@@ -117,7 +117,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if(character == null){
-            character = getSpatial().getControl(CharacterControl.class);
+            character = getSpatial().getControl(MyCharacterControl.class);
             if(character == null){
                 throw new RuntimeException("AbstractInputControl requires a CharacterControl to be attached to spatial");
             }
@@ -141,7 +141,8 @@ public abstract class AbstractInputControl extends AbstractControl implements An
     /**
      * Sends information about model to server
      */
-    private void sendMovementToServer(){    
+    private void sendMovementToServer(){
+        
         synchronized(lock){
             if (!isSending) {
                 executor.schedule(movementSender, 20, TimeUnit.MILLISECONDS);
@@ -162,7 +163,7 @@ public abstract class AbstractInputControl extends AbstractControl implements An
                 isSending = false;
             }
             synchronized(charLock){
-                Spatial self = getSpatial().clone();
+                Spatial self = getSpatial();
                 pm = new PlayerMovement(self.getName(), self.getLocalTranslation(),
                         character.getWalkDirection(), character.getViewDirection());
             }

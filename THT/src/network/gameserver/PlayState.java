@@ -23,6 +23,7 @@ import control.CollisionController;
 import control.HumanNode;
 import control.MonkeyNode;
 import control.MonsterNode;
+import control.MyCharacterControl;
 import control.WorldCreator;
 import control.NPCController;
 import java.util.concurrent.Executors;
@@ -133,7 +134,7 @@ public class PlayState extends BaseAppState implements MovementSession, GameStat
                 @Override
                 public void run() {
                     Spatial player = playersNode.getChild(playerMovement.id);
-                    player.getControl(CharacterControl.class).setWalkDirection(playerMovement.direction);
+                    player.getControl(MyCharacterControl.class).setNextDirection(playerMovement.direction);
                     player.getControl(CharacterControl.class).setViewDirection(playerMovement.rotation);
 
                     hostedMovementService.playerUpdated(playerMovement.id);

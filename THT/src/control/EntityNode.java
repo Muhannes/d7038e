@@ -95,6 +95,7 @@ public abstract class EntityNode extends Node{
             timer = System.currentTimeMillis();
             slowed = true;
             movementSpeed = SLOWED_MOVEMENT_SPEED;
+            charControl.setMovementSpeed(movementSpeed);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -105,11 +106,12 @@ public abstract class EntityNode extends Node{
                     }
                     slowed = false;
                     movementSpeed = NORMAL_MOVEMENT_SPEED;
-                    Vector3f wd = charControl.getWalkDirection();
+                    charControl.setMovementSpeed(movementSpeed);
+                    /*Vector3f wd = charControl.getWalkDirection();
                     if (wd.length() > 0) {
                         wd.normalizeLocal();
                         wd.multLocal(movementSpeed);
-                    }
+                    }*/
                 }
             }).start();            
         }

@@ -10,6 +10,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
+import control.MyCharacterControl;
 import java.util.List;
 import network.service.movement.MovementSessionListener;
 import network.service.movement.PlayerMovement;
@@ -126,6 +127,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
         Vector3f currentPos = getSpatial().getLocalTranslation();
         Vector3f dif = currentPos.subtract(setpoint).negate();
         convergeVector = dif.mult(1.0f/MAX_CONVERGE_STEPS);
+        convergeVector.y = 0;
         convergeCounter = 0;
     }
 
@@ -151,7 +153,7 @@ public class ConvergeControl extends AbstractControl implements MovementSessionL
                         newConvergeVector(posSetpoint);
                     }
                     if(convergeAll){
-                        getSpatial().getControl(CharacterControl.class).setWalkDirection(pm.direction);
+                        getSpatial().getControl(MyCharacterControl.class).setNextDirection(pm.direction);
                     }
                 }
                 return;
